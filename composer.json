@@ -1,5 +1,5 @@
 {
-    "name": "yiisoft/rbac-spiral-db",
+    "name": "yiisoft/rbac-cycle-db",
     "type": "library",
     "description": "Yii RBAC Spiral Database storage",
     "keywords": [
@@ -12,11 +12,11 @@
     "homepage": "https://www.yiiframework.com/",
     "license": "BSD-3-Clause",
     "support": {
-        "issues": "https://github.com/yiisoft/rbac-spiral-db/issues?state=open",
+        "issues": "https://github.com/yiisoft/rbac-cycle-db/issues?state=open",
         "forum": "https://www.yiiframework.com/forum/",
         "wiki": "https://www.yiiframework.com/wiki/",
         "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/rbac-spiral-db"
+        "source": "https://github.com/yiisoft/rbac-cycle-db"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
