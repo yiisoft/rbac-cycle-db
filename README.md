@@ -2,11 +2,11 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://github.com/yiisoft.png" height="100px">
     </a>
-    <h1 align="center">Yii RBAC Spiral Database</h1>
+    <h1 align="center">Yii RBAC Cycle Database</h1>
     <br>
 </p>
 
-The package provides [Spiral Database](https://github.com/spiral/database) storage for [Yii RBAC](https://github.com/yiisoft/rbac).
+The package provides [Cycle Database](https://github.com/cycle/database) storage for [Yii RBAC](https://github.com/yiisoft/rbac).
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/rbac-cycle-db/v/stable.png)](https://packagist.org/packages/yiisoft/rbac-cycle-db)
 [![Total Downloads](https://poser.pugx.org/yiisoft/rbac-cycle-db/downloads.png)](https://packagist.org/packages/yiisoft/rbac-cycle-db)

@@ -1,13 +1,13 @@
 {
     "name": "yiisoft/rbac-cycle-db",
     "type": "library",
-    "description": "Yii RBAC Spiral Database storage",
+    "description": "Yii RBAC Cycle Database storage",
     "keywords": [
         "yii",
         "rbac",
         "storage",
-        "spiral",
-        "spiral-db"
+        "cycle",
+        "cycle-db"
     ],
     "homepage": "https://www.yiiframework.com/",
     "license": "BSD-3-Clause",
@@ -22,7 +22,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.4|^8.0",
-        "spiral/database": "^2.7"
+        "cycle/database": "^2.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
@@ -32,12 +32,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Yiisoft\\Rbac\\Spiral\\": "src"
+            "Yiisoft\\Rbac\\Cycle\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Yiisoft\\Rbac\\Spiral\\Tests\\": "tests"
+            "Yiisoft\\Rbac\\Cycle\\Tests\\": "tests"
         }
     },
     "extra": {
