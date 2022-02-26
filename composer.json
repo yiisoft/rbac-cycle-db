@@ -22,8 +22,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^7.4|^8.0",
-        "cycle/database": "^1.0|^2.0",
+        "php": "^8.0",
+        "cycle/database": "^2.1",
         "symfony/console": "^5.3|^6.0",
         "yiisoft/rbac": "dev-master"
     },
