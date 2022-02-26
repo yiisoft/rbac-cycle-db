@@ -17,14 +17,8 @@ use Yiisoft\Rbac\Role;
 final class ItemsStorage implements ItemsStorageInterface
 {
     private DatabaseInterface $database;
-    /**
-     * @var Table
-     */
-    private TableInterface $table;
-    /**
-     * @var Table
-     */
-    private TableInterface $childrenTable;
+    private Table|TableInterface $table;
+    private Table|TableInterface $childrenTable;
 
     public function __construct(string $tableName, DatabaseProviderInterface $dbal, ?string $childrenTable = null)
     {

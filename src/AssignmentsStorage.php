@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle;
 
-use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\Table;
 use Cycle\Database\TableInterface;
@@ -13,16 +12,11 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
 
 final class AssignmentsStorage implements AssignmentsStorageInterface
 {
-    private DatabaseInterface $database;
-    /**
-     * @var Table
-     */
-    private TableInterface $table;
+    private Table|TableInterface $table;
 
     public function __construct(string $tableName, DatabaseProviderInterface $dbal)
     {
-        $this->database = $dbal->database();
-        $this->table = $this->database->table($tableName);
+        $this->table = $dbal->database()->table($tableName);
     }
 
     /**
