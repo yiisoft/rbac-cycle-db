@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Rbac\Cycle\Tests;
 
-use Cycle\Database\Query\InsertQuery;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\Permission;
@@ -22,7 +23,6 @@ class ItemsStorageTest extends TestCase
         $this->assertSame('Super Admin', $storage->get('Super Admin')->getName());
         $this->assertSame('super admin', $storage->get('Super Admin')->getRuleName());
     }
-
 
     public function testGet(): void
     {
@@ -159,7 +159,6 @@ class ItemsStorageTest extends TestCase
                 ->table('auth_item_child')
                 ->insertOne($item);
         }
-
     }
 
     private function getStorage()
