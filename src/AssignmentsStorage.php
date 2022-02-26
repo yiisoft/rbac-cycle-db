@@ -27,9 +27,9 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         $assignments = [];
         foreach ($this->table->select()->fetchAll() as $items) {
             foreach ($items as $item) {
-                $assignments[$item['user_id']][$item['item_name']] = new Assignment(
-                    $item['user_id'],
-                    $item['item_name'],
+                $assignments[$item['userId']][$item['itemName']] = new Assignment(
+                    $item['userId'],
+                    $item['itemName'],
                     $item['created_at']
                 );
             }
@@ -43,10 +43,10 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function getByUserId(string $userId): array
     {
-        $assignments = $this->table->select()->where(['user_id' => $userId])->fetchAll();
+        $assignments = $this->table->select()->where(['userId' => $userId])->fetchAll();
 
         return array_map(
-            static fn (array $item) => new Assignment($userId, $item['item_name'], $item['created_at']),
+            static fn (array $item) => new Assignment($userId, $item['itemName'], $item['created_at']),
             $assignments
         );
     }
@@ -58,7 +58,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     {
         $assignment = $this->table
             ->select()
-            ->where(['item_name' => $itemName, 'user_id' => $userId])
+            ->where(['itemName' => $itemName, 'userId' => $userId])
             ->run()
             ->fetch();
         if (!empty($assignment)) {
@@ -74,8 +74,8 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     {
         $this->table->insertOne(
             [
-                'item_name' => $itemName,
-                'user_id' => $userId,
+                'itemName' => $itemName,
+                'userId' => $userId,
                 'created_at' => time(),
             ]
         );
@@ -86,7 +86,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function hasItem(string $name): bool
     {
-        return $this->table->select('item_name')->where(['item_name' => $name])->count() > 0;
+        return $this->table->select('itemName')->where(['itemName' => $name])->count() > 0;
     }
 
     /**
@@ -97,7 +97,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         if ($oldName === $newName) {
             return;
         }
-        $this->table->update(['item_name' => $newName], ['item_name' => $oldName])->run();
+        $this->table->update(['itemName' => $newName], ['itemName' => $oldName])->run();
     }
 
     /**
@@ -105,7 +105,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function remove(string $itemName, string $userId): void
     {
-        $this->table->delete(['item_name' => $itemName, 'user_id' => $userId])->run();
+        $this->table->delete(['itemName' => $itemName, 'userId' => $userId])->run();
     }
 
     /**
@@ -113,7 +113,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function removeByUserId(string $userId): void
     {
-        $this->table->delete(['user_id' => $userId])->run();
+        $this->table->delete(['userId' => $userId])->run();
     }
 
     /**
@@ -121,7 +121,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function removeByItemName(string $itemName): void
     {
-        $this->table->delete(['item_name' => $itemName])->run();
+        $this->table->delete(['itemName' => $itemName])->run();
     }
 
     /**

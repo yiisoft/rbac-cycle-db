@@ -18,7 +18,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     private ?DatabaseManager $databaseManager = null;
 
-    public function getDbal(): DatabaseManager
+    protected function getDbal(): DatabaseManager
     {
         if ($this->databaseManager === null) {
             $this->createConnection();
@@ -26,20 +26,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return $this->databaseManager;
     }
 
-    private function createConnection(): void
+    protected function setUp(): void
     {
-        $dbConfig = new DatabaseConfig(
-            [
-                'default' => 'default',
-                'databases' => [
-                    'default' => ['connection' => 'sqlite'],
-                ],
-                'connections' => [
-                    'sqlite' => new SQLiteDriverConfig(new FileConnectionConfig(__DIR__ . '/runtime/test.db')),
-                ],
-            ]
-        );
-        $this->databaseManager = new DatabaseManager($dbConfig);
+        parent::setUp();
+        $this->createDbTables();
+        $this->populateDb();
     }
 
     protected function tearDown(): void
@@ -66,6 +57,22 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             )
         );
         $app->find('rbac/cycle/init')->run(new ArrayInput([]), new NullOutput());
+    }
+
+    private function createConnection(): void
+    {
+        $dbConfig = new DatabaseConfig(
+            [
+                'default' => 'default',
+                'databases' => [
+                    'default' => ['connection' => 'sqlite'],
+                ],
+                'connections' => [
+                    'sqlite' => new SQLiteDriverConfig(new FileConnectionConfig(__DIR__ . '/runtime/test.db')),
+                ],
+            ]
+        );
+        $this->databaseManager = new DatabaseManager($dbConfig);
     }
 
     abstract protected function populateDb(): void;

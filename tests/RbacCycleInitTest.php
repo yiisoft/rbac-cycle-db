@@ -6,6 +6,11 @@ namespace Yiisoft\Rbac\Cycle\Tests;
 
 class RbacCycleInitTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        // Skip
+    }
+
     public function testExecute(): void
     {
         $this->createDbTables();

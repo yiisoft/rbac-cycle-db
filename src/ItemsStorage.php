@@ -8,7 +8,6 @@ use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\Injection\Expression;
 use Cycle\Database\Table;
-use Cycle\Database\TableInterface;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
@@ -17,8 +16,8 @@ use Yiisoft\Rbac\Role;
 final class ItemsStorage implements ItemsStorageInterface
 {
     private DatabaseInterface $database;
-    private Table|TableInterface $table;
-    private Table|TableInterface $childrenTable;
+    private Table $table;
+    private Table $childrenTable;
 
     public function __construct(string $tableName, DatabaseProviderInterface $dbal, ?string $childrenTable = null)
     {
@@ -51,7 +50,10 @@ final class ItemsStorage implements ItemsStorageInterface
     public function get(string $name): ?Item
     {
         $item = $this->table->select()->where(['name' => $name])->run()->fetch();
-        return $this->populateItem($item);
+        if (!empty($item)) {
+            return $this->populateItem($item);
+        }
+        return null;
     }
 
     /**
@@ -122,9 +124,13 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function getPermission(string $name): ?Permission
     {
-        $permission = $this->table->select()->where(['name' => $name, 'type' => Item::TYPE_PERMISSION])->run()->fetch();
+        $permission = $this->table
+            ->select()
+            ->where(['name' => $name, 'type' => Item::TYPE_PERMISSION])
+            ->run()
+            ->fetch();
 
-        if ($permission !== []) {
+        if (!empty($permission)) {
             return $this->populateItem($permission);
         }
         return null;
@@ -200,19 +206,21 @@ final class ItemsStorage implements ItemsStorageInterface
     }
 
     /**
-     * @param array $item
-     *
-     * @return Permission|Role
+     * @psalm-param array{type: string, name: string, description?: string, ruleName?: string, createdAt: int, updatedAt: int} $attributes
+     * @psalm-return ($attributes['type'] is Item::TYPE_PERMISSION ? Permission : ($attributes['type'] is Item::TYPE_ROLE ? Role : Item))
      */
-    private function populateItem(array $item): Item
+    private function populateItem(array $attributes): Item
     {
-        return $this->createItemByTypeAndName($item['type'], $item['name'])
-            ->withDescription($item['description'] ?? '')
-            ->withRuleName($item['rule_name'] ?? '')
-            ->withCreatedAt($item['created_at'])
-            ->withUpdatedAt($item['updated_at']);
+        return $this->createItemByTypeAndName($attributes['type'], $attributes['name'])
+            ->withDescription($attributes['description'] ?? '')
+            ->withRuleName($attributes['ruleName'] ?? '')
+            ->withCreatedAt((int)$attributes['createdAt'])
+            ->withUpdatedAt((int)$attributes['updatedAt']);
     }
 
+    /**
+     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : ($type is Item::TYPE_ROLE ? Role : Item))
+     */
     private function createItemByTypeAndName(string $type, string $name): Item
     {
         return $type === Item::TYPE_PERMISSION ? new Permission($name) : new Role($name);

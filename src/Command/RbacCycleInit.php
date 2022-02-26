@@ -9,6 +9,7 @@ use Cycle\Database\ForeignKeyInterface;
 use Cycle\Database\Schema\AbstractTable;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Yiisoft\Rbac\Item;
 
@@ -30,6 +31,7 @@ final class RbacCycleInit extends Command
 
     protected function configure()
     {
+        $this->addOption('force', 'f', InputOption::VALUE_OPTIONAL);
         parent::configure();
     }
 
@@ -63,13 +65,14 @@ final class RbacCycleInit extends Command
         /** @var AbstractTable $schema */
         $schema = $this->dbal->database()->table($this->config['itemsTable'])->getSchema();
 
-        $schema->primary('name')->string(128);
-        $schema->primary('type')->enum([Item::TYPE_ROLE, Item::TYPE_PERMISSION]);
+        $schema->string('name', 128);
+        $schema->enum('type', [Item::TYPE_ROLE, Item::TYPE_PERMISSION])->nullable(false);
         $schema->string('description', 191)->nullable();
-        $schema->string('rule_name', 64)->nullable();
-        $schema->integer('created_at');
-        $schema->integer('updated_at');
-        $schema->index(['name', 'type']);
+        $schema->string('ruleName', 64)->nullable();
+        $schema->integer('createdAt')->nullable(false);
+        $schema->integer('updatedAt')->nullable(false);
+        $schema->index(['type']);
+        $schema->setPrimaryKeys(['name']);
 
         $schema->save();
     }
@@ -81,8 +84,9 @@ final class RbacCycleInit extends Command
             ->table($itemsChildrenTable)
             ->getSchema();
 
-        $schema->primary('parent')->string(128);
-        $schema->primary('child')->string(128);
+        $schema->string('parent', 128)->nullable(false);
+        $schema->string('child', 128)->nullable(false);
+        $schema->setPrimaryKeys(['parent', 'child']);
 
         $schema->foreignKey(['parent'])
             ->references($this->config['itemsTable'], ['name'])
@@ -104,12 +108,12 @@ final class RbacCycleInit extends Command
             ->table($this->config['assignmentsTable'])
             ->getSchema();
 
-        $schema->primary('item_name')->string(128);
-        $schema->primary('user_id')->string(128);
-        $schema->integer('created_at');
-        $schema->index(['item_name', 'user_id']);
+        $schema->primary('itemName')->string(128);
+        $schema->primary('userId')->string(128);
+        $schema->integer('createdAt')->nullable(false);
+        $schema->index(['itemName', 'userId']);
 
-        $schema->foreignKey(['item_name'])
+        $schema->foreignKey(['itemName'])
             ->references($this->config['itemsTable'], ['name'])
             ->onUpdate(ForeignKeyInterface::CASCADE)
             ->onDelete(ForeignKeyInterface::CASCADE);
