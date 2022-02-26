@@ -23,8 +23,9 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.4|^8.0",
-        "yiisoft/rbac": "dev-master",
-        "cycle/database": "^1.0|^2.0"
+        "cycle/database": "^1.0|^2.0",
+        "symfony/console": "^5.3|^6.0",
+        "yiisoft/rbac": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",

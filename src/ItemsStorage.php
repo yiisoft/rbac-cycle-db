@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\DatabaseInterface;
+use Cycle\Database\DatabaseProviderInterface;
+use Cycle\Database\Injection\Expression;
 use Cycle\Database\Table;
 use Cycle\Database\TableInterface;
 use Yiisoft\Rbac\Item;
@@ -12,7 +14,7 @@ use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 
-class ItemsStorage implements ItemsStorageInterface
+final class ItemsStorage implements ItemsStorageInterface
 {
     private DatabaseInterface $database;
     /**
@@ -24,11 +26,11 @@ class ItemsStorage implements ItemsStorageInterface
      */
     private TableInterface $childrenTable;
 
-    public function __construct(string $tableName, DatabaseInterface $database, ?string $childrenTable)
+    public function __construct(string $tableName, DatabaseProviderInterface $dbal, ?string $childrenTable = null)
     {
-        $this->database = $database;
-        $this->table = $database->table($tableName);
-        $this->childrenTable = $database->table($childrenTable ?? $tableName . '_children');
+        $this->database = $dbal->database();
+        $this->table = $this->database->table($tableName);
+        $this->childrenTable = $this->database->table($childrenTable ?? $tableName . '_child');
     }
 
     /**
@@ -98,7 +100,7 @@ class ItemsStorage implements ItemsStorageInterface
     {
         $role = $this->table->select()->where(['name' => $name, 'type' => Item::TYPE_ROLE])->run()->fetch();
 
-        if ($role !== []) {
+        if (!empty($role)) {
             return $this->populateItem($role);
         }
         return null;
@@ -147,7 +149,12 @@ class ItemsStorage implements ItemsStorageInterface
      */
     public function getParents(string $name): array
     {
-        // TODO: Implement getParents() method.
+        $parents = $this->database
+            ->select()
+            ->from([$this->table->getName(), $this->childrenTable->getName()])
+            ->where(['child' => $name, 'name' => new Expression('parent')])
+            ->fetchAll();
+        return array_map(fn (array $item) => $this->populateItem($item), $parents);
     }
 
     /**
@@ -155,7 +162,13 @@ class ItemsStorage implements ItemsStorageInterface
      */
     public function getChildren(string $name): array
     {
-        // TODO: Implement getChildren() method.
+        $children = $this->database
+            ->select()
+            ->from([$this->table->getName(), $this->childrenTable->getName()])
+            ->where(['parent' => $name, 'name' => new Expression('child')])
+            ->fetchAll();
+
+        return array_map(fn (array $item) => $this->populateItem($item), $children);
     }
 
     /**
@@ -163,7 +176,7 @@ class ItemsStorage implements ItemsStorageInterface
      */
     public function hasChildren(string $name): bool
     {
-        // TODO: Implement hasChildren() method.
+        return $this->childrenTable->select('parent')->where(['parent' => $name])->count() > 0;
     }
 
     /**
@@ -171,7 +184,7 @@ class ItemsStorage implements ItemsStorageInterface
      */
     public function addChild(string $parentName, string $childName): void
     {
-        // TODO: Implement addChild() method.
+        $this->childrenTable->insertOne(['parent' => $parentName, 'child' => $childName]);
     }
 
     /**
@@ -179,7 +192,9 @@ class ItemsStorage implements ItemsStorageInterface
      */
     public function removeChild(string $parentName, string $childName): void
     {
-        // TODO: Implement removeChild() method.
+        $this->childrenTable
+            ->delete(['parent' => $parentName, 'child' => $childName])
+            ->run();
     }
 
     /**
@@ -187,7 +202,7 @@ class ItemsStorage implements ItemsStorageInterface
      */
     public function removeChildren(string $parentName): void
     {
-        // TODO: Implement removeChildren() method.
+        $this->childrenTable->delete(['parent' => $parentName])->run();
     }
 
     /**
