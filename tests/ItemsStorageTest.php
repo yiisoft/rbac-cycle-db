@@ -7,6 +7,7 @@ namespace Yiisoft\Rbac\Cycle\Tests;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\Permission;
+use Yiisoft\Rbac\Role;
 
 class ItemsStorageTest extends TestCase
 {
@@ -41,64 +42,133 @@ class ItemsStorageTest extends TestCase
         $this->assertInstanceOf(Permission::class, $permission);
     }
 
-    public function testAddChild()
+    public function testAddChild(): void
     {
+        $storage = $this->getStorage();
+
+        $storage->addChild('Parent 2', 'Child 1');
+
+        $this->assertCount(2, $storage->getChildren('Parent 2'));
     }
 
-    public function testClear()
+    public function testClear(): void
     {
+        $storage = $this->getStorage();
+        $storage->clear();
+
+        $this->assertEmpty($storage->getAll());
+        $this->assertEmpty($storage->getChildren('Parent 2'));
     }
 
-    public function testGetChildren()
+    public function testGetChildren(): void
     {
+        $storage = $this->getStorage();
+
+        $children = $storage->getChildren('Parent 1');
+
+        $this->assertCount(1, $children);
+        $this->assertContainsOnlyInstancesOf(Item::class, $children);
     }
 
-    public function testGetRoles()
+    public function testGetRoles(): void
     {
+        $storage = $this->getStorage();
+        $roles = $storage->getRoles();
+
+        $this->assertNotEmpty($roles);
+        $this->assertContainsOnlyInstancesOf(Role::class, $roles);
     }
 
-    public function testGetPermissions()
+    public function testGetPermissions(): void
     {
+        $storage = $this->getStorage();
+        $permissions = $storage->getPermissions();
+
+        $this->assertCount(2, $permissions);
+        $this->assertContainsOnlyInstancesOf(Permission::class, $permissions);
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
+        $storage = $this->getStorage();
+        $storage->remove('Parent 3');
+
+        $this->assertEmpty($storage->get('Parent 3'));
     }
 
-    public function testGetParents()
+    public function testGetParents(): void
     {
+        $storage = $this->getStorage();
+        $parents = $storage->getParents('Child 1');
+
+        $this->assertCount(1, $parents);
+        $this->assertSame('Parent 1', $parents[0]->getName());
     }
 
-    public function testRemoveChildren()
+    public function testRemoveChildren(): void
     {
+        $storage = $this->getStorage();
+        $storage->removeChildren('Parent 2');
+
+        $this->assertFalse($storage->hasChildren('Parent 2'));
     }
 
-    public function testGetRole()
+    public function testGetRole(): void
     {
+        $storage = $this->getStorage();
+        $role = $storage->getRole('Parent 1');
+
+        $this->assertNotEmpty($role);
+        $this->assertInstanceOf(Role::class, $role);
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
+        $storage = $this->getStorage();
+        $newItem = new Permission('Delete post');
+        $storage->add($newItem);
+
+        $this->assertInstanceOf(Permission::class, $storage->get('Delete post'));
     }
 
-    public function testRemoveChild()
+    public function testRemoveChild(): void
     {
+        $storage = $this->getStorage();
+        $storage->removeChild('Parent 2', 'Child 2');
+
+        $this->assertFalse($storage->hasChildren('Parent 2'));
     }
 
-    public function testGetAll()
+    public function testGetAll(): void
     {
+        $storage = $this->getStorage();
+        $all = $storage->getAll();
+
+        $this->assertCount(5, $all);
     }
 
-    public function testHasChildren()
+    public function testHasChildren(): void
     {
+        $storage = $this->getStorage();
+
+        $this->assertTrue($storage->hasChildren('Parent 1'));
+        $this->assertFalse($storage->hasChildren('Parent 3'));
     }
 
-    public function testClearPermissions()
+    public function testClearPermissions(): void
     {
+        $storage = $this->getStorage();
+        $storage->clearPermissions();
+
+        $this->assertContainsOnlyInstancesOf(Role::class, $storage->getAll());
     }
 
-    public function testClearRoles()
+    public function testClearRoles(): void
     {
+        $storage = $this->getStorage();
+        $storage->clearRoles();
+
+        $this->assertContainsOnlyInstancesOf(Permission::class, $storage->getAll());
     }
 
     protected function populateDb(): void

@@ -61,6 +61,13 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function add(Item $item): void
     {
+        $time = time();
+        if (!$item->hasCreatedAt()) {
+            $item = $item->withCreatedAt($time);
+        }
+        if (!$item->hasUpdatedAt()) {
+            $item = $item->withUpdatedAt($time);
+        }
         $this->table->insertOne($item->getAttributes());
     }
 
