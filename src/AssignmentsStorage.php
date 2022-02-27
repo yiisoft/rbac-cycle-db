@@ -25,14 +25,12 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     public function getAll(): array
     {
         $assignments = [];
-        foreach ($this->table->select()->fetchAll() as $items) {
-            foreach ($items as $item) {
-                $assignments[$item['userId']][$item['itemName']] = new Assignment(
-                    $item['userId'],
-                    $item['itemName'],
-                    $item['created_at']
-                );
-            }
+        foreach ($this->table->select()->fetchAll() as $item) {
+            $assignments[$item['userId']][$item['itemName']] = new Assignment(
+                $item['userId'],
+                $item['itemName'],
+                (int)$item['createdAt']
+            );
         }
 
         return $assignments;
@@ -46,7 +44,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         $assignments = $this->table->select()->where(['userId' => $userId])->fetchAll();
 
         return array_map(
-            static fn (array $item) => new Assignment($userId, $item['itemName'], $item['created_at']),
+            static fn (array $item) => new Assignment($userId, $item['itemName'], (int)$item['createdAt']),
             $assignments
         );
     }
@@ -62,7 +60,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->run()
             ->fetch();
         if (!empty($assignment)) {
-            return new Assignment($userId, $itemName, $assignment['created_at']);
+            return new Assignment($userId, $itemName, (int)$assignment['createdAt']);
         }
         return null;
     }
@@ -76,7 +74,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             [
                 'itemName' => $itemName,
                 'userId' => $userId,
-                'created_at' => time(),
+                'createdAt' => time(),
             ]
         );
     }
