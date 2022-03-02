@@ -31,19 +31,42 @@ final class RbacCycleInit extends Command
 
     protected function configure()
     {
-        $this->addOption('force', 'f', InputOption::VALUE_OPTIONAL);
-        parent::configure();
+        $this
+            ->setDescription('Create RBAC schemas')
+            ->setHelp('This command creates schemas for RBAC using Cycle DBAL')
+            ->addOption('force', 'f', InputOption::VALUE_OPTIONAL, 'Force re-create schemas if exists', false);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $itemsChildrenTable = $this->config['itemsChildrenTable'] ?? $this->config['itemsTable'] . '_child';
+        $force = $input->getOption('force');
+        if ($force === false) {
+            $reCreate = false;
+        } else {
+            $reCreate = true;
+        }
+        /** @var AbstractTable $schema */
+        if ($reCreate && $this->dbal->database()->hasTable($itemsChildrenTable) === true) {
+            $schema = $this->dbal->database()->table($itemsChildrenTable)->getSchema();
+            $schema->declareDropped();
+            $schema->save();
+        }
+        if ($reCreate && $this->dbal->database()->hasTable($this->config['assignmentsTable']) === true) {
+            $schema = $this->dbal->database()->table($this->config['assignmentsTable'])->getSchema();
+            $schema->declareDropped();
+            $schema->save();
+        }
+        if ($reCreate && $this->dbal->database()->hasTable($this->config['itemsTable']) === true) {
+            $schema = $this->dbal->database()->table($this->config['itemsTable'])->getSchema();
+            $schema->declareDropped();
+            $schema->save();
+        }
         if ($this->dbal->database()->hasTable($this->config['itemsTable']) === false) {
             $output->writeln('<fg=blue>Creating `' . $this->config['itemsTable'] . '` table...</>');
             $this->createItemsTable();
             $output->writeln('<bg=green>Table `' . $this->config['itemsTable'] . '` created successfully</>');
         }
-
-        $itemsChildrenTable = $this->config['itemsChildrenTable'] ?? $this->config['itemsTable'] . '_child';
 
         if ($this->dbal->database()->hasTable($itemsChildrenTable) === false) {
             $output->writeln('<fg=blue>Creating `' . $itemsChildrenTable . '` table...</>');
