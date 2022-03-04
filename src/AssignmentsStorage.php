@@ -12,9 +12,12 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
 
 final class AssignmentsStorage implements AssignmentsStorageInterface
 {
-    /** @psalm-var Table */
-    private TableInterface $table;
+    private Table|TableInterface $table;
 
+    /**
+     * @param non-empty-string $tableName
+     * @param DatabaseProviderInterface $dbal
+     */
     public function __construct(string $tableName, DatabaseProviderInterface $dbal)
     {
         $this->table = $dbal->database()->table($tableName);

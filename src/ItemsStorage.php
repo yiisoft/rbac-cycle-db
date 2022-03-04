@@ -17,16 +17,19 @@ use Yiisoft\Rbac\Role;
 final class ItemsStorage implements ItemsStorageInterface
 {
     private DatabaseInterface $database;
-    /** @psalm-var Table */
-    private TableInterface $table;
-    /** @psalm-var Table */
-    private TableInterface $childrenTable;
+    private Table|TableInterface $table;
+    private Table|TableInterface $childrenTable;
 
-    public function __construct(string $tableName, DatabaseProviderInterface $dbal, ?string $childrenTable = null)
+    /**
+     * @param non-empty-string $tableName
+     * @param DatabaseProviderInterface $dbal
+     * @param non-empty-string|null $childrenTableName
+     */
+    public function __construct(string $tableName, DatabaseProviderInterface $dbal, ?string $childrenTableName = null)
     {
         $this->database = $dbal->database();
         $this->table = $this->database->table($tableName);
-        $this->childrenTable = $this->database->table($childrenTable ?? $tableName . '_child');
+        $this->childrenTable = $this->database->table($childrenTableName ?? $tableName . '_child');
     }
 
     /**
@@ -44,7 +47,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function getAll(): array
     {
-        return array_map(fn (array $item) => $this->populateItem($item), $this->table->fetchAll());
+        return array_map(fn (array $item): Item => $this->populateItem($item), $this->table->fetchAll());
     }
 
     /**
@@ -95,8 +98,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->table->select()->where(['type' => Item::TYPE_ROLE])->fetchAll();
-        return array_map(fn (array $item) => $this->populateItem($item), $roles);
+        return $this->getItemsByType(Item::TYPE_ROLE);
     }
 
     /**
@@ -104,12 +106,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function getRole(string $name): ?Role
     {
-        $role = $this->table->select()->where(['name' => $name, 'type' => Item::TYPE_ROLE])->run()->fetch();
-
-        if (!empty($role)) {
-            return $this->populateItem($role);
-        }
-        return null;
+        return $this->getItemByTypeAndName(Item::TYPE_ROLE, $name);
     }
 
     /**
@@ -125,8 +122,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function getPermissions(): array
     {
-        $permissions = $this->table->select()->where(['type' => Item::TYPE_PERMISSION])->fetchAll();
-        return array_map(fn (array $item) => $this->populateItem($item), $permissions);
+        return $this->getItemsByType(Item::TYPE_PERMISSION);
     }
 
     /**
@@ -134,16 +130,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function getPermission(string $name): ?Permission
     {
-        $permission = $this->table
-            ->select()
-            ->where(['name' => $name, 'type' => Item::TYPE_PERMISSION])
-            ->run()
-            ->fetch();
-
-        if (!empty($permission)) {
-            return $this->populateItem($permission);
-        }
-        return null;
+        return $this->getItemByTypeAndName(Item::TYPE_PERMISSION, $name);
     }
 
     /**
@@ -164,7 +151,7 @@ final class ItemsStorage implements ItemsStorageInterface
             ->from([$this->table->getName(), $this->childrenTable->getName()])
             ->where(['child' => $name, 'name' => new Expression('parent')])
             ->fetchAll();
-        return array_map(fn (array $item) => $this->populateItem($item), $parents);
+        return array_map(fn (array $item): Item => $this->populateItem($item), $parents);
     }
 
     /**
@@ -178,7 +165,7 @@ final class ItemsStorage implements ItemsStorageInterface
             ->where(['parent' => $name, 'name' => new Expression('child')])
             ->fetchAll();
 
-        return array_map(fn (array $item) => $this->populateItem($item), $children);
+        return array_map(fn (array $item): Item => $this->populateItem($item), $children);
     }
 
     /**
@@ -216,8 +203,31 @@ final class ItemsStorage implements ItemsStorageInterface
     }
 
     /**
-     * @psalm-param array{type: string, name: string, description?: string, ruleName?: string, createdAt: int, updatedAt: int} $attributes
-     * @psalm-return ($attributes['type'] is Item::TYPE_PERMISSION ? Permission : ($attributes['type'] is Item::TYPE_ROLE ? Role : Item))
+     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission[] : ($type is Item::TYPE_ROLE ? Role[] : Item[]))
+     */
+    private function getItemsByType(string $type): array
+    {
+        $items = $this->table->select()->where(['type' => $type])->fetchAll();
+
+        return array_map(fn (array $item): Item => $this->populateItem($item), $items);
+    }
+
+    /**
+     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : ($type is Item::TYPE_ROLE ? Role : Item))|null
+     */
+    private function getItemByTypeAndName(string $type, string $name): ?Item
+    {
+        $item = $this->table->select()->where(['type' => $type, 'name' => $name])->run()->fetch();
+
+        if (empty($item)) {
+            return null;
+        }
+
+        return $this->populateItem($item);
+    }
+
+    /**
+     * @psalm-param array{type: string, name: string, description?: string, ruleName?: string, createdAt: int|string, updatedAt: int|string} $attributes
      */
     private function populateItem(array $attributes): Item
     {

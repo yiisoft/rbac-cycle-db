@@ -6,7 +6,7 @@ namespace Yiisoft\Rbac\Cycle\Command;
 
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\ForeignKeyInterface;
-use Cycle\Database\Schema\AbstractTable;
+use Cycle\Database\Table;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,7 +18,7 @@ final class RbacCycleInit extends Command
     protected static $defaultName = 'rbac/cycle/init';
     private DatabaseProviderInterface $dbal;
     /**
-     * @psalm-var array{itemsTable: string, assignmentsTable: string, itemsChildrenTable?: string}
+     * @psalm-var array{itemsTable: non-empty-string, assignmentsTable: non-empty-string, itemsChildrenTable?: non-empty-string}
      */
     private array $config;
 
@@ -29,7 +29,7 @@ final class RbacCycleInit extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Create RBAC schemas')
@@ -39,6 +39,7 @@ final class RbacCycleInit extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        /** @var non-empty-string $itemsChildrenTable */
         $itemsChildrenTable = $this->config['itemsChildrenTable'] ?? $this->config['itemsTable'] . '_child';
         $force = $input->getOption('force');
         if ($force === false) {
@@ -46,21 +47,15 @@ final class RbacCycleInit extends Command
         } else {
             $reCreate = true;
         }
-        /** @var AbstractTable $schema */
+        /** @var Table $table */
         if ($reCreate && $this->dbal->database()->hasTable($itemsChildrenTable) === true) {
-            $schema = $this->dbal->database()->table($itemsChildrenTable)->getSchema();
-            $schema->declareDropped();
-            $schema->save();
+            $this->dropTable($itemsChildrenTable);
         }
         if ($reCreate && $this->dbal->database()->hasTable($this->config['assignmentsTable']) === true) {
-            $schema = $this->dbal->database()->table($this->config['assignmentsTable'])->getSchema();
-            $schema->declareDropped();
-            $schema->save();
+            $this->dropTable($this->config['assignmentsTable']);
         }
         if ($reCreate && $this->dbal->database()->hasTable($this->config['itemsTable']) === true) {
-            $schema = $this->dbal->database()->table($this->config['itemsTable'])->getSchema();
-            $schema->declareDropped();
-            $schema->save();
+            $this->dropTable($this->config['itemsTable']);
         }
         if ($this->dbal->database()->hasTable($this->config['itemsTable']) === false) {
             $output->writeln('<fg=blue>Creating `' . $this->config['itemsTable'] . '` table...</>');
@@ -85,8 +80,9 @@ final class RbacCycleInit extends Command
 
     private function createItemsTable(): void
     {
-        /** @var AbstractTable $schema */
-        $schema = $this->dbal->database()->table($this->config['itemsTable'])->getSchema();
+        /** @var Table $table */
+        $table = $this->dbal->database()->table($this->config['itemsTable']);
+        $schema = $table->getSchema();
 
         $schema->string('name', 128);
         $schema->enum('type', [Item::TYPE_ROLE, Item::TYPE_PERMISSION])->nullable(false);
@@ -100,12 +96,16 @@ final class RbacCycleInit extends Command
         $schema->save();
     }
 
+    /**
+     * @param non-empty-string $itemsChildrenTable
+     *
+     * @return void
+     */
     private function createItemsChildrenTable(string $itemsChildrenTable): void
     {
-        /** @var AbstractTable $schema */
-        $schema = $this->dbal->database()
-            ->table($itemsChildrenTable)
-            ->getSchema();
+        /** @var Table $table */
+        $table = $this->dbal->database()->table($itemsChildrenTable);
+        $schema = $table->getSchema();
 
         $schema->string('parent', 128)->nullable(false);
         $schema->string('child', 128)->nullable(false);
@@ -126,10 +126,9 @@ final class RbacCycleInit extends Command
 
     private function createAssignmentsTable(): void
     {
-        /** @var AbstractTable $schema */
-        $schema = $this->dbal->database()
-            ->table($this->config['assignmentsTable'])
-            ->getSchema();
+        /** @var Table $table */
+        $table = $this->dbal->database()->table($this->config['assignmentsTable']);
+        $schema = $table->getSchema();
 
         $schema->primary('itemName')->string(128);
         $schema->primary('userId')->string(128);
@@ -141,6 +140,20 @@ final class RbacCycleInit extends Command
             ->onUpdate(ForeignKeyInterface::CASCADE)
             ->onDelete(ForeignKeyInterface::CASCADE);
 
+        $schema->save();
+    }
+
+    /**
+     * @param non-empty-string $tableName
+     *
+     * @return void
+     */
+    private function dropTable(string $tableName): void
+    {
+        /** @var Table $table */
+        $table = $this->dbal->database()->table($tableName);
+        $schema = $table->getSchema();
+        $schema->declareDropped();
         $schema->save();
     }
 }
