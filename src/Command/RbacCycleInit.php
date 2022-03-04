@@ -98,8 +98,6 @@ final class RbacCycleInit extends Command
 
     /**
      * @param non-empty-string $itemsChildrenTable
-     *
-     * @return void
      */
     private function createItemsChildrenTable(string $itemsChildrenTable): void
     {
@@ -145,8 +143,6 @@ final class RbacCycleInit extends Command
 
     /**
      * @param non-empty-string $tableName
-     *
-     * @return void
      */
     private function dropTable(string $tableName): void
     {
