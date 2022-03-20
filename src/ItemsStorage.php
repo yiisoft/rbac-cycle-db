@@ -8,7 +8,6 @@ use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\Injection\Expression;
 use Cycle\Database\Table;
-use Cycle\Database\TableInterface;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
@@ -17,8 +16,8 @@ use Yiisoft\Rbac\Role;
 final class ItemsStorage implements ItemsStorageInterface
 {
     private DatabaseInterface $database;
-    private Table|TableInterface $table;
-    private Table|TableInterface $childrenTable;
+    private Table $table;
+    private Table $childrenTable;
 
     /**
      * @param non-empty-string $tableName

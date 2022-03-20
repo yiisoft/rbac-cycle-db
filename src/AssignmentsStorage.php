@@ -6,13 +6,12 @@ namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\Table;
-use Cycle\Database\TableInterface;
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 
 final class AssignmentsStorage implements AssignmentsStorageInterface
 {
-    private Table|TableInterface $table;
+    private Table $table;
 
     /**
      * @param non-empty-string $tableName
