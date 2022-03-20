@@ -219,15 +219,17 @@ class ItemsStorageTest extends TestCase
         foreach ($items as $item) {
             $this->getDbal()
                 ->database()
-                ->table('auth_item')
-                ->insertOne($item);
+                ->insert('auth_item')
+                ->values($item)
+                ->run();
         }
 
         foreach ($items_child as $item) {
             $this->getDbal()
                 ->database()
-                ->table('auth_item_child')
-                ->insertOne($item);
+                ->insert('auth_item_child')
+                ->values($item)
+                ->run();
         }
     }
 

@@ -138,15 +138,17 @@ class AssignmentsStorageTest extends TestCase
         foreach ($items as $item) {
             $this->getDbal()
                 ->database()
-                ->table('auth_item')
-                ->insertOne($item);
+                ->insert('auth_item')
+                ->values($item)
+                ->run();
         }
 
         foreach ($assignments as $item) {
             $this->getDbal()
                 ->database()
-                ->table('auth_assignment')
-                ->insertOne($item);
+                ->insert('auth_assignment')
+                ->values($item)
+                ->run();
         }
     }
 

@@ -16,8 +16,14 @@ use Yiisoft\Rbac\Role;
 final class ItemsStorage implements ItemsStorageInterface
 {
     private DatabaseInterface $database;
-    private Table $table;
-    private Table $childrenTable;
+    /**
+     * @var non-empty-string
+     */
+    private string $tableName;
+    /**
+     * @var non-empty-string
+     */
+    private string $childrenTableName;
 
     /**
      * @param non-empty-string $tableName
@@ -27,8 +33,8 @@ final class ItemsStorage implements ItemsStorageInterface
     public function __construct(string $tableName, DatabaseProviderInterface $dbal, ?string $childrenTableName = null)
     {
         $this->database = $dbal->database();
-        $this->table = $this->database->table($tableName);
-        $this->childrenTable = $this->database->table($childrenTableName ?? $tableName . '_child');
+        $this->tableName = $tableName;
+        $this->childrenTableName = $childrenTableName ?? $tableName . '_child';
     }
 
     /**
@@ -36,8 +42,10 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function clear(): void
     {
-        if ($this->database->hasTable($this->table->getName())) {
-            $this->table->eraseData();
+        if ($this->database->hasTable($this->tableName)) {
+            /** @var Table $table */
+            $table = $this->database->table($this->tableName);
+            $table->eraseData();
         }
     }
 
@@ -46,7 +54,10 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function getAll(): array
     {
-        return array_map(fn (array $item): Item => $this->populateItem($item), $this->table->fetchAll());
+        return array_map(
+            fn (array $item): Item => $this->populateItem($item),
+            $this->database->select()->from($this->tableName)->fetchAll()
+        );
     }
 
     /**
@@ -54,7 +65,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function get(string $name): ?Item
     {
-        $item = $this->table->select()->where(['name' => $name])->run()->fetch();
+        $item = $this->database->select()->from($this->tableName)->where(['name' => $name])->run()->fetch();
         if (!empty($item)) {
             return $this->populateItem($item);
         }
@@ -73,7 +84,7 @@ final class ItemsStorage implements ItemsStorageInterface
         if (!$item->hasUpdatedAt()) {
             $item = $item->withUpdatedAt($time);
         }
-        $this->table->insertOne($item->getAttributes());
+        $this->database->insert($this->tableName)->values($item->getAttributes())->run();
     }
 
     /**
@@ -81,7 +92,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function update(string $name, Item $item): void
     {
-        $this->table->update($item->getAttributes(), ['name' => $name])->run();
+        $this->database->update($this->tableName, $item->getAttributes(), ['name' => $name])->run();
     }
 
     /**
@@ -89,7 +100,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function remove(string $name): void
     {
-        $this->table->delete(['name' => $name])->run();
+        $this->database->delete($this->tableName, ['name' => $name])->run();
     }
 
     /**
@@ -113,7 +124,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function clearRoles(): void
     {
-        $this->table->delete(['type' => Item::TYPE_ROLE])->run();
+        $this->database->delete($this->tableName, ['type' => Item::TYPE_ROLE])->run();
     }
 
     /**
@@ -137,7 +148,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function clearPermissions(): void
     {
-        $this->table->delete(['type' => Item::TYPE_PERMISSION])->run();
+        $this->database->delete($this->tableName, ['type' => Item::TYPE_PERMISSION])->run();
     }
 
     /**
@@ -147,7 +158,7 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         $parents = $this->database
             ->select()
-            ->from([$this->table->getName(), $this->childrenTable->getName()])
+            ->from([$this->tableName, $this->childrenTableName])
             ->where(['child' => $name, 'name' => new Expression('parent')])
             ->fetchAll();
         return array_map(fn (array $item): Item => $this->populateItem($item), $parents);
@@ -160,7 +171,7 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         $children = $this->database
             ->select()
-            ->from([$this->table->getName(), $this->childrenTable->getName()])
+            ->from([$this->tableName, $this->childrenTableName])
             ->where(['parent' => $name, 'name' => new Expression('child')])
             ->fetchAll();
 
@@ -172,7 +183,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function hasChildren(string $name): bool
     {
-        return $this->childrenTable->select('parent')->where(['parent' => $name])->count() > 0;
+        return $this->database->select('parent')->from($this->childrenTableName)->where(['parent' => $name])->count() > 0;
     }
 
     /**
@@ -180,7 +191,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function addChild(string $parentName, string $childName): void
     {
-        $this->childrenTable->insertOne(['parent' => $parentName, 'child' => $childName]);
+        $this->database->insert($this->childrenTableName)->values(['parent' => $parentName, 'child' => $childName])->run();
     }
 
     /**
@@ -188,8 +199,8 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function removeChild(string $parentName, string $childName): void
     {
-        $this->childrenTable
-            ->delete(['parent' => $parentName, 'child' => $childName])
+        $this->database
+            ->delete($this->childrenTableName, ['parent' => $parentName, 'child' => $childName])
             ->run();
     }
 
@@ -198,7 +209,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function removeChildren(string $parentName): void
     {
-        $this->childrenTable->delete(['parent' => $parentName])->run();
+        $this->database->delete($this->childrenTableName, ['parent' => $parentName])->run();
     }
 
     /**
@@ -206,7 +217,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     private function getItemsByType(string $type): array
     {
-        $items = $this->table->select()->where(['type' => $type])->fetchAll();
+        $items = $this->database->select()->from($this->tableName)->where(['type' => $type])->fetchAll();
 
         return array_map(fn (array $item): Item => $this->populateItem($item), $items);
     }
@@ -216,7 +227,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     private function getItemByTypeAndName(string $type, string $name): ?Item
     {
-        $item = $this->table->select()->where(['type' => $type, 'name' => $name])->run()->fetch();
+        $item = $this->database->select()->from($this->tableName)->where(['type' => $type, 'name' => $name])->run()->fetch();
 
         if (empty($item)) {
             return null;
