@@ -14,7 +14,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 {
     private DatabaseInterface $database;
     /**
-     * @var non-empty-string
+     * @psalm-var non-empty-string
      */
     private string $tableName;
 

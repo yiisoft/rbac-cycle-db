@@ -17,11 +17,11 @@ final class ItemsStorage implements ItemsStorageInterface
 {
     private DatabaseInterface $database;
     /**
-     * @var non-empty-string
+     * @psalm-var non-empty-string
      */
     private string $tableName;
     /**
-     * @var non-empty-string
+     * @psalm-var non-empty-string
      */
     private string $childrenTableName;
 
