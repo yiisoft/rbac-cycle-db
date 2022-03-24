@@ -26,6 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}
 
     env:
+      extensions: pdo, pdo_sqlite
       key: cache-v1
 
     runs-on: ${{ matrix.os }}
@@ -37,7 +38,6 @@ jobs:
           - windows-latest
 
         php:
-          - 7.4
           - 8.0
           - 8.1
 
@@ -52,6 +52,7 @@ jobs:
           ini-values: date.timezone='UTC'
           coverage: pcov
           tools: composer:v2
+          extensions: ${{ env.extensions }}
 
       - name: Determine composer cache directory on Linux
         if: matrix.os == 'ubuntu-latest'
