@@ -41,12 +41,7 @@ final class RbacCycleInit extends Command
     {
         /** @var non-empty-string $itemsChildrenTable */
         $itemsChildrenTable = $this->config['itemsChildrenTable'] ?? $this->config['itemsTable'] . '_child';
-        $force = $input->getOption('force');
-        if ($force === false) {
-            $reCreate = false;
-        } else {
-            $reCreate = true;
-        }
+        $reCreate = $input->getOption('force') !== false;
         /** @var Table $table */
         if ($reCreate && $this->dbal->database()->hasTable($itemsChildrenTable) === true) {
             $this->dropTable($itemsChildrenTable);

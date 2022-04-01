@@ -66,10 +66,8 @@ final class ItemsStorage implements ItemsStorageInterface
     public function get(string $name): ?Item
     {
         $item = $this->database->select()->from($this->tableName)->where(['name' => $name])->run()->fetch();
-        if (!empty($item)) {
-            return $this->populateItem($item);
-        }
-        return null;
+
+        return empty($item) ? null : $this->populateItem($item);
     }
 
     /**
@@ -229,11 +227,7 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         $item = $this->database->select()->from($this->tableName)->where(['type' => $type, 'name' => $name])->run()->fetch();
 
-        if (empty($item)) {
-            return null;
-        }
-
-        return $this->populateItem($item);
+        return empty($item) ? null : $this->populateItem($item);
     }
 
     /**
