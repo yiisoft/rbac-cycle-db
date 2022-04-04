@@ -122,7 +122,7 @@ class ItemsStorageTest extends TestCase
 
         $this->assertNotEmpty($role);
         $this->assertInstanceOf(Role::class, $role);
-        $this->assertEquals('Parent 1', $role->getName());
+        $this->assertSame('Parent 1', $role->getName());
     }
 
     public function testAdd(): void
