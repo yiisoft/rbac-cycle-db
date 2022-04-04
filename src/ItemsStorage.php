@@ -181,7 +181,15 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function hasChildren(string $name): bool
     {
-        return $this->database->select('parent')->from($this->childrenTableName)->where(['parent' => $name])->count() > 0;
+        $result = $this
+            ->database
+            ->select('1')
+            ->from($this->childrenTableName)
+            ->where(['parent' => $name])
+            ->run()
+            ->fetch();
+
+        return $result !== false;
     }
 
     /**

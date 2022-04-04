@@ -69,10 +69,8 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->where(['itemName' => $itemName, 'userId' => $userId])
             ->run()
             ->fetch();
-        if (!empty($assignment)) {
-            return new Assignment($userId, $itemName, (int)$assignment['createdAt']);
-        }
-        return null;
+
+        return empty($assignment) ? null : new Assignment($userId, $itemName, (int)$assignment['createdAt']);
     }
 
     /**
@@ -97,7 +95,15 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function hasItem(string $name): bool
     {
-        return $this->database->select('itemName')->from($this->tableName)->where(['itemName' => $name])->count() > 0;
+        $result = $this
+            ->database
+            ->select('1')
+            ->from($this->tableName)
+            ->where(['itemName' => $name])
+            ->run()
+            ->fetch();
+
+        return $result !== false;
     }
 
     /**
