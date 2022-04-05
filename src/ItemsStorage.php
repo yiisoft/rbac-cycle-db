@@ -66,10 +66,8 @@ final class ItemsStorage implements ItemsStorageInterface
     public function get(string $name): ?Item
     {
         $item = $this->database->select()->from($this->tableName)->where(['name' => $name])->run()->fetch();
-        if (!empty($item)) {
-            return $this->populateItem($item);
-        }
-        return null;
+
+        return empty($item) ? null : $this->populateItem($item);
     }
 
     /**
@@ -183,7 +181,15 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function hasChildren(string $name): bool
     {
-        return $this->database->select('parent')->from($this->childrenTableName)->where(['parent' => $name])->count() > 0;
+        $result = $this
+            ->database
+            ->select('1')
+            ->from($this->childrenTableName)
+            ->where(['parent' => $name])
+            ->run()
+            ->fetch();
+
+        return $result !== false;
     }
 
     /**
@@ -229,11 +235,7 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         $item = $this->database->select()->from($this->tableName)->where(['type' => $type, 'name' => $name])->run()->fetch();
 
-        if (empty($item)) {
-            return null;
-        }
-
-        return $this->populateItem($item);
+        return empty($item) ? null : $this->populateItem($item);
     }
 
     /**

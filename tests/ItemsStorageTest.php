@@ -32,6 +32,7 @@ class ItemsStorageTest extends TestCase
 
         $this->assertInstanceOf(Permission::class, $item);
         $this->assertSame(Item::TYPE_PERMISSION, $item->getType());
+        $this->assertSame('Parent 3', $item->getName());
     }
 
     public function testGetPermission(): void
@@ -40,6 +41,7 @@ class ItemsStorageTest extends TestCase
         $permission = $storage->getPermission('Child 1');
 
         $this->assertInstanceOf(Permission::class, $permission);
+        $this->assertSame('Child 1', $permission->getName());
     }
 
     public function testAddChild(): void
@@ -120,6 +122,7 @@ class ItemsStorageTest extends TestCase
 
         $this->assertNotEmpty($role);
         $this->assertInstanceOf(Role::class, $role);
+        $this->assertSame('Parent 1', $role->getName());
     }
 
     public function testAdd(): void
@@ -142,9 +145,8 @@ class ItemsStorageTest extends TestCase
     public function testGetAll(): void
     {
         $storage = $this->getStorage();
-        $all = $storage->getAll();
 
-        $this->assertCount(5, $all);
+        $this->assertCount(5, $storage->getAll());
     }
 
     public function testHasChildren(): void
@@ -173,36 +175,37 @@ class ItemsStorageTest extends TestCase
 
     protected function populateDb(): void
     {
+        $time = time();
         $items = [
             [
                 'name' => 'Parent 1',
                 'type' => Item::TYPE_ROLE,
-                'createdAt' => time(),
-                'updatedAt' => time(),
+                'createdAt' => $time,
+                'updatedAt' => $time,
             ],
             [
                 'name' => 'Parent 2',
                 'type' => Item::TYPE_ROLE,
-                'createdAt' => time(),
-                'updatedAt' => time(),
+                'createdAt' => $time,
+                'updatedAt' => $time,
             ],
             [
                 'name' => 'Parent 3',
                 'type' => Item::TYPE_PERMISSION,
-                'createdAt' => time(),
-                'updatedAt' => time(),
+                'createdAt' => $time,
+                'updatedAt' => $time,
             ],
             [
                 'name' => 'Child 1',
                 'type' => Item::TYPE_PERMISSION,
-                'createdAt' => time(),
-                'updatedAt' => time(),
+                'createdAt' => $time,
+                'updatedAt' => $time,
             ],
             [
                 'name' => 'Child 2',
                 'type' => Item::TYPE_ROLE,
-                'createdAt' => time(),
-                'updatedAt' => time(),
+                'createdAt' => $time,
+                'updatedAt' => $time,
             ],
         ];
         $items_child = [
@@ -233,7 +236,7 @@ class ItemsStorageTest extends TestCase
         }
     }
 
-    private function getStorage()
+    private function getStorage(): ItemsStorage
     {
         return new ItemsStorage('auth_item', $this->getDbal());
     }
