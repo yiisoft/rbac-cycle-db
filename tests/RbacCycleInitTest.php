@@ -15,9 +15,18 @@ class RbacCycleInitTest extends TestCase
     {
         $this->createDbTables();
 
-        $this->assertTrue($this->getDbal()->database()->hasTable('auth_item'));
-        $this->assertTrue($this->getDbal()->database()->hasTable('auth_item_child'));
-        $this->assertTrue($this->getDbal()->database()->hasTable('auth_assignment'));
+        $this->assertTrue($this
+            ->getDbal()
+            ->database()
+            ->hasTable('auth_item'));
+        $this->assertTrue($this
+            ->getDbal()
+            ->database()
+            ->hasTable('auth_item_child'));
+        $this->assertTrue($this
+            ->getDbal()
+            ->database()
+            ->hasTable('auth_assignment'));
     }
 
     protected function populateDb(): void

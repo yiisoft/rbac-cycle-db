@@ -35,7 +35,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function tearDown(): void
     {
-        foreach ($this->getDbal()->database()->getTables() as $table) {
+        foreach ($this
+                     ->getDbal()
+                     ->database()
+                     ->getTables() as $table) {
             /** @var AbstractTable $schema */
             $schema = $table->getSchema();
             $schema->declareDropped();
@@ -56,7 +59,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 $this->getDbal()
             )
         );
-        $app->find('rbac/cycle/init')->run(new ArrayInput([]), new NullOutput());
+        $app
+            ->find('rbac/cycle/init')
+            ->run(new ArrayInput([]), new NullOutput());
     }
 
     private function createConnection(): void

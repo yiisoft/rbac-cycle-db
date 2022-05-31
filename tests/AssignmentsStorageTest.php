@@ -136,7 +136,8 @@ class AssignmentsStorageTest extends TestCase
         ];
 
         foreach ($items as $item) {
-            $this->getDbal()
+            $this
+                ->getDbal()
                 ->database()
                 ->insert('auth_item')
                 ->values($item)
@@ -144,7 +145,8 @@ class AssignmentsStorageTest extends TestCase
         }
 
         foreach ($assignments as $item) {
-            $this->getDbal()
+            $this
+                ->getDbal()
                 ->database()
                 ->insert('auth_assignment')
                 ->values($item)

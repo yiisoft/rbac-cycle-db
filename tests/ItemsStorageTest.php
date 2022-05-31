@@ -21,8 +21,12 @@ class ItemsStorageTest extends TestCase
             ->withName('Super Admin')
             ->withRuleName('super admin');
         $storage->update('Parent 1', $item);
-        $this->assertSame('Super Admin', $storage->get('Super Admin')->getName());
-        $this->assertSame('super admin', $storage->get('Super Admin')->getRuleName());
+        $this->assertSame('Super Admin', $storage
+            ->get('Super Admin')
+            ->getName());
+        $this->assertSame('super admin', $storage
+            ->get('Super Admin')
+            ->getRuleName());
     }
 
     public function testGet(): void
@@ -220,7 +224,8 @@ class ItemsStorageTest extends TestCase
         ];
 
         foreach ($items as $item) {
-            $this->getDbal()
+            $this
+                ->getDbal()
                 ->database()
                 ->insert('auth_item')
                 ->values($item)
@@ -228,7 +233,8 @@ class ItemsStorageTest extends TestCase
         }
 
         foreach ($items_child as $item) {
-            $this->getDbal()
+            $this
+                ->getDbal()
                 ->database()
                 ->insert('auth_item_child')
                 ->values($item)
