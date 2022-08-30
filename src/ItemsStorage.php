@@ -73,6 +73,16 @@ final class ItemsStorage implements ItemsStorageInterface
     /**
      * @inheritDoc
      */
+    public function exists(string $name): bool
+    {
+        $item = $this->database->select('1')->from($this->tableName)->where(['name' => $name])->run()->fetch();
+
+        return !empty($item);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function add(Item $item): void
     {
         $time = time();

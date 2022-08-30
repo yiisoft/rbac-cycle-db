@@ -35,6 +35,28 @@ class ItemsStorageTest extends TestCase
         $this->assertSame('Parent 3', $item->getName());
     }
 
+    public function existsProvider(): array
+    {
+        return [
+            ['Parent 1', true],
+            ['Parent 2', true],
+            ['Parent 3', true],
+            ['Parent 100', false],
+            ['Child 1', true],
+            ['Child 2', true],
+            ['Child 100', false],
+        ];
+    }
+
+    /**
+     * @dataProvider existsProvider
+     */
+    public function testExists(string $name, bool $exists): void
+    {
+        $storage = $this->getStorage();
+        $this->assertSame($storage->exists($name), $exists);
+    }
+
     public function testGetPermission(): void
     {
         $storage = $this->getStorage();
