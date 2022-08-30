@@ -71,9 +71,6 @@ final class ItemsStorage implements ItemsStorageInterface
         return empty($item) ? null : $this->populateItem($item);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function exists(string $name): bool
     {
         $item = $this->database->select([new Fragment('1')])->from($this->tableName)->where(['name' => $name])->run()->fetch();
