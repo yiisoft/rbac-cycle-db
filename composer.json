@@ -25,7 +25,7 @@
         "php": "^8.0",
         "cycle/database": "^2.1",
         "symfony/console": "^5.3|^6.0",
-        "yiisoft/rbac": "dev-master"
+        "yiisoft/rbac": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
