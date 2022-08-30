@@ -7,6 +7,7 @@ namespace Yiisoft\Rbac\Cycle;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\Injection\Expression;
+use Cycle\Database\Injection\Fragment;
 use Cycle\Database\Table;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\ItemsStorageInterface;
@@ -75,7 +76,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function exists(string $name): bool
     {
-        $item = $this->database->select('1')->from($this->tableName)->where(['name' => $name])->run()->fetch();
+        $item = $this->database->select([new Fragment('1')])->from($this->tableName)->where(['name' => $name])->run()->fetch();
 
         return !empty($item);
     }
@@ -197,7 +198,7 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         $result = $this
             ->database
-            ->select('1')
+            ->select([new Fragment('1')])
             ->from($this->childrenTableName)
             ->where(['parent' => $name])
             ->run()
