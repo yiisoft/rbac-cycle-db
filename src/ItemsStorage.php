@@ -183,7 +183,11 @@ final class ItemsStorage implements ItemsStorageInterface
             ->where(['parent' => $name, 'name' => new Expression('child')])
             ->fetchAll();
 
-        return array_map(fn (array $item): Item => $this->populateItem($item), $children);
+        $keys = array_column($children, 'name');
+        return array_combine(
+            $keys,
+            array_map(fn (array $item): Item => $this->populateItem($item), $children)
+        );
     }
 
     /**

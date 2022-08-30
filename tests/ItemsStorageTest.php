@@ -72,7 +72,11 @@ class ItemsStorageTest extends TestCase
 
         $storage->addChild('Parent 2', 'Child 1');
 
-        $this->assertCount(2, $storage->getChildren('Parent 2'));
+        $children = $storage->getChildren('Parent 2');
+        $this->assertCount(2, $children);
+        foreach ($children as $name => $item) {
+            $this->assertSame($name, $item->getName());
+        }
     }
 
     public function testClear(): void
