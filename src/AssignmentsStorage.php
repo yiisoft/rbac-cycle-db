@@ -101,6 +101,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->select([new Fragment('1')])
             ->from($this->tableName)
             ->where(['itemName' => $name])
+            ->limit(1)
             ->run()
             ->fetch();
 

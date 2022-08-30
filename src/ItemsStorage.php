@@ -73,9 +73,16 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function exists(string $name): bool
     {
-        $item = $this->database->select([new Fragment('1')])->from($this->tableName)->where(['name' => $name])->run()->fetch();
+        $result = $this
+            ->database
+            ->select([new Fragment('1')])
+            ->from($this->tableName)
+            ->where(['name' => $name])
+            ->limit(1)
+            ->run()
+            ->fetch();
 
-        return !empty($item);
+        return $result !== false;
     }
 
     /**
@@ -198,6 +205,7 @@ final class ItemsStorage implements ItemsStorageInterface
             ->select([new Fragment('1')])
             ->from($this->childrenTableName)
             ->where(['parent' => $name])
+            ->limit(1)
             ->run()
             ->fetch();
 
