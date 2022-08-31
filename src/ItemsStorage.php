@@ -7,6 +7,7 @@ namespace Yiisoft\Rbac\Cycle;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\Injection\Expression;
+use Cycle\Database\Injection\Fragment;
 use Cycle\Database\Table;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\ItemsStorageInterface;
@@ -68,6 +69,20 @@ final class ItemsStorage implements ItemsStorageInterface
         $item = $this->database->select()->from($this->tableName)->where(['name' => $name])->run()->fetch();
 
         return empty($item) ? null : $this->populateItem($item);
+    }
+
+    public function exists(string $name): bool
+    {
+        $result = $this
+            ->database
+            ->select([new Fragment('1')])
+            ->from($this->tableName)
+            ->where(['name' => $name])
+            ->limit(1)
+            ->run()
+            ->fetch();
+
+        return $result !== false;
     }
 
     /**
@@ -173,7 +188,11 @@ final class ItemsStorage implements ItemsStorageInterface
             ->where(['parent' => $name, 'name' => new Expression('child')])
             ->fetchAll();
 
-        return array_map(fn (array $item): Item => $this->populateItem($item), $children);
+        $keys = array_column($children, 'name');
+        return array_combine(
+            $keys,
+            array_map(fn (array $item): Item => $this->populateItem($item), $children)
+        );
     }
 
     /**
@@ -183,9 +202,10 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         $result = $this
             ->database
-            ->select('1')
+            ->select([new Fragment('1')])
             ->from($this->childrenTableName)
             ->where(['parent' => $name])
+            ->limit(1)
             ->run()
             ->fetch();
 

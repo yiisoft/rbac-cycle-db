@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests;
 
 use Cycle\Database\Config\DatabaseConfig;
+use Cycle\Database\Config\MySQL\DsnConnectionConfig as MyQSLDsnConnectionConfig;
+use Cycle\Database\Config\MySQLDriverConfig;
+use Cycle\Database\Config\Postgres\DsnConnectionConfig as PostgresDsnConnectionConfig;
+use Cycle\Database\Config\PostgresDriverConfig;
 use Cycle\Database\Config\SQLite\FileConnectionConfig;
 use Cycle\Database\Config\SQLiteDriverConfig;
 use Cycle\Database\DatabaseManager;
@@ -17,6 +21,12 @@ use Yiisoft\Rbac\Cycle\Command\RbacCycleInit;
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     private ?DatabaseManager $databaseManager = null;
+
+    private $tables = [
+        'itemsChildTable' => 'auth_item_child',
+        'assignmentsTable' => 'auth_assignment',
+        'itemsTable' => 'auth_item',
+    ];
 
     protected function getDbal(): DatabaseManager
     {
@@ -35,11 +45,19 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function tearDown(): void
     {
-        foreach ($this->getDbal()->database()->getTables() as $table) {
+        foreach ($this->tables as $name) {
+            $table = $this->getDbal()->database()->table($name);
             /** @var AbstractTable $schema */
             $schema = $table->getSchema();
             $schema->declareDropped();
             $schema->save();
+        }
+    }
+
+    protected function clear()
+    {
+        foreach ($this->tables as $name) {
+            $this->getDbal()->database()->delete($name)->run();
         }
     }
 
@@ -48,11 +66,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $app = new Application();
         $app->add(
             new RbacCycleInit(
-                [
-                    'itemsTable' => 'auth_item',
-                    'itemsChildTable' => 'auth_item_child',
-                    'assignmentsTable' => 'auth_assignment',
-                ],
+                $this->tables,
                 $this->getDbal()
             )
         );
@@ -69,6 +83,16 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 ],
                 'connections' => [
                     'sqlite' => new SQLiteDriverConfig(new FileConnectionConfig(__DIR__ . '/runtime/test.db')),
+                    // 'mysql' => new MySQLDriverConfig(new MyQSLDsnConnectionConfig(
+                    //     'mysql:host=127.0.0.1;port=3306;dbname=test',
+                    //     'root',
+                    //     '123456',
+                    // )),
+                    // 'postgres' => new PostgresDriverConfig(new PostgresDsnConnectionConfig(
+                    //     'pgsql:host=127.0.0.1;port=5432;dbname=test',
+                    //     'postgres',
+                    //     '123456',
+                    // )),
                 ],
             ]
         );
