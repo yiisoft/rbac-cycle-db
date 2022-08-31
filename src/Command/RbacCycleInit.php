@@ -123,10 +123,10 @@ final class RbacCycleInit extends Command
         $table = $this->dbal->database()->table($this->config['assignmentsTable']);
         $schema = $table->getSchema();
 
-        $schema->primary('itemName')->string(128);
-        $schema->primary('userId')->string(128);
+        $schema->string('itemName', 128)->nullable(false);
+        $schema->string('userId', 128)->nullable(false);
+        $schema->setPrimaryKeys(['itemName', 'userId']);
         $schema->integer('createdAt')->nullable(false);
-        $schema->index(['itemName', 'userId']);
 
         $schema->foreignKey(['itemName'])
             ->references($this->config['itemsTable'], ['name'])

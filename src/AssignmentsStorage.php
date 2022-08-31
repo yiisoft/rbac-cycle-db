@@ -6,6 +6,7 @@ namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseProviderInterface;
+use Cycle\Database\Injection\Fragment;
 use Cycle\Database\Table;
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
@@ -97,9 +98,10 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     {
         $result = $this
             ->database
-            ->select('1')
+            ->select([new Fragment('1')])
             ->from($this->tableName)
             ->where(['itemName' => $name])
+            ->limit(1)
             ->run()
             ->fetch();
 
