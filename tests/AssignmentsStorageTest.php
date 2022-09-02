@@ -31,6 +31,11 @@ class AssignmentsStorageTest extends TestCase
         $all = $storage->getAll();
 
         $this->assertCount(2, $all);
+        foreach ($all as $assignments) {
+            foreach ($assignments as $name => $assignment) {
+                $this->assertSame($name, $assignment->getItemName());
+            }
+        }
     }
 
     public function testRemoveByItemName(): void
@@ -47,7 +52,10 @@ class AssignmentsStorageTest extends TestCase
         $assignments = $storage->getByUserId('admin');
 
         $this->assertCount(1, $assignments);
-        $this->assertSame('Admin', $assignments[0]->getItemName());
+        $this->assertSame('Admin', $assignments['Admin']->getItemName());
+        foreach ($assignments as $name => $assignment) {
+            $this->assertSame($name, $assignment->getItemName());
+        }
     }
 
     public function testRemoveByUserId(): void

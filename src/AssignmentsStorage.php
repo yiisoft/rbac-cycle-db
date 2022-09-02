@@ -53,9 +53,12 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     {
         $assignments = $this->database->select()->from($this->tableName)->where(['userId' => $userId])->fetchAll();
 
-        return array_map(
-            static fn (array $item) => new Assignment($userId, $item['itemName'], (int)$item['createdAt']),
-            $assignments
+        return array_combine(
+            array_column($assignments, 'itemName'),
+            array_map(
+                static fn (array $item) => new Assignment($userId, $item['itemName'], (int)$item['createdAt']),
+                $assignments
+            )
         );
     }
 
