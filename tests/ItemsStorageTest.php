@@ -124,13 +124,27 @@ class ItemsStorageTest extends TestCase
         $this->assertEmpty($storage->get('Parent 3'));
     }
 
-    public function testGetParents(): void
+    public function getParentsProvider(): array
+    {
+        return [
+            ['Child 1', ['Parent 1']],
+            ['Child 2', ['Parent 2']],
+        ];
+    }
+
+    /**
+     * @dataProvider getParentsProvider
+     */
+    public function testGetParents(string $childName, array $expectedParents): void
     {
         $storage = $this->getStorage();
-        $parents = $storage->getParents('Child 1');
+        $parents = $storage->getParents($childName);
 
-        $this->assertCount(1, $parents);
-        $this->assertSame('Parent 1', $parents[0]->getName());
+        $this->assertCount(count($expectedParents), $parents);
+        foreach ($parents as $parentName => $parent) {
+            $this->assertContains($parentName, $expectedParents);
+            $this->assertSame($parentName, $parent->getName());
+        }
     }
 
     public function testRemoveChildren(): void

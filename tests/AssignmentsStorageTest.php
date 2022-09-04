@@ -22,6 +22,7 @@ class AssignmentsStorageTest extends TestCase
         $storage = $this->getStorage();
         $storage->renameItem('Admin', 'Tech Admin');
 
+        $this->assertFalse($storage->hasItem('Admin'));
         $this->assertTrue($storage->hasItem('Tech Admin'));
     }
 
@@ -31,8 +32,9 @@ class AssignmentsStorageTest extends TestCase
         $all = $storage->getAll();
 
         $this->assertCount(2, $all);
-        foreach ($all as $assignments) {
+        foreach ($all as $userId => $assignments) {
             foreach ($assignments as $name => $assignment) {
+                $this->assertSame($userId, $assignment->getUserId());
                 $this->assertSame($name, $assignment->getItemName());
             }
         }
