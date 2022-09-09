@@ -15,14 +15,14 @@ class ItemsStorageTest extends TestCase
     {
         $storage = $this->getStorage();
         $item = $storage->get('Parent 1');
-        $this->assertEmpty($item->getRuleName());
+        $this->assertNull($item->getRuleName());
 
         $item = $item
             ->withName('Super Admin')
             ->withRuleName('super admin');
         $storage->update('Parent 1', $item);
-        $this->assertSame('Super Admin', $storage->get('Super Admin')->getName());
-        $this->assertSame('super admin', $storage->get('Super Admin')->getRuleName());
+        $this->assertSame('Super Admin', $storage->get('Super Admin')?->getName());
+        $this->assertSame('super admin', $storage->get('Super Admin')?->getRuleName());
     }
 
     public function testGet(): void
