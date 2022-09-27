@@ -20,7 +20,9 @@ final class RbacCycleInit extends Command
     public function __construct(/**
      * @psalm-var array{itemsTable: non-empty-string, assignmentsTable: non-empty-string, itemsChildrenTable?: non-empty-string}
      */
-    private array $config, private DatabaseProviderInterface $dbal)
+    private array $config,
+        private DatabaseProviderInterface $dbal
+    )
     {
         parent::__construct();
     }

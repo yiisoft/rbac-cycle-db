@@ -29,7 +29,10 @@ final class ItemsStorage implements ItemsStorageInterface
     public function __construct(/**
      * @psalm-var non-empty-string
      */
-    private string $tableName, DatabaseProviderInterface $dbal, ?string $childrenTableName = null)
+    private string $tableName,
+        DatabaseProviderInterface $dbal,
+        ?string $childrenTableName = null
+    )
     {
         $this->database = $dbal->database();
         $this->childrenTableName = $childrenTableName ?? $tableName . '_child';

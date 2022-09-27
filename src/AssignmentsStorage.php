@@ -21,7 +21,9 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     public function __construct(/**
      * @psalm-var non-empty-string
      */
-    private string $tableName, DatabaseProviderInterface $dbal)
+    private string $tableName,
+        DatabaseProviderInterface $dbal
+    )
     {
         $this->database = $dbal->database();
     }
