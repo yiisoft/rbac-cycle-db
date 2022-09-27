@@ -14,19 +14,16 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
 final class AssignmentsStorage implements AssignmentsStorageInterface
 {
     private DatabaseInterface $database;
-    /**
-     * @psalm-var non-empty-string
-     */
-    private string $tableName;
 
     /**
      * @param non-empty-string $tableName
-     * @param DatabaseProviderInterface $dbal
      */
-    public function __construct(string $tableName, DatabaseProviderInterface $dbal)
+    public function __construct(/**
+     * @psalm-var non-empty-string
+     */
+    private string $tableName, DatabaseProviderInterface $dbal)
     {
         $this->database = $dbal->database();
-        $this->tableName = $tableName;
     }
 
     /**
