@@ -22,7 +22,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     private ?DatabaseManager $databaseManager = null;
 
-    private $tables = [
+    private array $tables = [
         'itemsChildTable' => 'auth_item_child',
         'assignmentsTable' => 'auth_assignment',
         'itemsTable' => 'auth_item',

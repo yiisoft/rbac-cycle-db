@@ -16,16 +16,14 @@ use Yiisoft\Rbac\Item;
 final class RbacCycleInit extends Command
 {
     protected static $defaultName = 'rbac/cycle/init';
-    private DatabaseProviderInterface $dbal;
-    /**
+
+    public function __construct(/**
      * @psalm-var array{itemsTable: non-empty-string, assignmentsTable: non-empty-string, itemsChildrenTable?: non-empty-string}
      */
-    private array $config;
-
-    public function __construct(array $config, DatabaseProviderInterface $dbal)
+    private array $config,
+        private DatabaseProviderInterface $dbal
+    )
     {
-        $this->dbal = $dbal;
-        $this->config = $config;
         parent::__construct();
     }
 
