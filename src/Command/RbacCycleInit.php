@@ -22,8 +22,7 @@ final class RbacCycleInit extends Command
      */
     private array $config,
         private DatabaseProviderInterface $dbal
-    )
-    {
+    ) {
         parent::__construct();
     }
 

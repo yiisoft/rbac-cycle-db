@@ -23,8 +23,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     private string $tableName,
         DatabaseProviderInterface $dbal
-    )
-    {
+    ) {
         $this->database = $dbal->database();
     }
 

@@ -32,8 +32,7 @@ final class ItemsStorage implements ItemsStorageInterface
     private string $tableName,
         DatabaseProviderInterface $dbal,
         ?string $childrenTableName = null
-    )
-    {
+    ) {
         $this->database = $dbal->database();
         $this->childrenTableName = $childrenTableName ?? $tableName . '_child';
     }
