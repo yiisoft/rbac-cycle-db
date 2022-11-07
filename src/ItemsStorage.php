@@ -20,21 +20,20 @@ final class ItemsStorage implements ItemsStorageInterface
     /**
      * @psalm-var non-empty-string
      */
-    private string $tableName;
-    /**
-     * @psalm-var non-empty-string
-     */
     private string $childrenTableName;
 
     /**
      * @param non-empty-string $tableName
-     * @param DatabaseProviderInterface $dbal
      * @param non-empty-string|null $childrenTableName
      */
-    public function __construct(string $tableName, DatabaseProviderInterface $dbal, ?string $childrenTableName = null)
-    {
+    public function __construct(/**
+     * @psalm-var non-empty-string
+     */
+    private string $tableName,
+        DatabaseProviderInterface $dbal,
+        ?string $childrenTableName = null
+    ) {
         $this->database = $dbal->database();
-        $this->tableName = $tableName;
         $this->childrenTableName = $childrenTableName ?? $tableName . '_child';
     }
 
