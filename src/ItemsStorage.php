@@ -23,13 +23,13 @@ final class ItemsStorage implements ItemsStorageInterface
     private string $childrenTableName;
 
     /**
-     * @param non-empty-string $tableName
      * @param non-empty-string|null $childrenTableName
      */
-    public function __construct(/**
-     * @psalm-var non-empty-string
-     */
-    private string $tableName,
+    public function __construct(
+        /**
+         * @psalm-var non-empty-string
+         */
+        private string $tableName,
         DatabaseProviderInterface $dbal,
         ?string $childrenTableName = null
     ) {
