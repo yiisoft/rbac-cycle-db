@@ -17,10 +17,15 @@ final class RbacCycleInit extends Command
 {
     protected static $defaultName = 'rbac/cycle/init';
 
-    public function __construct(/**
-     * @psalm-var array{itemsTable: non-empty-string, assignmentsTable: non-empty-string, itemsChildrenTable?: non-empty-string}
-     */
-    private array $config,
+    public function __construct(
+        /**
+         * @psalm-var array{
+         *     itemsTable: non-empty-string,
+         *     assignmentsTable: non-empty-string,
+         *     itemsChildrenTable?: non-empty-string
+         * }
+         */
+        private array $config,
         private DatabaseProviderInterface $dbal
     ) {
         parent::__construct();
