@@ -68,7 +68,7 @@ final class ItemsStorage implements ItemsStorageInterface
         $rows = $this->database->select()->from($this->tableName)->fetchAll();
 
         return array_map(
-            fn(array $row): Item => $this->createItem($row),
+            fn (array $row): Item => $this->createItem($row),
             $rows
         );
     }
@@ -207,7 +207,7 @@ final class ItemsStorage implements ItemsStorageInterface
         return array_combine(
             array_column($parentRows, 'name'),
             array_map(
-                fn(array $row): Item => $this->createItem($row),
+                fn (array $row): Item => $this->createItem($row),
                 $parentRows
             ),
         );
@@ -229,7 +229,7 @@ final class ItemsStorage implements ItemsStorageInterface
         return array_combine(
             $keys,
             array_map(
-                fn(array $row): Item => $this->createItem($row),
+                fn (array $row): Item => $this->createItem($row),
                 $childrenRows
             )
         );
@@ -297,7 +297,7 @@ final class ItemsStorage implements ItemsStorageInterface
             ->fetchAll();
 
         return array_map(
-            fn(array $row): Item => $this->createItem($row),
+            fn (array $row): Item => $this->createItem($row),
             $rows
         );
     }
