@@ -70,7 +70,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         return array_combine(
             array_column($rows, 'itemName'),
             array_map(
-                static fn (array $row) => new Assignment($userId, $row['itemName'], (int) $row['createdAt']),
+                static fn(array $row) => new Assignment($userId, $row['itemName'], (int) $row['createdAt']),
                 $rows
             )
         );
