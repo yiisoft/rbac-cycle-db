@@ -11,6 +11,13 @@ use Cycle\Database\Table;
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 
+/**
+ * @psalm-type RawAssignment = array{
+ *     itemName: string,
+ *     userId: string,
+ *     createdAt: int|string,
+ * }
+ */
 final class AssignmentsStorage implements AssignmentsStorageInterface
 {
     private DatabaseInterface $database;
@@ -30,12 +37,18 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function getAll(): array
     {
+        /** @psalm-var RawAssignment[] $rows */
+        $rows = $this->database
+            ->select()
+            ->from($this->tableName)
+            ->fetchAll();
+
         $assignments = [];
-        foreach ($this->database->select()->from($this->tableName)->fetchAll() as $item) {
-            $assignments[$item['userId']][$item['itemName']] = new Assignment(
-                $item['userId'],
-                $item['itemName'],
-                (int)$item['createdAt']
+        foreach ($rows as $row) {
+            $assignments[$row['userId']][$row['itemName']] = new Assignment(
+                $row['userId'],
+                $row['itemName'],
+                (int) $row['createdAt']
             );
         }
 
@@ -47,12 +60,17 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function getByUserId(string $userId): array
     {
-        $assignments = $this->database->select()->from($this->tableName)->where(['userId' => $userId])->fetchAll();
+        /** @psalm-var RawAssignment[] $assignments */
+        $assignments = $this->database
+            ->select()
+            ->from($this->tableName)
+            ->where(['userId' => $userId])
+            ->fetchAll();
 
         return array_combine(
             array_column($assignments, 'itemName'),
             array_map(
-                static fn (array $item) => new Assignment($userId, $item['itemName'], (int)$item['createdAt']),
+                static fn(array $item) => new Assignment($userId, $item['itemName'], (int) $item['createdAt']),
                 $assignments
             )
         );
@@ -63,6 +81,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function get(string $itemName, string $userId): ?Assignment
     {
+        /** @psalm-var RawAssignment|null $assignment */
         $assignment = $this->database
             ->select()
             ->from($this->tableName)
@@ -95,6 +114,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function hasItem(string $name): bool
     {
+        /** @var mixed $result */
         $result = $this
             ->database
             ->select([new Fragment('1')])
