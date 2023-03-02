@@ -34,7 +34,7 @@ final class RbacCycleInit extends Command
     public function __construct(
         string $itemsTable,
         string $assignmentsTable,
-        string|null $itemsChildrenTable,
+        string|null $itemsChildrenTable = null,
         private DatabaseProviderInterface $dbal,
     ) {
         if ($itemsTable === '') {
