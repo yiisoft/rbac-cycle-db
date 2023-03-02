@@ -7,6 +7,7 @@ namespace Yiisoft\Rbac\Cycle\Command;
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\ForeignKeyInterface;
 use Cycle\Database\Table;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,17 +18,43 @@ final class RbacCycleInit extends Command
 {
     protected static $defaultName = 'rbac/cycle/init';
 
+    /**
+     * @psalm-var non-empty-string
+     */
+    private string $itemsTable;
+    /**
+     * @psalm-var non-empty-string
+     */
+    private string $assignmentsTable;
+    /**
+     * @psalm-var non-empty-string
+     */
+    private string $itemsChildrenTable;
+
     public function __construct(
-        /**
-         * @psalm-var array{
-         *     itemsTable: non-empty-string,
-         *     assignmentsTable: non-empty-string,
-         *     itemsChildrenTable?: non-empty-string
-         * }
-         */
-        private array $config,
-        private DatabaseProviderInterface $dbal
+        string $itemsTable,
+        string $assignmentsTable,
+        private DatabaseProviderInterface $dbal,
+        string|null $itemsChildrenTable = null,
     ) {
+        if ($itemsTable === '') {
+            throw new InvalidArgumentException('Items table name can\'t be empty.');
+        }
+
+        $this->itemsTable = $itemsTable;
+
+        if ($assignmentsTable === '') {
+            throw new InvalidArgumentException('Assignments table name can\'t be empty.');
+        }
+
+        $this->assignmentsTable = $assignmentsTable;
+
+        if ($itemsChildrenTable === '') {
+            throw new InvalidArgumentException('Items children table can\'t be empty.');
+        }
+
+        $this->itemsChildrenTable = $itemsChildrenTable ?? $this->itemsTable . '_child';
+
         parent::__construct();
     }
 
@@ -41,35 +68,32 @@ final class RbacCycleInit extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var non-empty-string $itemsChildrenTable */
-        $itemsChildrenTable = $this->config['itemsChildrenTable'] ?? $this->config['itemsTable'] . '_child';
         $reCreate = $input->getOption('force') !== false;
-        /** @var Table $table */
-        if ($reCreate && $this->dbal->database()->hasTable($itemsChildrenTable) === true) {
-            $this->dropTable($itemsChildrenTable);
+        if ($reCreate && $this->dbal->database()->hasTable($this->itemsChildrenTable) === true) {
+            $this->dropTable($this->itemsChildrenTable);
         }
-        if ($reCreate && $this->dbal->database()->hasTable($this->config['assignmentsTable']) === true) {
-            $this->dropTable($this->config['assignmentsTable']);
+        if ($reCreate && $this->dbal->database()->hasTable($this->assignmentsTable) === true) {
+            $this->dropTable($this->assignmentsTable);
         }
-        if ($reCreate && $this->dbal->database()->hasTable($this->config['itemsTable']) === true) {
-            $this->dropTable($this->config['itemsTable']);
+        if ($reCreate && $this->dbal->database()->hasTable($this->itemsTable) === true) {
+            $this->dropTable($this->itemsTable);
         }
-        if ($this->dbal->database()->hasTable($this->config['itemsTable']) === false) {
-            $output->writeln('<fg=blue>Creating `' . $this->config['itemsTable'] . '` table...</>');
+        if ($this->dbal->database()->hasTable($this->itemsTable) === false) {
+            $output->writeln('<fg=blue>Creating `' . $this->itemsTable . '` table...</>');
             $this->createItemsTable();
-            $output->writeln('<bg=green>Table `' . $this->config['itemsTable'] . '` created successfully</>');
+            $output->writeln('<bg=green>Table `' . $this->itemsTable . '` created successfully</>');
         }
 
-        if ($this->dbal->database()->hasTable($itemsChildrenTable) === false) {
-            $output->writeln('<fg=blue>Creating `' . $itemsChildrenTable . '` table...</>');
-            $this->createItemsChildrenTable($itemsChildrenTable);
-            $output->writeln('<bg=green>Table `' . $itemsChildrenTable . '` created successfully</>');
+        if ($this->dbal->database()->hasTable($this->itemsChildrenTable) === false) {
+            $output->writeln('<fg=blue>Creating `' . $this->itemsChildrenTable . '` table...</>');
+            $this->createItemsChildrenTable($this->itemsChildrenTable);
+            $output->writeln('<bg=green>Table `' . $this->itemsChildrenTable . '` created successfully</>');
         }
 
-        if ($this->dbal->database()->hasTable($this->config['assignmentsTable']) === false) {
-            $output->writeln('<fg=blue>Creating `' . $this->config['assignmentsTable'] . '` table...</>');
+        if ($this->dbal->database()->hasTable($this->assignmentsTable) === false) {
+            $output->writeln('<fg=blue>Creating `' . $this->assignmentsTable . '` table...</>');
             $this->createAssignmentsTable();
-            $output->writeln('<bg=green>Table `' . $this->config['assignmentsTable'] . '` created successfully</>');
+            $output->writeln('<bg=green>Table `' . $this->assignmentsTable . '` created successfully</>');
         }
         $output->writeln('<fg=green>DONE</>');
         return 0;
@@ -78,7 +102,7 @@ final class RbacCycleInit extends Command
     private function createItemsTable(): void
     {
         /** @var Table $table */
-        $table = $this->dbal->database()->table($this->config['itemsTable']);
+        $table = $this->dbal->database()->table($this->itemsTable);
         $schema = $table->getSchema();
 
         $schema->string('name', 128);
@@ -94,7 +118,7 @@ final class RbacCycleInit extends Command
     }
 
     /**
-     * @param non-empty-string $itemsChildrenTable
+     * @psalm-param non-empty-string $itemsChildrenTable
      */
     private function createItemsChildrenTable(string $itemsChildrenTable): void
     {
@@ -107,12 +131,12 @@ final class RbacCycleInit extends Command
         $schema->setPrimaryKeys(['parent', 'child']);
 
         $schema->foreignKey(['parent'])
-            ->references($this->config['itemsTable'], ['name'])
+            ->references($this->itemsTable, ['name'])
             ->onDelete(ForeignKeyInterface::CASCADE)
             ->onUpdate(ForeignKeyInterface::CASCADE);
 
         $schema->foreignKey(['child'])
-            ->references($this->config['itemsTable'], ['name'])
+            ->references($this->itemsTable, ['name'])
             ->onDelete(ForeignKeyInterface::CASCADE)
             ->onUpdate(ForeignKeyInterface::CASCADE);
 
@@ -122,7 +146,7 @@ final class RbacCycleInit extends Command
     private function createAssignmentsTable(): void
     {
         /** @var Table $table */
-        $table = $this->dbal->database()->table($this->config['assignmentsTable']);
+        $table = $this->dbal->database()->table($this->assignmentsTable);
         $schema = $table->getSchema();
 
         $schema->string('itemName', 128)->nullable(false);
@@ -131,7 +155,7 @@ final class RbacCycleInit extends Command
         $schema->integer('createdAt')->nullable(false);
 
         $schema->foreignKey(['itemName'])
-            ->references($this->config['itemsTable'], ['name'])
+            ->references($this->itemsTable, ['name'])
             ->onUpdate(ForeignKeyInterface::CASCADE)
             ->onDelete(ForeignKeyInterface::CASCADE);
 
@@ -139,7 +163,7 @@ final class RbacCycleInit extends Command
     }
 
     /**
-     * @param non-empty-string $tableName
+     * @psalm-param non-empty-string $tableName
      */
     private function dropTable(string $tableName): void
     {

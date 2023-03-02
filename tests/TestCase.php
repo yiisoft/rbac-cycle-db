@@ -22,11 +22,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     private ?DatabaseManager $databaseManager = null;
 
-    private array $tables = [
-        'itemsChildTable' => 'auth_item_child',
-        'assignmentsTable' => 'auth_assignment',
-        'itemsTable' => 'auth_item',
-    ];
+    private const ITEMS_CHILDREN_TABLE = 'auth_item_child';
+    private const ASSIGNMENTS_TABLE = 'auth_assignment';
+    private const ITEMS_TABLE = 'auth_item';
+    private const TABLES = [self::ITEMS_CHILDREN_TABLE, self::ASSIGNMENTS_TABLE, self::ITEMS_TABLE];
 
     protected function getDbal(): DatabaseManager
     {
@@ -45,7 +44,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function tearDown(): void
     {
-        foreach ($this->tables as $name) {
+        foreach (self::TABLES as $name) {
             $table = $this->getDbal()->database()->table($name);
             /** @var AbstractTable $schema */
             $schema = $table->getSchema();
@@ -56,7 +55,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function clear()
     {
-        foreach ($this->tables as $name) {
+        foreach (self::TABLES as $name) {
             $this->getDbal()->database()->delete($name)->run();
         }
     }
@@ -66,9 +65,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $app = new Application();
         $app->add(
             new RbacCycleInit(
-                $this->tables,
-                $this->getDbal()
-            )
+                itemsTable: self::ITEMS_TABLE,
+                assignmentsTable: self::ASSIGNMENTS_TABLE,
+                dbal: $this->getDbal(),
+                itemsChildrenTable: self::ITEMS_CHILDREN_TABLE,
+            ),
         );
         $app->find('rbac/cycle/init')->run(new ArrayInput([]), new NullOutput());
     }
