@@ -7,6 +7,7 @@ namespace Yiisoft\Rbac\Cycle\Command;
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\ForeignKeyInterface;
 use Cycle\Database\Table;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,12 +18,38 @@ final class RbacCycleInit extends Command
 {
     protected static $defaultName = 'rbac/cycle/init';
 
+    /**
+     * @psalm-var non-empty-string
+     */
+    private string $itemsTable;
+    /**
+     * @psalm-var non-empty-string
+     */
+    private string $assignmentsTable;
+    /**
+     * @psalm-var non-empty-string
+     */
+    private string $itemsChildrenTable;
+
     public function __construct(
-        private string $itemsTable,
-        private string $assignmentsTable,
-        private string $itemsChildrenTable,
+        string $itemsTable,
+        string $assignmentsTable,
+        string $itemsChildrenTable,
         private DatabaseProviderInterface $dbal,
     ) {
+        if ($itemsTable === '') {
+            throw new InvalidArgumentException('Items table name must be set');
+        }
+
+        $this->itemsTable = $itemsTable;
+
+        if ($assignmentsTable === '') {
+            throw new InvalidArgumentException('Assignments table name must be set');
+        }
+
+        $this->assignmentsTable = $assignmentsTable;
+        $this->itemsChildrenTable = $itemsChildrenTable !== '' ? $itemsChildrenTable : $this->itemsTable . '_child';
+
         parent::__construct();
     }
 
@@ -36,10 +63,9 @@ final class RbacCycleInit extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $itemsChildrenTable = $this->itemsChildrenTable ?? $this->itemsTable . '_child';
         $reCreate = $input->getOption('force') !== false;
-        if ($reCreate && $this->dbal->database()->hasTable($itemsChildrenTable) === true) {
-            $this->dropTable($itemsChildrenTable);
+        if ($reCreate && $this->dbal->database()->hasTable($this->itemsChildrenTable) === true) {
+            $this->dropTable($this->itemsChildrenTable);
         }
         if ($reCreate && $this->dbal->database()->hasTable($this->assignmentsTable) === true) {
             $this->dropTable($this->assignmentsTable);
@@ -53,10 +79,10 @@ final class RbacCycleInit extends Command
             $output->writeln('<bg=green>Table `' . $this->itemsTable . '` created successfully</>');
         }
 
-        if ($this->dbal->database()->hasTable($itemsChildrenTable) === false) {
-            $output->writeln('<fg=blue>Creating `' . $itemsChildrenTable . '` table...</>');
-            $this->createItemsChildrenTable($itemsChildrenTable);
-            $output->writeln('<bg=green>Table `' . $itemsChildrenTable . '` created successfully</>');
+        if ($this->dbal->database()->hasTable($this->itemsChildrenTable) === false) {
+            $output->writeln('<fg=blue>Creating `' . $this->itemsChildrenTable . '` table...</>');
+            $this->createItemsChildrenTable($this->itemsChildrenTable);
+            $output->writeln('<bg=green>Table `' . $this->itemsChildrenTable . '` created successfully</>');
         }
 
         if ($this->dbal->database()->hasTable($this->assignmentsTable) === false) {
