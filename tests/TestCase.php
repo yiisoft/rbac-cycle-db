@@ -67,8 +67,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             new RbacCycleInit(
                 itemsTable: self::ITEMS_TABLE,
                 assignmentsTable: self::ASSIGNMENTS_TABLE,
-                itemsChildrenTable: self::ITEMS_CHILDREN_TABLE,
                 dbal: $this->getDbal(),
+                itemsChildrenTable: self::ITEMS_CHILDREN_TABLE,
             ),
         );
         $app->find('rbac/cycle/init')->run(new ArrayInput([]), new NullOutput());

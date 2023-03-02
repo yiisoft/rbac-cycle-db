@@ -34,8 +34,8 @@ final class RbacCycleInit extends Command
     public function __construct(
         string $itemsTable,
         string $assignmentsTable,
-        string|null $itemsChildrenTable = null,
         private DatabaseProviderInterface $dbal,
+        string|null $itemsChildrenTable = null,
     ) {
         if ($itemsTable === '') {
             throw new InvalidArgumentException('Items table name can\'t be empty.');
