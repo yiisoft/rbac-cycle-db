@@ -34,21 +34,26 @@ final class RbacCycleInit extends Command
     public function __construct(
         string $itemsTable,
         string $assignmentsTable,
-        string $itemsChildrenTable,
+        string|null $itemsChildrenTable,
         private DatabaseProviderInterface $dbal,
     ) {
         if ($itemsTable === '') {
-            throw new InvalidArgumentException('Items table name must be set');
+            throw new InvalidArgumentException('Items table name can\'t be empty.');
         }
 
         $this->itemsTable = $itemsTable;
 
         if ($assignmentsTable === '') {
-            throw new InvalidArgumentException('Assignments table name must be set');
+            throw new InvalidArgumentException('Assignments table name can\'t be empty.');
         }
 
         $this->assignmentsTable = $assignmentsTable;
-        $this->itemsChildrenTable = $itemsChildrenTable !== '' ? $itemsChildrenTable : $this->itemsTable . '_child';
+
+        if ($itemsChildrenTable === '') {
+            throw new InvalidArgumentException('Items children table can\'t be empty.');
+        }
+
+        $this->itemsChildrenTable = $itemsChildrenTable ?? $this->itemsTable . '_child';
 
         parent::__construct();
     }
