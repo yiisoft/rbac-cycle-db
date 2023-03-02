@@ -14,6 +14,16 @@ use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 
+/**
+ * @psalm-type RawItem = array{
+ *     type: Item::TYPE_*,
+ *     name: string,
+ *     description: string|null,
+ *     ruleName: string|null,
+ *     createdAt: int|string,
+ *     updatedAt: int|string
+ * }
+ */
 final class ItemsStorage implements ItemsStorageInterface
 {
     private DatabaseInterface $database;
@@ -54,9 +64,12 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function getAll(): array
     {
+        /** @psalm-var RawItem[] $rows */
+        $rows = $this->database->select()->from($this->tableName)->fetchAll();
+
         return array_map(
-            fn (array $item): Item => $this->populateItem($item),
-            $this->database->select()->from($this->tableName)->fetchAll()
+            fn(array $row): Item => $this->createItem($row),
+            $rows
         );
     }
 
@@ -65,13 +78,20 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function get(string $name): ?Item
     {
-        $item = $this->database->select()->from($this->tableName)->where(['name' => $name])->run()->fetch();
+        /** @psalm-var RawItem|null $row */
+        $row = $this->database
+            ->select()
+            ->from($this->tableName)
+            ->where(['name' => $name])
+            ->run()
+            ->fetch();
 
-        return empty($item) ? null : $this->populateItem($item);
+        return empty($row) ? null : $this->createItem($row);
     }
 
     public function exists(string $name): bool
     {
+        /** @var mixed $result */
         $result = $this
             ->database
             ->select([new Fragment('1')])
@@ -96,7 +116,10 @@ final class ItemsStorage implements ItemsStorageInterface
         if (!$item->hasUpdatedAt()) {
             $item = $item->withUpdatedAt($time);
         }
-        $this->database->insert($this->tableName)->values($item->getAttributes())->run();
+        $this->database
+            ->insert($this->tableName)
+            ->values($item->getAttributes())
+            ->run();
     }
 
     /**
@@ -104,7 +127,9 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function update(string $name, Item $item): void
     {
-        $this->database->update($this->tableName, $item->getAttributes(), ['name' => $name])->run();
+        $this->database
+            ->update($this->tableName, $item->getAttributes(), ['name' => $name])
+            ->run();
     }
 
     /**
@@ -112,7 +137,9 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function remove(string $name): void
     {
-        $this->database->delete($this->tableName, ['name' => $name])->run();
+        $this->database
+            ->delete($this->tableName, ['name' => $name])
+            ->run();
     }
 
     /**
@@ -160,7 +187,9 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function clearPermissions(): void
     {
-        $this->database->delete($this->tableName, ['type' => Item::TYPE_PERMISSION])->run();
+        $this->database
+            ->delete($this->tableName, ['type' => Item::TYPE_PERMISSION])
+            ->run();
     }
 
     /**
@@ -168,17 +197,18 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function getParents(string $name): array
     {
-        $parents = $this->database
+        /** @psalm-var RawItem[] $parentRows */
+        $parentRows = $this->database
             ->select()
             ->from([$this->tableName, $this->childrenTableName])
             ->where(['child' => $name, 'name' => new Expression('parent')])
             ->fetchAll();
 
         return array_combine(
-            array_column($parents, 'name'),
+            array_column($parentRows, 'name'),
             array_map(
-                fn (array $item): Item => $this->populateItem($item),
-                $parents
+                fn(array $row): Item => $this->createItem($row),
+                $parentRows
             ),
         );
     }
@@ -188,16 +218,20 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function getChildren(string $name): array
     {
-        $children = $this->database
+        /** @psalm-var RawItem[] $childrenRows */
+        $childrenRows = $this->database
             ->select()
             ->from([$this->tableName, $this->childrenTableName])
             ->where(['parent' => $name, 'name' => new Expression('child')])
             ->fetchAll();
 
-        $keys = array_column($children, 'name');
+        $keys = array_column($childrenRows, 'name');
         return array_combine(
             $keys,
-            array_map(fn (array $item): Item => $this->populateItem($item), $children)
+            array_map(
+                fn(array $row): Item => $this->createItem($row),
+                $childrenRows
+            )
         );
     }
 
@@ -206,6 +240,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function hasChildren(string $name): bool
     {
+        /** @var mixed $result */
         $result = $this
             ->database
             ->select([new Fragment('1')])
@@ -223,7 +258,10 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function addChild(string $parentName, string $childName): void
     {
-        $this->database->insert($this->childrenTableName)->values(['parent' => $parentName, 'child' => $childName])->run();
+        $this->database
+            ->insert($this->childrenTableName)
+            ->values(['parent' => $parentName, 'child' => $childName])
+            ->run();
     }
 
     /**
@@ -241,7 +279,9 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function removeChildren(string $parentName): void
     {
-        $this->database->delete($this->childrenTableName, ['parent' => $parentName])->run();
+        $this->database
+            ->delete($this->childrenTableName, ['parent' => $parentName])
+            ->run();
     }
 
     /**
@@ -249,37 +289,53 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     private function getItemsByType(string $type): array
     {
-        $items = $this->database->select()->from($this->tableName)->where(['type' => $type])->fetchAll();
+        /** @psalm-var RawItem[] $rows */
+        $rows = $this->database
+            ->select()
+            ->from($this->tableName)
+            ->where(['type' => $type])
+            ->fetchAll();
 
-        return array_map(fn (array $item): Item => $this->populateItem($item), $items);
+        return array_map(
+            fn(array $row): Item => $this->createItem($row),
+            $rows
+        );
     }
 
     /**
-     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : ($type is Item::TYPE_ROLE ? Role : Item))|null
+     * @psalm-param Item::TYPE_* $type
+     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)|null
      */
-    private function getItemByTypeAndName(string $type, string $name): ?Item
+    private function getItemByTypeAndName(string $type, string $name): Permission|Role|null
     {
-        $item = $this->database->select()->from($this->tableName)->where(['type' => $type, 'name' => $name])->run()->fetch();
+        /** @psalm-var RawItem|null $row */
+        $row = $this->database
+            ->select()
+            ->from($this->tableName)
+            ->where(['type' => $type, 'name' => $name])
+            ->run()
+            ->fetch();
 
-        return empty($item) ? null : $this->populateItem($item);
+        return empty($row) ? null : $this->createItem($row);
     }
 
     /**
-     * @psalm-param array{type: string, name: string, description?: string, ruleName?: string, createdAt: int|string, updatedAt: int|string} $attributes
+     * @psalm-param RawItem $attributes
      */
-    private function populateItem(array $attributes): Item
+    private function createItem(array $attributes): Permission|Role
     {
         return $this->createItemByTypeAndName($attributes['type'], $attributes['name'])
             ->withDescription($attributes['description'] ?? '')
             ->withRuleName($attributes['ruleName'] ?? null)
-            ->withCreatedAt((int)$attributes['createdAt'])
-            ->withUpdatedAt((int)$attributes['updatedAt']);
+            ->withCreatedAt((int) $attributes['createdAt'])
+            ->withUpdatedAt((int) $attributes['updatedAt']);
     }
 
     /**
-     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : ($type is Item::TYPE_ROLE ? Role : Item))
+     * @psalm-param Item::TYPE_* $type
+     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)
      */
-    private function createItemByTypeAndName(string $type, string $name): Item
+    private function createItemByTypeAndName(string $type, string $name): Permission|Role
     {
         return $type === Item::TYPE_PERMISSION ? new Permission($name) : new Role($name);
     }

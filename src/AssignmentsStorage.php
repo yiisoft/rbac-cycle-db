@@ -11,6 +11,13 @@ use Cycle\Database\Table;
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 
+/**
+ * @psalm-type RawAssignment = array{
+ *     itemName: string,
+ *     userId: string,
+ *     createdAt: int|string,
+ * }
+ */
 final class AssignmentsStorage implements AssignmentsStorageInterface
 {
     private DatabaseInterface $database;
@@ -30,12 +37,18 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function getAll(): array
     {
+        /** @psalm-var RawAssignment[] $rows */
+        $rows = $this->database
+            ->select()
+            ->from($this->tableName)
+            ->fetchAll();
+
         $assignments = [];
-        foreach ($this->database->select()->from($this->tableName)->fetchAll() as $item) {
-            $assignments[$item['userId']][$item['itemName']] = new Assignment(
-                $item['userId'],
-                $item['itemName'],
-                (int)$item['createdAt']
+        foreach ($rows as $row) {
+            $assignments[$row['userId']][$row['itemName']] = new Assignment(
+                $row['userId'],
+                $row['itemName'],
+                (int) $row['createdAt']
             );
         }
 
@@ -47,13 +60,18 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function getByUserId(string $userId): array
     {
-        $assignments = $this->database->select()->from($this->tableName)->where(['userId' => $userId])->fetchAll();
+        /** @psalm-var RawAssignment[] $rows */
+        $rows = $this->database
+            ->select()
+            ->from($this->tableName)
+            ->where(['userId' => $userId])
+            ->fetchAll();
 
         return array_combine(
-            array_column($assignments, 'itemName'),
+            array_column($rows, 'itemName'),
             array_map(
-                static fn (array $item) => new Assignment($userId, $item['itemName'], (int)$item['createdAt']),
-                $assignments
+                static fn(array $row) => new Assignment($userId, $row['itemName'], (int) $row['createdAt']),
+                $rows
             )
         );
     }
@@ -63,14 +81,15 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function get(string $itemName, string $userId): ?Assignment
     {
-        $assignment = $this->database
+        /** @psalm-var RawAssignment|null $row */
+        $row = $this->database
             ->select()
             ->from($this->tableName)
             ->where(['itemName' => $itemName, 'userId' => $userId])
             ->run()
             ->fetch();
 
-        return empty($assignment) ? null : new Assignment($userId, $itemName, (int)$assignment['createdAt']);
+        return empty($row) ? null : new Assignment($userId, $itemName, (int) $row['createdAt']);
     }
 
     /**
@@ -95,6 +114,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function hasItem(string $name): bool
     {
+        /** @var mixed $result */
         $result = $this
             ->database
             ->select([new Fragment('1')])
@@ -115,7 +135,9 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         if ($oldName === $newName) {
             return;
         }
-        $this->database->update($this->tableName, ['itemName' => $newName], ['itemName' => $oldName])->run();
+        $this->database
+            ->update($this->tableName, ['itemName' => $newName], ['itemName' => $oldName])
+            ->run();
     }
 
     /**
@@ -123,7 +145,9 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function remove(string $itemName, string $userId): void
     {
-        $this->database->delete($this->tableName, ['itemName' => $itemName, 'userId' => $userId])->run();
+        $this->database
+            ->delete($this->tableName, ['itemName' => $itemName, 'userId' => $userId])
+            ->run();
     }
 
     /**
@@ -131,7 +155,9 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function removeByUserId(string $userId): void
     {
-        $this->database->delete($this->tableName, ['userId' => $userId])->run();
+        $this->database
+            ->delete($this->tableName, ['userId' => $userId])
+            ->run();
     }
 
     /**
@@ -139,7 +165,9 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
      */
     public function removeByItemName(string $itemName): void
     {
-        $this->database->delete($this->tableName, ['itemName' => $itemName])->run();
+        $this->database
+            ->delete($this->tableName, ['itemName' => $itemName])
+            ->run();
     }
 
     /**
