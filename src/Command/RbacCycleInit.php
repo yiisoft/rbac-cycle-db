@@ -63,21 +63,25 @@ final class RbacCycleInit extends Command
         $this
             ->setDescription('Create RBAC schemas')
             ->setHelp('This command creates schemas for RBAC using Cycle DBAL')
-            ->addOption('force', 'f', InputOption::VALUE_OPTIONAL, 'Force re-create schemas if exists', false);
+            ->addOption('force', 'f', InputOption::VALUE_OPTIONAL, 'Force recreation of schemas if they exist', false);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $reCreate = $input->getOption('force') !== false;
-        if ($reCreate && $this->dbal->database()->hasTable($this->itemsChildrenTable) === true) {
+        $force = $input->getOption('force') !== false;
+
+        if ($force && $this->dbal->database()->hasTable($this->itemsChildrenTable) === true) {
             $this->dropTable($this->itemsChildrenTable);
         }
-        if ($reCreate && $this->dbal->database()->hasTable($this->assignmentsTable) === true) {
+
+        if ($force && $this->dbal->database()->hasTable($this->assignmentsTable) === true) {
             $this->dropTable($this->assignmentsTable);
         }
-        if ($reCreate && $this->dbal->database()->hasTable($this->itemsTable) === true) {
+
+        if ($force && $this->dbal->database()->hasTable($this->itemsTable) === true) {
             $this->dropTable($this->itemsTable);
         }
+
         if ($this->dbal->database()->hasTable($this->itemsTable) === false) {
             $output->writeln('<fg=blue>Creating `' . $this->itemsTable . '` table...</>');
             $this->createItemsTable();
@@ -95,8 +99,10 @@ final class RbacCycleInit extends Command
             $this->createAssignmentsTable();
             $output->writeln('<bg=green>Table `' . $this->assignmentsTable . '` created successfully</>');
         }
+
         $output->writeln('<fg=green>DONE</>');
-        return 0;
+
+        return Command::SUCCESS;
     }
 
     private function createItemsTable(): void
