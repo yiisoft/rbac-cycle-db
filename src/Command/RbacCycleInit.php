@@ -50,7 +50,7 @@ final class RbacCycleInit extends Command
         $this->assignmentsTable = $assignmentsTable;
 
         if ($itemsChildrenTable === '') {
-            throw new InvalidArgumentException('Items children table can\'t be empty.');
+            throw new InvalidArgumentException('Items children table name can\'t be empty.');
         }
 
         $this->itemsChildrenTable = $itemsChildrenTable ?? $this->itemsTable . '_child';

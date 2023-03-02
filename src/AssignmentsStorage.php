@@ -22,19 +22,16 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 {
     private DatabaseInterface $database;
 
+    /**
+     * @psalm-param non-empty-string $tableName
+     */
     public function __construct(
-        /**
-         * @psalm-var non-empty-string
-         */
         private string $tableName,
-        DatabaseProviderInterface $dbal
+        DatabaseProviderInterface $dbal,
     ) {
         $this->database = $dbal->database();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getAll(): array
     {
         /** @psalm-var RawAssignment[] $rows */
@@ -55,9 +52,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         return $assignments;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getByUserId(string $userId): array
     {
         /** @psalm-var RawAssignment[] $rows */
@@ -76,9 +70,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     public function get(string $itemName, string $userId): ?Assignment
     {
         /** @psalm-var RawAssignment|null $row */
@@ -92,9 +83,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         return empty($row) ? null : new Assignment($userId, $itemName, (int) $row['createdAt']);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function add(string $itemName, string $userId): void
     {
         $this->database
@@ -109,9 +97,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function hasItem(string $name): bool
     {
         /** @var mixed $result */
@@ -127,9 +112,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         return $result !== false;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function renameItem(string $oldName, string $newName): void
     {
         if ($oldName === $newName) {
@@ -140,9 +122,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function remove(string $itemName, string $userId): void
     {
         $this->database
@@ -150,9 +129,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function removeByUserId(string $userId): void
     {
         $this->database
@@ -160,9 +136,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function removeByItemName(string $itemName): void
     {
         $this->database
@@ -170,9 +143,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function clear(): void
     {
         /** @var Table $table */
