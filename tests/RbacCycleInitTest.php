@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle\Tests;
 
+use Cycle\Database\ForeignKeyInterface;
+use Cycle\Database\Schema\AbstractForeignKey;
 use Cycle\Database\Schema\AbstractIndex;
 use InvalidArgumentException;
 use Symfony\Component\Console\Application;
@@ -62,9 +64,9 @@ class RbacCycleInitTest extends TestCase
         $app->find('rbac/cycle/init')->run(new ArrayInput([]), $output);
 
         $this->checkItemsTable();
+        $this->checkAssignmentsTable();
 
         $this->assertTrue($this->getDbal()->database()->hasTable('auth_item_child'));
-        $this->assertTrue($this->getDbal()->database()->hasTable('auth_assignment'));
 
         $newLine = PHP_EOL;
         $expectedOutput = "\033[34mCreating `auth_item` table...\033[39m$newLine" .
@@ -80,9 +82,9 @@ class RbacCycleInitTest extends TestCase
     private function checkItemsTable(): void
     {
         $database = $this->getDbal()->database();
-        $this->assertTrue($database->hasTable('auth_item'));
+        $this->assertTrue($database->hasTable(self::ITEMS_TABLE));
 
-        $table = $database->table('auth_item');
+        $table = $database->table(self::ITEMS_TABLE);
         $columns = $table->getColumns();
 
         $this->assertArrayHasKey('name', $columns);
@@ -125,6 +127,43 @@ class RbacCycleInitTest extends TestCase
         $this->assertSame(['type'], $index->getColumns());
 
         $this->assertSame(['name'], $table->getPrimaryKeys());
+    }
+
+    private function checkAssignmentsTable(): void
+    {
+        $database = $this->getDbal()->database();
+        $this->assertTrue($database->hasTable(self::ASSIGNMENTS_TABLE));
+
+        $table = $database->table(self::ASSIGNMENTS_TABLE);
+        $columns = $table->getColumns();
+
+        $this->assertArrayHasKey('itemName', $columns);
+        $itemName = $columns['itemName'];
+        $this->assertSame('string', $itemName->getType());
+        $this->assertSame(128, $itemName->getSize());
+        $this->assertFalse($itemName->isNullable());
+
+        $this->assertArrayHasKey('userId', $columns);
+        $userId = $columns['userId'];
+        $this->assertSame('string', $userId->getType());
+        $this->assertSame(128, $userId->getSize());
+        $this->assertFalse($userId->isNullable());
+
+        $this->assertArrayHasKey('createdAt', $columns);
+        $createdAt = $columns['createdAt'];
+        $this->assertSame('string', $createdAt->getType());
+        $this->assertFalse($createdAt->isNullable());
+
+        $this->assertSame(['itemName', 'userId'], $table->getPrimaryKeys());
+
+        $this->assertCount(1, $table->getForeignKeys());
+        /** @var AbstractForeignKey $foreignKey */
+        $foreignKey = array_values($table->getForeignKeys())[0];
+        $this->assertSame(['itemName'], $foreignKey->getColumns());
+        $this->assertSame(self::ITEMS_TABLE, $foreignKey->getForeignTable());
+        $this->assertSame(['name'], $foreignKey->getForeignKeys());
+        $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getUpdateRule());
+        $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getDeleteRule());
     }
 
     protected function populateDb(): void
