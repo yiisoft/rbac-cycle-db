@@ -65,8 +65,8 @@ class RbacCycleInitTest extends TestCase
 
         $newLine = PHP_EOL;
         $expectedOutput = "\033[34mCreating `auth_item` table...\033[39m$newLine" .
-        "\033[42mTable `auth_item` created successfully\033[49m\n$newLine" .
-        "\033[34mCreating `auth_item_child` table...\033[39$newLine" .
+        "\033[42mTable `auth_item` created successfully\033[49m$newLine" .
+        "\033[34mCreating `auth_item_child` table...\033[39m$newLine" .
         "\033[42mTable `auth_item_child` created successfully\033[49m$newLine" .
         "\033[34mCreating `auth_assignment` table...\033[39m$newLine" .
         "\033[42mTable `auth_assignment` created successfully\033[49m$newLine" .
