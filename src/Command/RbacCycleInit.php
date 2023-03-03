@@ -113,10 +113,10 @@ final class RbacCycleInit extends Command
 
         $schema->string('name', 128);
         $schema->enum('type', [Item::TYPE_ROLE, Item::TYPE_PERMISSION])->nullable(false);
-        $schema->string('description', 191)->nullable();
-        $schema->string('ruleName', 64)->nullable();
-        $schema->integer('createdAt')->nullable(false);
-        $schema->integer('updatedAt')->nullable(false);
+        $schema->string('description', 191);
+        $schema->string('ruleName', 64);
+        $schema->timestamp('createdAt')->nullable(false);
+        $schema->timestamp('updatedAt')->nullable(false);
         $schema->index(['type']);
         $schema->setPrimaryKeys(['name']);
 
