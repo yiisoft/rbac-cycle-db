@@ -93,7 +93,7 @@ class RbacCycleInitTest extends TestCase
 
         $this->assertArrayHasKey('type', $columns);
         $type = $columns['type'];
-        $this->assertSame('enum', $type->getAbstractType());
+        $this->assertSame('string', $type->getType());
         $this->assertSame([Item::TYPE_ROLE, Item::TYPE_PERMISSION], $type->getEnumValues());
         $this->assertFalse($type->isNullable());
 
@@ -111,12 +111,12 @@ class RbacCycleInitTest extends TestCase
 
         $this->assertArrayHasKey('createdAt', $columns);
         $createdAt = $columns['createdAt'];
-        $this->assertSame('timestamp', $createdAt->getAbstractType());
+        $this->assertSame('string', $createdAt->getType());
         $this->assertFalse($createdAt->isNullable());
 
         $this->assertArrayHasKey('updatedAt', $columns);
         $updatedAt = $columns['updatedAt'];
-        $this->assertSame('timestamp', $updatedAt->getAbstractType());
+        $this->assertSame('string', $updatedAt->getType());
         $this->assertFalse($updatedAt->isNullable());
 
         $this->assertCount(1, $table->getIndexes());
