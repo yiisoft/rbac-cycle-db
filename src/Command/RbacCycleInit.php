@@ -158,7 +158,7 @@ final class RbacCycleInit extends Command
         $schema->string('itemName', 128)->nullable(false);
         $schema->string('userId', 128)->nullable(false);
         $schema->setPrimaryKeys(['itemName', 'userId']);
-        $schema->integer('createdAt')->nullable(false);
+        $schema->timestamp('createdAt')->nullable(false);
 
         $schema->foreignKey(['itemName'])
             ->references($this->itemsTable, ['name'])

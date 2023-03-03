@@ -22,10 +22,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     private ?DatabaseManager $databaseManager = null;
 
-    private const ITEMS_CHILDREN_TABLE = 'auth_item_child';
-    private const ASSIGNMENTS_TABLE = 'auth_assignment';
-    private const ITEMS_TABLE = 'auth_item';
-    private const TABLES = [self::ITEMS_CHILDREN_TABLE, self::ASSIGNMENTS_TABLE, self::ITEMS_TABLE];
+    protected const ITEMS_TABLE = 'auth_item';
+    protected const ASSIGNMENTS_TABLE = 'auth_assignment';
+    protected const ITEMS_CHILDREN_TABLE = 'auth_item_child';
+    private const TABLES = [self::ITEMS_TABLE, self::ASSIGNMENTS_TABLE, self::ITEMS_CHILDREN_TABLE];
 
     protected function getDbal(): DatabaseManager
     {
