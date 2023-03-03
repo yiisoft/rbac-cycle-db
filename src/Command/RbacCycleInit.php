@@ -68,37 +68,19 @@ final class RbacCycleInit extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $force = $input->getOption('force') !== false;
-
-        if ($force && $this->dbal->database()->hasTable($this->itemsChildrenTable) === true) {
+        $force = $input->getOption('force');
+        if ($force === true) {
             $this->dropTable($this->itemsChildrenTable);
-        }
-
-        if ($force && $this->dbal->database()->hasTable($this->assignmentsTable) === true) {
             $this->dropTable($this->assignmentsTable);
-        }
-
-        if ($force && $this->dbal->database()->hasTable($this->itemsTable) === true) {
             $this->dropTable($this->itemsTable);
+            $checkExistence = false;
+        } else {
+            $checkExistence = true;
         }
 
-        if ($this->dbal->database()->hasTable($this->itemsTable) === false) {
-            $output->writeln('<fg=blue>Creating `' . $this->itemsTable . '` table...</>');
-            $this->createItemsTable();
-            $output->writeln('<bg=green>Table `' . $this->itemsTable . '` created successfully</>');
-        }
-
-        if ($this->dbal->database()->hasTable($this->itemsChildrenTable) === false) {
-            $output->writeln('<fg=blue>Creating `' . $this->itemsChildrenTable . '` table...</>');
-            $this->createItemsChildrenTable($this->itemsChildrenTable);
-            $output->writeln('<bg=green>Table `' . $this->itemsChildrenTable . '` created successfully</>');
-        }
-
-        if ($this->dbal->database()->hasTable($this->assignmentsTable) === false) {
-            $output->writeln('<fg=blue>Creating `' . $this->assignmentsTable . '` table...</>');
-            $this->createAssignmentsTable();
-            $output->writeln('<bg=green>Table `' . $this->assignmentsTable . '` created successfully</>');
-        }
+        $this->createTable($this->itemsTable, $output, checkExistence: $checkExistence);
+        $this->createTable($this->itemsChildrenTable, $output, checkExistence: $checkExistence);
+        $this->createTable($this->assignmentsTable, $output, checkExistence: $checkExistence);
 
         $output->writeln('<fg=green>DONE</>');
 
@@ -123,13 +105,10 @@ final class RbacCycleInit extends Command
         $schema->save();
     }
 
-    /**
-     * @psalm-param non-empty-string $itemsChildrenTable
-     */
-    private function createItemsChildrenTable(string $itemsChildrenTable): void
+    private function createItemsChildrenTable(): void
     {
         /** @var Table $table */
-        $table = $this->dbal->database()->table($itemsChildrenTable);
+        $table = $this->dbal->database()->table($this->itemsChildrenTable);
         $schema = $table->getSchema();
 
         $schema->string('parent', 128)->nullable(false);
@@ -171,8 +150,32 @@ final class RbacCycleInit extends Command
     /**
      * @psalm-param non-empty-string $tableName
      */
+    private function createTable(string $tableName, OutputInterface $output, bool $checkExistence = true): void
+    {
+        if ($checkExistence && $this->dbal->database()->hasTable($tableName) === true) {
+            return;
+        }
+
+        $output->writeln('<fg=blue>Creating `' . $tableName . '` table...</>');
+
+        match ($tableName) {
+            $this->itemsTable => $this->createItemsTable(),
+            $this->assignmentsTable => $this->createAssignmentsTable(),
+            $this->itemsChildrenTable => $this->createItemsChildrenTable(),
+        };
+
+        $output->writeln('<bg=green>Table `' . $tableName . '` created successfully</>');
+    }
+
+    /**
+     * @psalm-param non-empty-string $tableName
+     */
     private function dropTable(string $tableName): void
     {
+        if ($this->dbal->database()->hasTable($tableName) === false) {
+            return;
+        }
+
         /** @var Table $table */
         $table = $this->dbal->database()->table($tableName);
         $schema = $table->getSchema();

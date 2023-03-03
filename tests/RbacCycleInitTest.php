@@ -65,8 +65,7 @@ class RbacCycleInitTest extends TestCase
 
         $this->checkItemsTable();
         $this->checkAssignmentsTable();
-
-        $this->assertTrue($this->getDbal()->database()->hasTable('auth_item_child'));
+        $this->checkItemsChildrenTable();
 
         $newLine = PHP_EOL;
         $expectedOutput = "\033[34mCreating `auth_item` table...\033[39m$newLine" .
@@ -164,6 +163,40 @@ class RbacCycleInitTest extends TestCase
         $this->assertSame(['name'], $foreignKey->getForeignKeys());
         $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getUpdateRule());
         $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getDeleteRule());
+    }
+
+    private function checkItemsChildrenTable(): void
+    {
+        $database = $this->getDbal()->database();
+        $this->assertTrue($database->hasTable(self::ITEMS_CHILDREN_TABLE));
+
+        $table = $database->table(self::ITEMS_CHILDREN_TABLE);
+        $columns = $table->getColumns();
+
+        $this->assertArrayHasKey('parent', $columns);
+        $parent = $columns['parent'];
+        $this->assertSame('string', $parent->getType());
+        $this->assertSame(128, $parent->getSize());
+        $this->assertFalse($parent->isNullable());
+
+        $this->assertArrayHasKey('child', $columns);
+        $child = $columns['child'];
+        $this->assertSame('string', $child->getType());
+        $this->assertSame(128, $child->getSize());
+        $this->assertFalse($child->isNullable());
+
+        $this->assertCount(2, $table->getForeignKeys());
+        foreach ($table->getForeignKeys() as $foreignKey) {
+            $columns = $foreignKey->getColumns();
+            $this->assertCount(1, $columns);
+            $column = $columns[0];
+            $this->assertContains($column, ['parent', 'child']);
+
+            $this->assertSame(self::ITEMS_TABLE, $foreignKey->getForeignTable());
+            $this->assertSame(['name'], $foreignKey->getForeignKeys());
+            $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getUpdateRule());
+            $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getDeleteRule());
+        }
     }
 
     protected function populateDb(): void
