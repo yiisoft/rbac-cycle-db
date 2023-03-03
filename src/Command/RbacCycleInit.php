@@ -68,7 +68,7 @@ final class RbacCycleInit extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $force = $input->getOption('force');
+        $force = $input->getOption('force') === true;
         if ($force === true) {
             $this->dropTable($this->itemsChildrenTable);
             $this->dropTable($this->assignmentsTable);
