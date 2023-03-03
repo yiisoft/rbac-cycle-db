@@ -154,10 +154,14 @@ final class RbacCycleInit extends Command
     {
         $output->writeln('<fg=blue>Creating `' . $tableName . '` table...</>');
 
-        if ($checkExistence && $this->dbal->database()->hasTable($tableName) === true) {
-            $output->writeln('<bg=yellow>Table `' . $tableName . '` already exists, skipped creating.</>');
+        if ($checkExistence) {
+            $output->writeln('<fg=blue>Checking existence of table `' . $tableName . '`...</>');
 
-            return;
+            if ($this->dbal->database()->hasTable($tableName) === true) {
+                $output->writeln('<bg=yellow>Table `' . $tableName . '` already exists, skipped creating.</>');
+
+                return;
+            }
         }
 
         match ($tableName) {

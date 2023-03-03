@@ -85,10 +85,13 @@ class RbacCycleInitTest extends TestCase
 
         $newLine = PHP_EOL;
         $expectedOutput = "\033[34mCreating `auth_item` table...\033[39m$newLine" .
+            "\033[34mChecking existence of table `auth_item`...\033[39m$newLine" .
             "\033[43mTable `auth_item` already exists, skipped creating.\033[49m$newLine" .
             "\033[34mCreating `auth_item_child` table...\033[39m$newLine" .
+            "\033[34mChecking existence of table `auth_item_child`...\033[39m$newLine" .
             "\033[43mTable `auth_item_child` already exists, skipped creating.\033[49m$newLine" .
             "\033[34mCreating `auth_assignment` table...\033[39m$newLine" .
+            "\033[34mChecking existence of table `auth_assignment`...\033[39m$newLine" .
             "\033[43mTable `auth_assignment` already exists, skipped creating.\033[49m$newLine" .
             "\033[32mDONE\033[39m$newLine";
         $this->assertSame($expectedOutput, $output->fetch());
