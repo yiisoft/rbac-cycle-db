@@ -63,13 +63,14 @@ class RbacCycleInitTest extends TestCase
         $this->assertTrue($this->getDbal()->database()->hasTable('auth_item_child'));
         $this->assertTrue($this->getDbal()->database()->hasTable('auth_assignment'));
 
-        $expectedOutput = "\033[34mCreating `auth_item` table...\033[39m\n" .
-        "\033[42mTable `auth_item` created successfully\033[49m\n" .
-        "\033[34mCreating `auth_item_child` table...\033[39m\n" .
-        "\033[42mTable `auth_item_child` created successfully\033[49m\n" .
-        "\033[34mCreating `auth_assignment` table...\033[39m\n" .
-        "\033[42mTable `auth_assignment` created successfully\033[49m\n" .
-        "\033[32mDONE\033[39m\n";
+        $newLine = PHP_EOL;
+        $expectedOutput = "\033[34mCreating `auth_item` table...\033[39m$newLine" .
+        "\033[42mTable `auth_item` created successfully\033[49m\n$newLine" .
+        "\033[34mCreating `auth_item_child` table...\033[39$newLine" .
+        "\033[42mTable `auth_item_child` created successfully\033[49m$newLine" .
+        "\033[34mCreating `auth_assignment` table...\033[39m$newLine" .
+        "\033[42mTable `auth_assignment` created successfully\033[49m$newLine" .
+        "\033[32mDONE\033[39m$newLine";
         $this->assertSame($expectedOutput, $output->fetch());
     }
 
