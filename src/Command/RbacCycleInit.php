@@ -70,9 +70,9 @@ final class RbacCycleInit extends Command
     {
         $force = $input->getOption('force') === true;
         if ($force === true) {
-            $this->dropTable($this->itemsChildrenTable);
-            $this->dropTable($this->assignmentsTable);
-            $this->dropTable($this->itemsTable);
+            $this->dropTable($this->itemsChildrenTable, $output);
+            $this->dropTable($this->assignmentsTable, $output);
+            $this->dropTable($this->itemsTable, $output);
             $checkExistence = false;
         } else {
             $checkExistence = true;
@@ -152,11 +152,13 @@ final class RbacCycleInit extends Command
      */
     private function createTable(string $tableName, OutputInterface $output, bool $checkExistence = true): void
     {
+        $output->writeln('<fg=blue>Creating `' . $tableName . '` table...</>');
+
         if ($checkExistence && $this->dbal->database()->hasTable($tableName) === true) {
+            $output->writeln('<bg=yellow>Table `' . $tableName . '` already exists, skipped creating.</>');
+
             return;
         }
-
-        $output->writeln('<fg=blue>Creating `' . $tableName . '` table...</>');
 
         match ($tableName) {
             $this->itemsTable => $this->createItemsTable(),
@@ -164,15 +166,19 @@ final class RbacCycleInit extends Command
             $this->itemsChildrenTable => $this->createItemsChildrenTable(),
         };
 
-        $output->writeln('<bg=green>Table `' . $tableName . '` created successfully</>');
+        $output->writeln('<bg=green>Table `' . $tableName . '` successfully created.</>');
     }
 
     /**
      * @psalm-param non-empty-string $tableName
      */
-    private function dropTable(string $tableName): void
+    private function dropTable(string $tableName, OutputInterface $output): void
     {
+        $output->writeln('<fg=blue>Dropping `' . $tableName . '` table...</>');
+
         if ($this->dbal->database()->hasTable($tableName) === false) {
+            $output->writeln('<bg=yellow>Table `' . $tableName . '` doesn\'t exist, skipped dropping.</>');
+
             return;
         }
 
@@ -181,5 +187,7 @@ final class RbacCycleInit extends Command
         $schema = $table->getSchema();
         $schema->declareDropped();
         $schema->save();
+
+        $output->writeln('<bg=green>Table `' . $tableName . '` successfully dropped.</>');
     }
 }

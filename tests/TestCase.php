@@ -62,20 +62,22 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function createDbTables(): void
     {
-        $app = new Application();
-        $command = $this->createCommand();
-        $app->add($command);
+        $app = $this->createApplication();
         $app->find('rbac/cycle/init')->run(new ArrayInput([]), new NullOutput());
     }
 
-    protected function createCommand(): RbacCycleInit
+    protected function createApplication(): Application
     {
-        return new RbacCycleInit(
+        $app = new Application();
+        $command = new RbacCycleInit(
             itemsTable: self::ITEMS_TABLE,
             assignmentsTable: self::ASSIGNMENTS_TABLE,
             dbal: $this->getDbal(),
             itemsChildrenTable: self::ITEMS_CHILDREN_TABLE,
         );
+        $app->add($command);
+
+        return $app;
     }
 
     private function createConnection(): void

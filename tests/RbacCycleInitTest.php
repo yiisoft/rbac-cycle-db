@@ -8,9 +8,9 @@ use Cycle\Database\ForeignKeyInterface;
 use Cycle\Database\Schema\AbstractForeignKey;
 use Cycle\Database\Schema\AbstractIndex;
 use InvalidArgumentException;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\NullOutput;
 use Yiisoft\Rbac\Cycle\Command\RbacCycleInit;
 use Yiisoft\Rbac\Item;
 
@@ -56,26 +56,101 @@ class RbacCycleInitTest extends TestCase
 
     public function testExecute(): void
     {
-        $app = new Application();
-        $command = $this->createCommand();
-        $app->add($command);
+        $app = $this->createApplication();
+        $output = new BufferedOutput(decorated: true);
+        $app->find('rbac/cycle/init')->run(new ArrayInput([]), $output);
+
+        $this->checkTables();
+
+        $newLine = PHP_EOL;
+        $expectedOutput = "\033[34mCreating `auth_item` table...\033[39m$newLine" .
+        "\033[42mTable `auth_item` successfully created.\033[49m$newLine" .
+        "\033[34mCreating `auth_item_child` table...\033[39m$newLine" .
+        "\033[42mTable `auth_item_child` successfully created.\033[49m$newLine" .
+        "\033[34mCreating `auth_assignment` table...\033[39m$newLine" .
+        "\033[42mTable `auth_assignment` successfully created.\033[49m$newLine" .
+        "\033[32mDONE\033[39m$newLine";
+        $this->assertSame($expectedOutput, $output->fetch());
+    }
+
+    public function testExecuteMultiple(): void
+    {
+        $app = $this->createApplication();
+        $app->find('rbac/cycle/init')->run(new ArrayInput([]), new NullOutput());
 
         $output = new BufferedOutput(decorated: true);
         $app->find('rbac/cycle/init')->run(new ArrayInput([]), $output);
 
-        $this->checkItemsTable();
-        $this->checkAssignmentsTable();
-        $this->checkItemsChildrenTable();
+        $this->checkTables();
 
         $newLine = PHP_EOL;
         $expectedOutput = "\033[34mCreating `auth_item` table...\033[39m$newLine" .
-        "\033[42mTable `auth_item` created successfully\033[49m$newLine" .
-        "\033[34mCreating `auth_item_child` table...\033[39m$newLine" .
-        "\033[42mTable `auth_item_child` created successfully\033[49m$newLine" .
-        "\033[34mCreating `auth_assignment` table...\033[39m$newLine" .
-        "\033[42mTable `auth_assignment` created successfully\033[49m$newLine" .
-        "\033[32mDONE\033[39m$newLine";
+            "\033[43mTable `auth_item` already exists, skipped creating.\033[49m$newLine" .
+            "\033[34mCreating `auth_item_child` table...\033[39m$newLine" .
+            "\033[43mTable `auth_item_child` already exists, skipped creating.\033[49m$newLine" .
+            "\033[34mCreating `auth_assignment` table...\033[39m$newLine" .
+            "\033[43mTable `auth_assignment` already exists, skipped creating.\033[49m$newLine" .
+            "\033[32mDONE\033[39m$newLine";
         $this->assertSame($expectedOutput, $output->fetch());
+    }
+
+    public function testExecuteWithForceAndExistingTables(): void
+    {
+        $app = $this->createApplication();
+        $app->find('rbac/cycle/init')->run(new ArrayInput([]), new NullOutput());
+
+        $output = new BufferedOutput(decorated: true);
+        $app->find('rbac/cycle/init')->run(new ArrayInput(['--force' => true]), $output);
+
+        $this->checkTables();
+
+        $newLine = PHP_EOL;
+        $expectedOutput = "\033[34mDropping `auth_item_child` table...\033[39m$newLine" .
+            "\033[42mTable `auth_item_child` successfully dropped.\033[49m$newLine" .
+            "\033[34mDropping `auth_assignment` table...\033[39m$newLine" .
+            "\033[42mTable `auth_assignment` successfully dropped.\033[49m$newLine" .
+            "\033[34mDropping `auth_item` table...\033[39m$newLine" .
+            "\033[42mTable `auth_item` successfully dropped.\033[49m$newLine" .
+            "\033[34mCreating `auth_item` table...\033[39m$newLine" .
+            "\033[42mTable `auth_item` successfully created.\033[49m$newLine" .
+            "\033[34mCreating `auth_item_child` table...\033[39m$newLine" .
+            "\033[42mTable `auth_item_child` successfully created.\033[49m$newLine" .
+            "\033[34mCreating `auth_assignment` table...\033[39m$newLine" .
+            "\033[42mTable `auth_assignment` successfully created.\033[49m$newLine" .
+            "\033[32mDONE\033[39m$newLine";
+        $this->assertSame($expectedOutput, $output->fetch());
+    }
+
+    public function testExecuteWithForceAndNonExistingTables(): void
+    {
+        $app = $this->createApplication();
+        $output = new BufferedOutput(decorated: true);
+        $app->find('rbac/cycle/init')->run(new ArrayInput(['--force' => true]), $output);
+
+        $this->checkTables();
+
+        $newLine = PHP_EOL;
+        $expectedOutput = "\033[34mDropping `auth_item_child` table...\033[39m$newLine" .
+            "\033[43mTable `auth_item_child` doesn't exist, skipped dropping.\033[49m$newLine" .
+            "\033[34mDropping `auth_assignment` table...\033[39m$newLine" .
+            "\033[43mTable `auth_assignment` doesn't exist, skipped dropping.\033[49m$newLine" .
+            "\033[34mDropping `auth_item` table...\033[39m$newLine" .
+            "\033[43mTable `auth_item` doesn't exist, skipped dropping.\033[49m$newLine" .
+            "\033[34mCreating `auth_item` table...\033[39m$newLine" .
+            "\033[42mTable `auth_item` successfully created.\033[49m$newLine" .
+            "\033[34mCreating `auth_item_child` table...\033[39m$newLine" .
+            "\033[42mTable `auth_item_child` successfully created.\033[49m$newLine" .
+            "\033[34mCreating `auth_assignment` table...\033[39m$newLine" .
+            "\033[42mTable `auth_assignment` successfully created.\033[49m$newLine" .
+            "\033[32mDONE\033[39m$newLine";
+        $this->assertSame($expectedOutput, $output->fetch());
+    }
+
+    private function checkTables(): void
+    {
+        $this->checkItemsTable();
+        $this->checkAssignmentsTable();
+        $this->checkItemsChildrenTable();
     }
 
     private function checkItemsTable(): void
