@@ -99,14 +99,15 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 
     public function hasItem(string $name): bool
     {
-        /** @var array<0, 1>|false $result */
+        /**
+         * @var array<0, 1>|false $result
+         * @infection-ignore-all
+         */
         $result = $this
             ->database
-            /** @infection-ignore-all */
             ->select([new Fragment('1')])
             ->from($this->tableName)
             ->where(['itemName' => $name])
-            /** @infection-ignore-all */
             ->limit(1)
             ->run()
             ->fetch();
