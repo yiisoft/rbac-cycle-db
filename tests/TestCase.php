@@ -66,14 +66,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $app->find('rbac/cycle/init')->run(new ArrayInput([]), new NullOutput());
     }
 
-    protected function createApplication(): Application
+    protected function createApplication(string|null $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE): Application
     {
         $app = new Application();
         $command = new RbacCycleInit(
             itemsTable: self::ITEMS_TABLE,
             assignmentsTable: self::ASSIGNMENTS_TABLE,
             dbal: $this->getDbal(),
-            itemsChildrenTable: self::ITEMS_CHILDREN_TABLE,
+            itemsChildrenTable: $itemsChildrenTable,
         );
         $app->add($command);
 

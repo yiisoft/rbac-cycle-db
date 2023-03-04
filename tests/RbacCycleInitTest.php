@@ -54,9 +54,20 @@ class RbacCycleInitTest extends TestCase
         new RbacCycleInit(...$arguments);
     }
 
-    public function testExecute(): void
+    public function dataExecute(): array
     {
-        $app = $this->createApplication();
+        return [
+            [self::ITEMS_CHILDREN_TABLE],
+            [null],
+        ];
+    }
+
+    /**
+     * @dataProvider dataExecute
+     */
+    public function testExecute(string|null $itemsChildrenTable): void
+    {
+        $app = $this->createApplication($itemsChildrenTable);
         $output = new BufferedOutput(decorated: true);
         $app->find('rbac/cycle/init')->run(new ArrayInput([]), $output);
 
