@@ -67,6 +67,7 @@ class AssignmentsStorageTest extends TestCase
 
         $this->assertFalse($storage->hasItem('Manager'));
         $this->assertEmpty($storage->getByUserId('manager'));
+        $this->assertNotEmpty($storage->getByUserId('admin'));
     }
 
     public function testRemove(): void
