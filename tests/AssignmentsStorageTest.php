@@ -53,7 +53,7 @@ class AssignmentsStorageTest extends TestCase
         $storage = $this->getStorage();
         $assignments = $storage->getByUserId('admin');
 
-        $this->assertCount(1, $assignments);
+        $this->assertCount(3, $assignments);
         $this->assertSame('Admin', $assignments['Admin']->getItemName());
         foreach ($assignments as $name => $assignment) {
             $this->assertSame($name, $assignment->getItemName());
