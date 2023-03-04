@@ -152,16 +152,18 @@ final class RbacCycleInit extends Command
      */
     private function createTable(string $tableName, OutputInterface $output, bool $checkExistence = true): void
     {
-        $output->writeln('<fg=blue>Creating `' . $tableName . '` table...</>');
-
-        if ($checkExistence) {
-            $output->writeln('<fg=blue>Checking existence of table `' . $tableName . '`...</>');
+        if (!$checkExistence) {
+            $output->writeln("<fg=blue>Creating `$tableName` table...</>");
+        } else {
+            $output->writeln("<fg=blue>Checking existence of `$tableName` table...</>");
 
             if ($this->dbal->database()->hasTable($tableName) === true) {
-                $output->writeln('<bg=yellow>Table `' . $tableName . '` already exists, skipped creating.</>');
+                $output->writeln("<bg=yellow>`$tableName` table already exists. Skipped creating.</>");
 
                 return;
             }
+
+            $output->writeln("<fg=blue>`$tableName` table doesn't exist. Creating...</>");
         }
 
         match ($tableName) {
@@ -170,7 +172,7 @@ final class RbacCycleInit extends Command
             $this->itemsChildrenTable => $this->createItemsChildrenTable(),
         };
 
-        $output->writeln('<bg=green>Table `' . $tableName . '` successfully created.</>');
+        $output->writeln("<bg=green>`$tableName` table has been successfully created.</>");
     }
 
     /**
@@ -178,13 +180,15 @@ final class RbacCycleInit extends Command
      */
     private function dropTable(string $tableName, OutputInterface $output): void
     {
-        $output->writeln('<fg=blue>Dropping `' . $tableName . '` table...</>');
+        $output->writeln("<fg=blue>Checking existence of `$tableName` table...</>");
 
         if ($this->dbal->database()->hasTable($tableName) === false) {
-            $output->writeln('<bg=yellow>Table `' . $tableName . '` doesn\'t exist, skipped dropping.</>');
+            $output->writeln("<bg=yellow>`$tableName` table doesn't exist. Skipped dropping.</>");
 
             return;
         }
+
+        $output->writeln("<fg=blue>`$tableName` table exists. Dropping...</>");
 
         /** @var Table $table */
         $table = $this->dbal->database()->table($tableName);
@@ -192,6 +196,6 @@ final class RbacCycleInit extends Command
         $schema->declareDropped();
         $schema->save();
 
-        $output->writeln('<bg=green>Table `' . $tableName . '` successfully dropped.</>');
+        $output->writeln("<bg=green>`$tableName` table has been successfully dropped.</>");
     }
 }
