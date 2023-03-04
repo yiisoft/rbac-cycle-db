@@ -259,16 +259,21 @@ class ItemsStorageTest extends TestCase
             ],
         ];
 
-        $this->getDbal()
-            ->database()
-            ->insert(self::ITEMS_TABLE)
-            ->values($items)
-            ->run();
-        $this->getDbal()
-            ->database()
-            ->insert(self::ITEMS_CHILDREN_TABLE)
-            ->values($itemsChildren)
-            ->run();
+        foreach ($items as $item) {
+            $this->getDbal()
+                ->database()
+                ->insert(self::ITEMS_TABLE)
+                ->values($item)
+                ->run();
+        }
+
+        foreach ($itemsChildren as $itemChild) {
+            $this->getDbal()
+                ->database()
+                ->insert(self::ITEMS_CHILDREN_TABLE)
+                ->values($itemChild)
+                ->run();
+        }
     }
 
     private function getStorage(): ItemsStorage

@@ -145,16 +145,21 @@ class AssignmentsStorageTest extends TestCase
             ],
         ];
 
-        $this->getDbal()
-            ->database()
-            ->insert(self::ITEMS_TABLE)
-            ->values($items)
-            ->run();
-        $this->getDbal()
-            ->database()
-            ->insert(self::ASSIGNMENTS_TABLE)
-            ->values($assignments)
-            ->run();
+        foreach ($items as $item) {
+            $this->getDbal()
+                ->database()
+                ->insert(self::ITEMS_TABLE)
+                ->values($item)
+                ->run();
+        }
+
+        foreach ($assignments as $assignment) {
+            $this->getDbal()
+                ->database()
+                ->insert(self::ASSIGNMENTS_TABLE)
+                ->values($assignment)
+                ->run();
+        }
     }
 
     private function getStorage(): AssignmentsStorage
