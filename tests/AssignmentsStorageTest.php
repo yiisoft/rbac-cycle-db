@@ -76,6 +76,7 @@ class AssignmentsStorageTest extends TestCase
 
         $this->assertFalse($storage->hasItem('Admin'));
         $this->assertEmpty($storage->get('Admin', 'admin'));
+        $this->assertNotEmpty($storage->getByUserId('admin'));
     }
 
     public function testClear(): void
@@ -135,7 +136,17 @@ class AssignmentsStorageTest extends TestCase
         ];
         $assignments = [
             [
+                'itemName' => 'Admin 0',
+                'userId' => 'admin',
+                'createdAt' => $time,
+            ],
+            [
                 'itemName' => 'Admin',
+                'userId' => 'admin',
+                'createdAt' => $time,
+            ],
+            [
+                'itemName' => 'Admin 1',
                 'userId' => 'admin',
                 'createdAt' => $time,
             ],
