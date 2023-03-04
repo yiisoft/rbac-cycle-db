@@ -105,33 +105,33 @@ class AssignmentsStorageTest extends TestCase
 
     protected function populateDb(): void
     {
+        $time = time();
         $items = [
             [
                 'name' => 'Admin',
                 'type' => Item::TYPE_ROLE,
-                'createdAt' => time(),
-                'updatedAt' => time(),
+                'createdAt' => $time,
+                'updatedAt' => $time,
             ],
             [
                 'name' => 'Tech Admin',
                 'type' => Item::TYPE_ROLE,
-                'createdAt' => time(),
-                'updatedAt' => time(),
+                'createdAt' => $time,
+                'updatedAt' => $time,
             ],
             [
                 'name' => 'Manager',
                 'type' => Item::TYPE_ROLE,
-                'createdAt' => time(),
-                'updatedAt' => time(),
+                'createdAt' => $time,
+                'updatedAt' => $time,
             ],
             [
                 'name' => 'Delete user',
                 'type' => Item::TYPE_PERMISSION,
-                'createdAt' => time(),
-                'updatedAt' => time(),
+                'createdAt' => $time,
+                'updatedAt' => $time,
             ],
         ];
-
         $assignments = [
             [
                 'itemName' => 'Admin',
@@ -145,25 +145,20 @@ class AssignmentsStorageTest extends TestCase
             ],
         ];
 
-        foreach ($items as $item) {
-            $this->getDbal()
-                ->database()
-                ->insert('auth_item')
-                ->values($item)
-                ->run();
-        }
-
-        foreach ($assignments as $item) {
-            $this->getDbal()
-                ->database()
-                ->insert('auth_assignment')
-                ->values($item)
-                ->run();
-        }
+        $this->getDbal()
+            ->database()
+            ->insert(self::ITEMS_TABLE)
+            ->values($items)
+            ->run();
+        $this->getDbal()
+            ->database()
+            ->insert(self::ASSIGNMENTS_TABLE)
+            ->values($assignments)
+            ->run();
     }
 
     private function getStorage(): AssignmentsStorage
     {
-        return new AssignmentsStorage('auth_assignment', $this->getDbal());
+        return new AssignmentsStorage(self::ASSIGNMENTS_TABLE, $this->getDbal());
     }
 }

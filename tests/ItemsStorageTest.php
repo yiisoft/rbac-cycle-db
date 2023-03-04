@@ -248,7 +248,7 @@ class ItemsStorageTest extends TestCase
                 'updatedAt' => $time,
             ],
         ];
-        $items_child = [
+        $itemsChildren = [
             [
                 'parent' => 'Parent 1',
                 'child' => 'Child 1',
@@ -259,25 +259,20 @@ class ItemsStorageTest extends TestCase
             ],
         ];
 
-        foreach ($items as $item) {
-            $this->getDbal()
-                ->database()
-                ->insert('auth_item')
-                ->values($item)
-                ->run();
-        }
-
-        foreach ($items_child as $item) {
-            $this->getDbal()
-                ->database()
-                ->insert('auth_item_child')
-                ->values($item)
-                ->run();
-        }
+        $this->getDbal()
+            ->database()
+            ->insert(self::ITEMS_TABLE)
+            ->values($items)
+            ->run();
+        $this->getDbal()
+            ->database()
+            ->insert(self::ITEMS_CHILDREN_TABLE)
+            ->values($itemsChildren)
+            ->run();
     }
 
     private function getStorage(): ItemsStorage
     {
-        return new ItemsStorage('auth_item', $this->getDbal());
+        return new ItemsStorage(self::ITEMS_TABLE, $this->getDbal());
     }
 }
