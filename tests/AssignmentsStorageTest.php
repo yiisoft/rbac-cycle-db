@@ -93,6 +93,7 @@ class AssignmentsStorageTest extends TestCase
 
         $this->assertSame('Manager', $assignment->getItemName());
         $this->assertSame('manager', $assignment->getUserId());
+        $this->assertIsInt($assignment->getCreatedAt());
     }
 
     public function testAdd(): void
@@ -136,12 +137,22 @@ class AssignmentsStorageTest extends TestCase
             [
                 'itemName' => 'Admin',
                 'userId' => 'admin',
-                'createdAt' => time(),
+                'createdAt' => $time,
+            ],
+            [
+                'itemName' => 'Manager 0',
+                'userId' => 'manager',
+                'createdAt' => $time,
             ],
             [
                 'itemName' => 'Manager',
                 'userId' => 'manager',
-                'createdAt' => time(),
+                'createdAt' => $time,
+            ],
+            [
+                'itemName' => 'Manager 2',
+                'userId' => 'manager',
+                'createdAt' => $time,
             ],
         ];
 

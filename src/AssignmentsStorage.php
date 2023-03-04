@@ -80,7 +80,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->run()
             ->fetch();
 
-        return empty($row) ? null : new Assignment($userId, $itemName, (int) $row['createdAt']);
+        return $row === false ? null : new Assignment($row['userId'], $row['itemName'], (int) $row['createdAt']);
     }
 
     public function add(string $itemName, string $userId): void
