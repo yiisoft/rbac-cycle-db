@@ -179,7 +179,7 @@ class ItemsStorageTest extends TestCase
     public function testRemoveChild(): void
     {
         $storage = $this->getStorage();
-        $storage->addChild('Parant 2', 'Child 1');
+        $storage->addChild('Parent 2', 'Child 1');
         $storage->removeChild('Parent 2', 'Child 1');
 
         $children = $storage->getChildren('Parent 2');
