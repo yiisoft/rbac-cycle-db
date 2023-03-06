@@ -19,6 +19,7 @@ The package provides [Cycle Database](https://github.com/cycle/database) storage
 ## Requirements
 
 - PHP 8.0 or higher.
+- `PDO` PHP extension.
 
 ## Installation
 
