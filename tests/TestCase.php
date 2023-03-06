@@ -52,13 +52,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         }
     }
 
-    protected function clear()
-    {
-        foreach (self::TABLES as $name) {
-            $this->getDbal()->database()->delete($name)->run();
-        }
-    }
-
     protected function createDbTables(): void
     {
         $app = $this->createApplication();

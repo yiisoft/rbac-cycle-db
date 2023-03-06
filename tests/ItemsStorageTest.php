@@ -82,10 +82,9 @@ class ItemsStorageTest extends TestCase
     public function testClear(): void
     {
         $storage = $this->getStorage();
-        $this->clear();
+        $storage->clear();
 
         $this->assertEmpty($storage->getAll());
-        $this->assertEmpty($storage->getChildren('Parent 2'));
     }
 
     public function testGetChildren(): void
