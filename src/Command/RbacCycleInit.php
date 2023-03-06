@@ -73,14 +73,11 @@ final class RbacCycleInit extends Command
             $this->dropTable($this->itemsChildrenTable, $output);
             $this->dropTable($this->assignmentsTable, $output);
             $this->dropTable($this->itemsTable, $output);
-            $checkExistence = false;
-        } else {
-            $checkExistence = true;
         }
 
-        $this->createTable($this->itemsTable, $output, checkExistence: $checkExistence);
-        $this->createTable($this->itemsChildrenTable, $output, checkExistence: $checkExistence);
-        $this->createTable($this->assignmentsTable, $output, checkExistence: $checkExistence);
+        $this->createTable($this->itemsTable, $output);
+        $this->createTable($this->itemsChildrenTable, $output);
+        $this->createTable($this->assignmentsTable, $output);
 
         $output->writeln('<fg=green>DONE</>');
 
@@ -150,21 +147,17 @@ final class RbacCycleInit extends Command
     /**
      * @psalm-param non-empty-string $tableName
      */
-    private function createTable(string $tableName, OutputInterface $output, bool $checkExistence = true): void
+    private function createTable(string $tableName, OutputInterface $output): void
     {
-        if (!$checkExistence) {
-            $output->writeln("<fg=blue>Creating `$tableName` table...</>");
-        } else {
-            $output->writeln("<fg=blue>Checking existence of `$tableName` table...</>");
+        $output->writeln("<fg=blue>Checking existence of `$tableName` table...</>");
 
-            if ($this->dbal->database()->hasTable($tableName) === true) {
-                $output->writeln("<bg=yellow>`$tableName` table already exists. Skipped creating.</>");
+        if ($this->dbal->database()->hasTable($tableName) === true) {
+            $output->writeln("<bg=yellow>`$tableName` table already exists. Skipped creating.</>");
 
-                return;
-            }
-
-            $output->writeln("<fg=blue>`$tableName` table doesn't exist. Creating...</>");
+            return;
         }
+
+        $output->writeln("<fg=blue>`$tableName` table doesn't exist. Creating...</>");
 
         match ($tableName) {
             $this->itemsTable => $this->createItemsTable(),
