@@ -26,6 +26,15 @@ class AssignmentsStorageTest extends TestCase
         $this->assertTrue($storage->hasItem('Senior accountant'));
     }
 
+    public function testRenameItemToSameName(): void
+    {
+        $storage = $this->getStorage();
+        $name = 'Accountant';
+        $storage->renameItem($name, $name);
+
+        $this->assertTrue($storage->hasItem($name));
+    }
+
     public function testGetAll(): void
     {
         $storage = $this->getStorage();
