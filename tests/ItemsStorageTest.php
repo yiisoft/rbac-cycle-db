@@ -154,6 +154,7 @@ class ItemsStorageTest extends TestCase
         $storage->removeChildren('Parent 2');
 
         $this->assertFalse($storage->hasChildren('Parent 2'));
+        $this->assertTrue($storage->hasChildren('Parent 1'));
     }
 
     public function testGetRole(): void
