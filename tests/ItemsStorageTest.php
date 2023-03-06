@@ -239,6 +239,7 @@ class ItemsStorageTest extends TestCase
                 'createdAt' => $time,
                 'updatedAt' => $time,
             ],
+            // Parent without children
             [
                 'name' => 'Parent 3',
                 'type' => Item::TYPE_PERMISSION,

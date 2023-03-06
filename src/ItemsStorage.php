@@ -261,7 +261,11 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     private function getItemByTypeAndName(string $type, string $name): Permission|Role|null
     {
-        /** @psalm-var RawItem|null $row */
+        /**
+         * @psalm-var RawItem|null $row
+         * @infection-ignore-all
+         * - ArrayItemRemoval, type.
+         */
         $row = $this->database
             ->select()
             ->from($this->tableName)
