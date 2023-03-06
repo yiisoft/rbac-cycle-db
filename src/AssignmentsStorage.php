@@ -102,6 +102,8 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         /**
          * @var array<0, 1>|false $result
          * @infection-ignore-all
+         * - ArrayItemRemoval, select.
+         * - IncrementInteger, limit.
          */
         $result = $this
             ->database

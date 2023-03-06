@@ -85,6 +85,8 @@ final class ItemsStorage implements ItemsStorageInterface
         /**
          * @var array<0, 1>|false $result
          * @infection-ignore-all
+         * - ArrayItemRemoval, select.
+         * - IncrementInteger, limit.
          */
         $result = $this
             ->database
@@ -201,6 +203,8 @@ final class ItemsStorage implements ItemsStorageInterface
         /**
          * @var array<0, 1>|false $result
          * @infection-ignore-all
+         * - ArrayItemRemoval, select.
+         * - IncrementInteger, limit.
          */
         $result = $this
             ->database
@@ -264,7 +268,7 @@ final class ItemsStorage implements ItemsStorageInterface
         /**
          * @psalm-var RawItem|null $row
          * @infection-ignore-all
-         * - ArrayItemRemoval, type.
+         * - ArrayItemRemoval, where, type.
          */
         $row = $this->database
             ->select()
