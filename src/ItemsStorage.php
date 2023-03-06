@@ -47,9 +47,6 @@ final class ItemsStorage implements ItemsStorageInterface
         $this->childrenTableName = $childrenTableName ?? $tableName . '_child';
     }
 
-    /**
-     * @inheritDoc
-     */
     public function clear(): void
     {
         if ($this->database->hasTable($this->tableName)) {
@@ -59,9 +56,6 @@ final class ItemsStorage implements ItemsStorageInterface
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getAll(): array
     {
         /** @psalm-var RawItem[] $rows */
@@ -73,9 +67,6 @@ final class ItemsStorage implements ItemsStorageInterface
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     public function get(string $name): ?Item
     {
         /** @psalm-var RawItem|null $row */
@@ -104,9 +95,6 @@ final class ItemsStorage implements ItemsStorageInterface
         return $result !== false;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function add(Item $item): void
     {
         $time = time();
@@ -122,9 +110,6 @@ final class ItemsStorage implements ItemsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function update(string $name, Item $item): void
     {
         $this->database
@@ -132,9 +117,6 @@ final class ItemsStorage implements ItemsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function remove(string $name): void
     {
         $this->database
@@ -142,49 +124,31 @@ final class ItemsStorage implements ItemsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getRoles(): array
     {
         return $this->getItemsByType(Item::TYPE_ROLE);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getRole(string $name): ?Role
     {
         return $this->getItemByTypeAndName(Item::TYPE_ROLE, $name);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function clearRoles(): void
     {
         $this->database->delete($this->tableName, ['type' => Item::TYPE_ROLE])->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getPermissions(): array
     {
         return $this->getItemsByType(Item::TYPE_PERMISSION);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getPermission(string $name): ?Permission
     {
         return $this->getItemByTypeAndName(Item::TYPE_PERMISSION, $name);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function clearPermissions(): void
     {
         $this->database
@@ -192,9 +156,6 @@ final class ItemsStorage implements ItemsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getParents(string $name): array
     {
         /** @psalm-var RawItem[] $parentRows */
@@ -213,9 +174,6 @@ final class ItemsStorage implements ItemsStorageInterface
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getChildren(string $name): array
     {
         /** @psalm-var RawItem[] $childrenRows */
@@ -235,9 +193,6 @@ final class ItemsStorage implements ItemsStorageInterface
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     public function hasChildren(string $name): bool
     {
         /** @var mixed $result */
@@ -253,9 +208,6 @@ final class ItemsStorage implements ItemsStorageInterface
         return $result !== false;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function addChild(string $parentName, string $childName): void
     {
         $this->database
@@ -264,9 +216,6 @@ final class ItemsStorage implements ItemsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function removeChild(string $parentName, string $childName): void
     {
         $this->database
@@ -274,9 +223,6 @@ final class ItemsStorage implements ItemsStorageInterface
             ->run();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function removeChildren(string $parentName): void
     {
         $this->database
@@ -285,6 +231,7 @@ final class ItemsStorage implements ItemsStorageInterface
     }
 
     /**
+     * @psalm-param Item::TYPE_* $type
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission[] : ($type is Item::TYPE_ROLE ? Role[] : Item[]))
      */
     private function getItemsByType(string $type): array
