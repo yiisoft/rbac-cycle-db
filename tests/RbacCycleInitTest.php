@@ -156,11 +156,14 @@ class RbacCycleInitTest extends TestCase
             "\033[43m`auth_assignment` table doesn't exist. Skipped dropping.\033[49m$newLine" .
             "\033[34mChecking existence of `auth_item` table...\033[39m$newLine" .
             "\033[43m`auth_item` table doesn't exist. Skipped dropping.\033[49m$newLine" .
-            "\033[34mCreating `auth_item` table...\033[39m$newLine" .
+            "\033[34mChecking existence of `auth_item` table...\033[39m$newLine" .
+            "\033[34m`auth_item` table doesn't exist. Creating...\033[39m$newLine" .
             "\033[42m`auth_item` table has been successfully created.\033[49m$newLine" .
-            "\033[34mCreating `auth_item_child` table...\033[39m$newLine" .
+            "\033[34mChecking existence of `auth_item_child` table...\033[39m$newLine" .
+            "\033[34m`auth_item_child` table doesn't exist. Creating...\033[39m$newLine" .
             "\033[42m`auth_item_child` table has been successfully created.\033[49m$newLine" .
-            "\033[34mCreating `auth_assignment` table...\033[39m$newLine" .
+            "\033[34mChecking existence of `auth_assignment` table...\033[39m$newLine" .
+            "\033[34m`auth_assignment` table doesn't exist. Creating...\033[39m$newLine" .
             "\033[42m`auth_assignment` table has been successfully created.\033[49m$newLine" .
             "\033[32mDONE\033[39m$newLine";
         $this->assertSame($expectedOutput, $output->fetch());
