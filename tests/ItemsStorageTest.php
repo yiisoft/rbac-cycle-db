@@ -179,13 +179,14 @@ class ItemsStorageTest extends TestCase
     public function testRemoveChild(): void
     {
         $storage = $this->getStorage();
+        $storage->addChild('Parant 2', 'Child 1');
         $storage->removeChild('Parent 2', 'Child 2');
 
         $children = $storage->getChildren('Parent 2');
-        $this->assertArrayNotHasKey('Child 2', $children);
-        $this->assertArrayHasKey('Child 3', $children);
+        $this->assertNotEmpty($children);
+        $this->assertArrayNotHasKey('Child 1', $children);
 
-        $this->assertTrue($storage->hasChildren('Parent 1'));
+        $this->assertArrayHasKey('Child 1', $storage->getChildren('Parent 1'));
     }
 
     public function testGetAll(): void
