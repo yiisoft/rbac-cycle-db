@@ -181,7 +181,11 @@ class ItemsStorageTest extends TestCase
         $storage = $this->getStorage();
         $storage->removeChild('Parent 2', 'Child 2');
 
-        $this->assertFalse($storage->hasChildren('Parent 2'));
+        $children = $storage->getChildren('Parent 2');
+        $this->assertArrayNotHasKey('Child 2', $children);
+        $this->assertArrayHasKey('Child 3', $children);
+
+        $this->assertTrue($storage->hasChildren('Parent 1'));
     }
 
     public function testGetAll(): void
@@ -251,6 +255,12 @@ class ItemsStorageTest extends TestCase
                 'createdAt' => $time,
                 'updatedAt' => $time,
             ],
+            [
+                'name' => 'Child 3',
+                'type' => Item::TYPE_ROLE,
+                'createdAt' => $time,
+                'updatedAt' => $time,
+            ],
         ];
         $itemsChildren = [
             [
@@ -260,6 +270,10 @@ class ItemsStorageTest extends TestCase
             [
                 'parent' => 'Parent 2',
                 'child' => 'Child 2',
+            ],
+            [
+                'parent' => 'Parent 2',
+                'child' => 'Child 3',
             ],
         ];
 
