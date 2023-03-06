@@ -180,7 +180,7 @@ class ItemsStorageTest extends TestCase
     {
         $storage = $this->getStorage();
         $storage->addChild('Parant 2', 'Child 1');
-        $storage->removeChild('Parent 2', 'Child 2');
+        $storage->removeChild('Parent 2', 'Child 1');
 
         $children = $storage->getChildren('Parent 2');
         $this->assertNotEmpty($children);
