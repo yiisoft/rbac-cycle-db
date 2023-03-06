@@ -122,6 +122,7 @@ class ItemsStorageTest extends TestCase
         $storage->remove('Parent 3');
 
         $this->assertEmpty($storage->get('Parent 3'));
+        $this->assertNotEmpty($storage->getAll());
     }
 
     public function getParentsProvider(): array

@@ -82,7 +82,10 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function exists(string $name): bool
     {
-        /** @var mixed $result */
+        /**
+         * @var array<0, 1>|false $result
+         * @infection-ignore-all
+         */
         $result = $this
             ->database
             ->select([new Fragment('1')])
