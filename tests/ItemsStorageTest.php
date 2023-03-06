@@ -204,7 +204,9 @@ class ItemsStorageTest extends TestCase
         $storage = $this->getStorage();
         $storage->clearPermissions();
 
-        $this->assertContainsOnlyInstancesOf(Role::class, $storage->getAll());
+        $all = $storage->getAll();
+        $this->assertNotEmpty($all);
+        $this->assertContainsOnlyInstancesOf(Role::class, $all);
     }
 
     public function testClearRoles(): void

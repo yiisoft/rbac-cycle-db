@@ -22,7 +22,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "ext-pdo": "*",
         "php": "^8.0",
         "cycle/database": "^2.1",
         "symfony/console": "^5.3|^6.0",
