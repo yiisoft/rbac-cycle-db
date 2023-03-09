@@ -167,7 +167,7 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         /** @psalm-var RawItem[] $parentRows */
         $parentRows = $this->database
-            ->select()
+            ->select($this->tableName . '.*')
             ->from([$this->tableName, $this->childrenTableName])
             ->where(['child' => $name, 'name' => new Expression('parent')])
             ->fetchAll();
@@ -176,7 +176,7 @@ final class ItemsStorage implements ItemsStorageInterface
             array_column($parentRows, 'name'),
             array_map(
                 fn(array $row): Item => $this->createItem(...$row),
-                $parentRows
+                $parentRows,
             ),
         );
     }
@@ -185,7 +185,7 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         /** @psalm-var RawItem[] $childrenRows */
         $childrenRows = $this->database
-            ->select()
+            ->select($this->tableName . '.*')
             ->from([$this->tableName, $this->childrenTableName])
             ->where(['parent' => $name, 'name' => new Expression('child')])
             ->fetchAll();
@@ -195,8 +195,8 @@ final class ItemsStorage implements ItemsStorageInterface
             $keys,
             array_map(
                 fn(array $row): Item => $this->createItem(...$row),
-                $childrenRows
-            )
+                $childrenRows,
+            ),
         );
     }
 
