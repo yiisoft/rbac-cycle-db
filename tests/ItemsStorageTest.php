@@ -298,6 +298,6 @@ class ItemsStorageTest extends TestCase
 
     private function getStorage(): ItemsStorage
     {
-        return new ItemsStorage(self::ITEMS_TABLE, $this->getDbal()->database());
+        return new ItemsStorage(self::ITEMS_TABLE, $this->getDbal());
     }
 }

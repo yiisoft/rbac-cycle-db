@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\DatabaseInterface;
+use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\Injection\Expression;
 use Cycle\Database\Injection\Fragment;
 use Cycle\Database\Table;
@@ -14,9 +15,6 @@ use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 
 /**
- * Storage for RBAC items (roles and permissions) and their relations in the form of database tables. Operations are
- * performed using Cycle ORM.
- *
  * @psalm-type RawItem = array{
  *     type: Item::TYPE_*,
  *     name: string,
@@ -28,24 +26,24 @@ use Yiisoft\Rbac\Role;
  */
 final class ItemsStorage implements ItemsStorageInterface
 {
+    private DatabaseInterface $database;
     /**
-     * @psalm-var non-empty-string A name of the table for storing relations between RBAC items.
+     * @psalm-var non-empty-string
      */
     private string $childrenTableName;
 
     /**
-     * @param string $tableName A name of the table for storing RBAC items.
-     * @psalm-param non-empty-string $tableName
-     * @param DatabaseInterface $database Cycle database instance.
-     * @param string|null $childrenTableName A name of the table for storing relations between RBAC items. When set to
-     * `null`, it will be automatically generated using {@see $tableName}.
-     * @psalm-param non-empty-string|null $childrenTableName
+     * @param non-empty-string|null $childrenTableName
      */
     public function __construct(
+        /**
+         * @psalm-var non-empty-string
+         */
         private string $tableName,
-        private DatabaseInterface $database,
-        ?string $childrenTableName = null,
+        DatabaseProviderInterface $dbal,
+        ?string $childrenTableName = null
     ) {
+        $this->database = $dbal->database();
         $this->childrenTableName = $childrenTableName ?? $tableName . '_child';
     }
 
@@ -64,7 +62,7 @@ final class ItemsStorage implements ItemsStorageInterface
         $rows = $this->database->select()->from($this->tableName)->fetchAll();
 
         return array_map(
-            fn(array $row): Item => $this->createItem(...$row),
+            fn(array $row): Item => $this->createItem($row),
             $rows
         );
     }
@@ -79,7 +77,7 @@ final class ItemsStorage implements ItemsStorageInterface
             ->run()
             ->fetch();
 
-        return empty($row) ? null : $this->createItem(...$row);
+        return empty($row) ? null : $this->createItem($row);
     }
 
     public function exists(string $name): bool
@@ -175,7 +173,7 @@ final class ItemsStorage implements ItemsStorageInterface
         return array_combine(
             array_column($parentRows, 'name'),
             array_map(
-                fn(array $row): Item => $this->createItem(...$row),
+                fn(array $row): Item => $this->createItem($row),
                 $parentRows
             ),
         );
@@ -194,7 +192,7 @@ final class ItemsStorage implements ItemsStorageInterface
         return array_combine(
             $keys,
             array_map(
-                fn(array $row): Item => $this->createItem(...$row),
+                fn(array $row): Item => $this->createItem($row),
                 $childrenRows
             )
         );
@@ -243,12 +241,8 @@ final class ItemsStorage implements ItemsStorageInterface
     }
 
     /**
-     * Gets either all existing roles or permissions, depending on specified type.
-     *
-     * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
      * @psalm-param Item::TYPE_* $type
-     * @return array A list of roles / permissions.
-     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission[] : Role[])
+     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission[] : ($type is Item::TYPE_ROLE ? Role[] : Item[]))
      */
     private function getItemsByType(string $type): array
     {
@@ -260,18 +254,13 @@ final class ItemsStorage implements ItemsStorageInterface
             ->fetchAll();
 
         return array_map(
-            fn(array $row): Item => $this->createItem(...$row),
-            $rows,
+            fn(array $row): Item => $this->createItem($row),
+            $rows
         );
     }
 
     /**
-     * Gets single item by its type and name.
-     *
-     * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
      * @psalm-param Item::TYPE_* $type
-     * @return Permission|Role|null Either role or permission, depending on initial type specified. `null` is returned
-     * when no item was found by given condition.
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)|null
      */
     private function getItemByTypeAndName(string $type, string $name): Permission|Role|null
@@ -288,44 +277,23 @@ final class ItemsStorage implements ItemsStorageInterface
             ->run()
             ->fetch();
 
-        return empty($row) ? null : $this->createItem(...$row);
+        return empty($row) ? null : $this->createItem($row);
     }
 
     /**
-     * A factory method for creating single item with all attributes filled.
-     *
-     * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
-     * @psalm-param Item::TYPE_* $type
-     * @param string $name Unique name.
-     * @param string|null $description Optional description.
-     * @param string|null $ruleName Optional associated rule name.
-     * @param int|string $createdAt UNIX timestamp for creation time.
-     * @param int|string $updatedAt UNIX timestamp for updating time.
-     * @return Permission|Role Either role or permission, depending on initial type specified.
-     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)
+     * @psalm-param RawItem $attributes
      */
-    private function createItem(
-        string $type,
-        string $name,
-        string|null $description = null,
-        string|null $ruleName = null,
-        int|string $createdAt,
-        int|string $updatedAt,
-    ): Permission|Role
+    private function createItem(array $attributes): Permission|Role
     {
-        return $this->createItemByTypeAndName($type, $name)
-            ->withDescription($description ?? '')
-            ->withRuleName($ruleName ?? null)
-            ->withCreatedAt((int) $createdAt)
-            ->withUpdatedAt((int) $updatedAt);
+        return $this->createItemByTypeAndName($attributes['type'], $attributes['name'])
+            ->withDescription($attributes['description'] ?? '')
+            ->withRuleName($attributes['ruleName'] ?? null)
+            ->withCreatedAt((int) $attributes['createdAt'])
+            ->withUpdatedAt((int) $attributes['updatedAt']);
     }
 
     /**
-     * A basic factory method for creating single item with name only.
-     *
-     * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
      * @psalm-param Item::TYPE_* $type
-     * @return Permission|Role Either role or permission, depending on initial type specified.
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)
      */
     private function createItemByTypeAndName(string $type, string $name): Permission|Role
