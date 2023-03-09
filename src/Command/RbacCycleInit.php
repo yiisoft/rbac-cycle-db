@@ -90,7 +90,7 @@ final class RbacCycleInit extends Command
         $table = $this->dbal->database()->table($this->itemsTable);
         $schema = $table->getSchema();
 
-        $schema->string('name', 128);
+        $schema->string('name', 128)->nullable(false);
         $schema->enum('type', [Item::TYPE_ROLE, Item::TYPE_PERMISSION])->nullable(false);
         $schema->string('description', 191);
         $schema->string('ruleName', 64);

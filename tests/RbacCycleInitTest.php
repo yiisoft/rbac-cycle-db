@@ -188,7 +188,7 @@ class RbacCycleInitTest extends TestCase
         $name = $columns['name'];
         $this->assertSame('string', $name->getType());
         $this->assertSame(128, $name->getSize());
-        $this->assertTrue($name->isNullable());
+        $this->assertFalse($name->isNullable());
 
         $this->assertArrayHasKey('type', $columns);
         $type = $columns['type'];
