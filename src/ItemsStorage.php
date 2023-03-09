@@ -297,20 +297,20 @@ final class ItemsStorage implements ItemsStorageInterface
      * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
      * @psalm-param Item::TYPE_* $type
      * @param string $name Unique name.
-     * @param string|null $description Optional description.
-     * @param string|null $ruleName Optional associated rule name.
      * @param int|string $createdAt UNIX timestamp for creation time.
      * @param int|string $updatedAt UNIX timestamp for updating time.
+     * @param string|null $description Optional description.
+     * @param string|null $ruleName Optional associated rule name.
      * @return Permission|Role Either role or permission, depending on initial type specified.
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)
      */
     private function createItem(
         string $type,
         string $name,
-        string|null $description = null,
-        string|null $ruleName = null,
         int|string $createdAt,
         int|string $updatedAt,
+        string|null $description = null,
+        string|null $ruleName = null,
     ): Permission|Role
     {
         return $this->createItemByTypeAndName($type, $name)
