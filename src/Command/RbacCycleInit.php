@@ -50,7 +50,7 @@ final class RbacCycleInit extends Command
         $this->assignmentsTable = $assignmentsTable;
 
         if ($itemsChildrenTable === '') {
-            throw new InvalidArgumentException('Items children table can\'t be empty.');
+            throw new InvalidArgumentException('Items children table name can\'t be empty.');
         }
 
         $this->itemsChildrenTable = $itemsChildrenTable ?? $this->itemsTable . '_child';
@@ -63,40 +63,25 @@ final class RbacCycleInit extends Command
         $this
             ->setDescription('Create RBAC schemas')
             ->setHelp('This command creates schemas for RBAC using Cycle DBAL')
-            ->addOption('force', 'f', InputOption::VALUE_OPTIONAL, 'Force re-create schemas if exists', false);
+            ->addOption('force', 'f', InputOption::VALUE_OPTIONAL, 'Force recreation of schemas if they exist', false);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $reCreate = $input->getOption('force') !== false;
-        if ($reCreate && $this->dbal->database()->hasTable($this->itemsChildrenTable) === true) {
-            $this->dropTable($this->itemsChildrenTable);
-        }
-        if ($reCreate && $this->dbal->database()->hasTable($this->assignmentsTable) === true) {
-            $this->dropTable($this->assignmentsTable);
-        }
-        if ($reCreate && $this->dbal->database()->hasTable($this->itemsTable) === true) {
-            $this->dropTable($this->itemsTable);
-        }
-        if ($this->dbal->database()->hasTable($this->itemsTable) === false) {
-            $output->writeln('<fg=blue>Creating `' . $this->itemsTable . '` table...</>');
-            $this->createItemsTable();
-            $output->writeln('<bg=green>Table `' . $this->itemsTable . '` created successfully</>');
+        $force = $input->getOption('force') === true;
+        if ($force === true) {
+            $this->dropTable($this->itemsChildrenTable, $output);
+            $this->dropTable($this->assignmentsTable, $output);
+            $this->dropTable($this->itemsTable, $output);
         }
 
-        if ($this->dbal->database()->hasTable($this->itemsChildrenTable) === false) {
-            $output->writeln('<fg=blue>Creating `' . $this->itemsChildrenTable . '` table...</>');
-            $this->createItemsChildrenTable($this->itemsChildrenTable);
-            $output->writeln('<bg=green>Table `' . $this->itemsChildrenTable . '` created successfully</>');
-        }
+        $this->createTable($this->itemsTable, $output);
+        $this->createTable($this->itemsChildrenTable, $output);
+        $this->createTable($this->assignmentsTable, $output);
 
-        if ($this->dbal->database()->hasTable($this->assignmentsTable) === false) {
-            $output->writeln('<fg=blue>Creating `' . $this->assignmentsTable . '` table...</>');
-            $this->createAssignmentsTable();
-            $output->writeln('<bg=green>Table `' . $this->assignmentsTable . '` created successfully</>');
-        }
         $output->writeln('<fg=green>DONE</>');
-        return 0;
+
+        return Command::SUCCESS;
     }
 
     private function createItemsTable(): void
@@ -105,25 +90,22 @@ final class RbacCycleInit extends Command
         $table = $this->dbal->database()->table($this->itemsTable);
         $schema = $table->getSchema();
 
-        $schema->string('name', 128);
+        $schema->string('name', 128)->nullable(false);
         $schema->enum('type', [Item::TYPE_ROLE, Item::TYPE_PERMISSION])->nullable(false);
-        $schema->string('description', 191)->nullable();
-        $schema->string('ruleName', 64)->nullable();
-        $schema->integer('createdAt')->nullable(false);
-        $schema->integer('updatedAt')->nullable(false);
+        $schema->string('description', 191);
+        $schema->string('ruleName', 64);
+        $schema->timestamp('createdAt')->nullable(false);
+        $schema->timestamp('updatedAt')->nullable(false);
         $schema->index(['type']);
         $schema->setPrimaryKeys(['name']);
 
         $schema->save();
     }
 
-    /**
-     * @psalm-param non-empty-string $itemsChildrenTable
-     */
-    private function createItemsChildrenTable(string $itemsChildrenTable): void
+    private function createItemsChildrenTable(): void
     {
         /** @var Table $table */
-        $table = $this->dbal->database()->table($itemsChildrenTable);
+        $table = $this->dbal->database()->table($this->itemsChildrenTable);
         $schema = $table->getSchema();
 
         $schema->string('parent', 128)->nullable(false);
@@ -152,7 +134,7 @@ final class RbacCycleInit extends Command
         $schema->string('itemName', 128)->nullable(false);
         $schema->string('userId', 128)->nullable(false);
         $schema->setPrimaryKeys(['itemName', 'userId']);
-        $schema->integer('createdAt')->nullable(false);
+        $schema->timestamp('createdAt')->nullable(false);
 
         $schema->foreignKey(['itemName'])
             ->references($this->itemsTable, ['name'])
@@ -165,12 +147,48 @@ final class RbacCycleInit extends Command
     /**
      * @psalm-param non-empty-string $tableName
      */
-    private function dropTable(string $tableName): void
+    private function createTable(string $tableName, OutputInterface $output): void
     {
+        $output->writeln("<fg=blue>Checking existence of `$tableName` table...</>");
+
+        if ($this->dbal->database()->hasTable($tableName) === true) {
+            $output->writeln("<bg=yellow>`$tableName` table already exists. Skipped creating.</>");
+
+            return;
+        }
+
+        $output->writeln("<fg=blue>`$tableName` table doesn't exist. Creating...</>");
+
+        match ($tableName) {
+            $this->itemsTable => $this->createItemsTable(),
+            $this->assignmentsTable => $this->createAssignmentsTable(),
+            $this->itemsChildrenTable => $this->createItemsChildrenTable(),
+        };
+
+        $output->writeln("<bg=green>`$tableName` table has been successfully created.</>");
+    }
+
+    /**
+     * @psalm-param non-empty-string $tableName
+     */
+    private function dropTable(string $tableName, OutputInterface $output): void
+    {
+        $output->writeln("<fg=blue>Checking existence of `$tableName` table...</>");
+
+        if ($this->dbal->database()->hasTable($tableName) === false) {
+            $output->writeln("<bg=yellow>`$tableName` table doesn't exist. Skipped dropping.</>");
+
+            return;
+        }
+
+        $output->writeln("<fg=blue>`$tableName` table exists. Dropping...</>");
+
         /** @var Table $table */
         $table = $this->dbal->database()->table($tableName);
         $schema = $table->getSchema();
         $schema->declareDropped();
         $schema->save();
+
+        $output->writeln("<bg=green>`$tableName` table has been successfully dropped.</>");
     }
 }

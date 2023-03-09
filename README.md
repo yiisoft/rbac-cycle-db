@@ -16,7 +16,25 @@ The package provides [Cycle Database](https://github.com/cycle/database) storage
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Frbac-cycle-db%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/rbac-cycle-db/master)
 [![static analysis](https://github.com/yiisoft/rbac-cycle-db/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3A%22static+analysis%22)
 
+## Requirements
+
+- PHP 8.0 or higher.
+
+## Installation
+
+The package could be installed with composer:
+
+```shell
+composer require yiisoft/rbac-cycle-db
+```
+
 ## General usage
+
+```shell
+rbac/cycle/init
+```
+
+## Testing
 
 ### Unit testing
 

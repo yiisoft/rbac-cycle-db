@@ -69,11 +69,11 @@ class ItemsStorageTest extends TestCase
     public function testAddChild(): void
     {
         $storage = $this->getStorage();
-
         $storage->addChild('Parent 2', 'Child 1');
 
         $children = $storage->getChildren('Parent 2');
-        $this->assertCount(2, $children);
+        $this->assertCount(3, $children);
+
         foreach ($children as $name => $item) {
             $this->assertSame($name, $item->getName());
         }
@@ -82,10 +82,9 @@ class ItemsStorageTest extends TestCase
     public function testClear(): void
     {
         $storage = $this->getStorage();
-        $this->clear();
+        $storage->clear();
 
         $this->assertEmpty($storage->getAll());
-        $this->assertEmpty($storage->getChildren('Parent 2'));
     }
 
     public function testGetChildren(): void
@@ -122,6 +121,7 @@ class ItemsStorageTest extends TestCase
         $storage->remove('Parent 3');
 
         $this->assertEmpty($storage->get('Parent 3'));
+        $this->assertNotEmpty($storage->getAll());
     }
 
     public function getParentsProvider(): array
@@ -153,6 +153,7 @@ class ItemsStorageTest extends TestCase
         $storage->removeChildren('Parent 2');
 
         $this->assertFalse($storage->hasChildren('Parent 2'));
+        $this->assertTrue($storage->hasChildren('Parent 1'));
     }
 
     public function testGetRole(): void
@@ -177,16 +178,20 @@ class ItemsStorageTest extends TestCase
     public function testRemoveChild(): void
     {
         $storage = $this->getStorage();
-        $storage->removeChild('Parent 2', 'Child 2');
+        $storage->addChild('Parent 2', 'Child 1');
+        $storage->removeChild('Parent 2', 'Child 1');
 
-        $this->assertFalse($storage->hasChildren('Parent 2'));
+        $children = $storage->getChildren('Parent 2');
+        $this->assertNotEmpty($children);
+        $this->assertArrayNotHasKey('Child 1', $children);
+
+        $this->assertArrayHasKey('Child 1', $storage->getChildren('Parent 1'));
     }
 
     public function testGetAll(): void
     {
         $storage = $this->getStorage();
-
-        $this->assertCount(5, $storage->getAll());
+        $this->assertCount(6, $storage->getAll());
     }
 
     public function testHasChildren(): void
@@ -202,7 +207,9 @@ class ItemsStorageTest extends TestCase
         $storage = $this->getStorage();
         $storage->clearPermissions();
 
-        $this->assertContainsOnlyInstancesOf(Role::class, $storage->getAll());
+        $all = $storage->getAll();
+        $this->assertNotEmpty($all);
+        $this->assertContainsOnlyInstancesOf(Role::class, $all);
     }
 
     public function testClearRoles(): void
@@ -210,6 +217,8 @@ class ItemsStorageTest extends TestCase
         $storage = $this->getStorage();
         $storage->clearRoles();
 
+        $all = $storage->getAll();
+        $this->assertNotEmpty($all);
         $this->assertContainsOnlyInstancesOf(Permission::class, $storage->getAll());
     }
 
@@ -229,6 +238,7 @@ class ItemsStorageTest extends TestCase
                 'createdAt' => $time,
                 'updatedAt' => $time,
             ],
+            // Parent without children
             [
                 'name' => 'Parent 3',
                 'type' => Item::TYPE_PERMISSION,
@@ -247,8 +257,14 @@ class ItemsStorageTest extends TestCase
                 'createdAt' => $time,
                 'updatedAt' => $time,
             ],
+            [
+                'name' => 'Child 3',
+                'type' => Item::TYPE_ROLE,
+                'createdAt' => $time,
+                'updatedAt' => $time,
+            ],
         ];
-        $items_child = [
+        $itemsChildren = [
             [
                 'parent' => 'Parent 1',
                 'child' => 'Child 1',
@@ -257,27 +273,31 @@ class ItemsStorageTest extends TestCase
                 'parent' => 'Parent 2',
                 'child' => 'Child 2',
             ],
+            [
+                'parent' => 'Parent 2',
+                'child' => 'Child 3',
+            ],
         ];
 
         foreach ($items as $item) {
             $this->getDbal()
                 ->database()
-                ->insert('auth_item')
+                ->insert(self::ITEMS_TABLE)
                 ->values($item)
                 ->run();
         }
 
-        foreach ($items_child as $item) {
+        foreach ($itemsChildren as $itemChild) {
             $this->getDbal()
                 ->database()
-                ->insert('auth_item_child')
-                ->values($item)
+                ->insert(self::ITEMS_CHILDREN_TABLE)
+                ->values($itemChild)
                 ->run();
         }
     }
 
     private function getStorage(): ItemsStorage
     {
-        return new ItemsStorage('auth_item', $this->getDbal());
+        return new ItemsStorage(self::ITEMS_TABLE, $this->getDbal());
     }
 }

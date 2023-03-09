@@ -22,10 +22,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     private ?DatabaseManager $databaseManager = null;
 
-    private const ITEMS_CHILDREN_TABLE = 'auth_item_child';
-    private const ASSIGNMENTS_TABLE = 'auth_assignment';
-    private const ITEMS_TABLE = 'auth_item';
-    private const TABLES = [self::ITEMS_CHILDREN_TABLE, self::ASSIGNMENTS_TABLE, self::ITEMS_TABLE];
+    protected const ITEMS_TABLE = 'auth_item';
+    protected const ASSIGNMENTS_TABLE = 'auth_assignment';
+    protected const ITEMS_CHILDREN_TABLE = 'auth_item_child';
+    private const TABLES = [self::ITEMS_TABLE, self::ASSIGNMENTS_TABLE, self::ITEMS_CHILDREN_TABLE];
 
     protected function getDbal(): DatabaseManager
     {
@@ -37,7 +37,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->createDbTables();
         $this->populateDb();
     }
@@ -53,25 +52,24 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         }
     }
 
-    protected function clear()
-    {
-        foreach (self::TABLES as $name) {
-            $this->getDbal()->database()->delete($name)->run();
-        }
-    }
-
     protected function createDbTables(): void
     {
-        $app = new Application();
-        $app->add(
-            new RbacCycleInit(
-                itemsTable: self::ITEMS_TABLE,
-                assignmentsTable: self::ASSIGNMENTS_TABLE,
-                dbal: $this->getDbal(),
-                itemsChildrenTable: self::ITEMS_CHILDREN_TABLE,
-            ),
-        );
+        $app = $this->createApplication();
         $app->find('rbac/cycle/init')->run(new ArrayInput([]), new NullOutput());
+    }
+
+    protected function createApplication(string|null $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE): Application
+    {
+        $app = new Application();
+        $command = new RbacCycleInit(
+            itemsTable: self::ITEMS_TABLE,
+            assignmentsTable: self::ASSIGNMENTS_TABLE,
+            dbal: $this->getDbal(),
+            itemsChildrenTable: $itemsChildrenTable,
+        );
+        $app->add($command);
+
+        return $app;
     }
 
     private function createConnection(): void
