@@ -36,6 +36,7 @@ final class ItemsStorage implements ItemsStorageInterface
     /**
      * @param string $tableName A name of the table for storing RBAC items.
      * @psalm-param non-empty-string $tableName
+     *
      * @param DatabaseInterface $database Cycle database instance.
      * @param string|null $childrenTableName A name of the table for storing relations between RBAC items. When set to
      * `null`, it will be automatically generated using {@see $tableName}.
@@ -247,6 +248,7 @@ final class ItemsStorage implements ItemsStorageInterface
      *
      * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
      * @psalm-param Item::TYPE_* $type
+     *
      * @return array A list of roles / permissions.
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission[] : Role[])
      */
@@ -270,6 +272,7 @@ final class ItemsStorage implements ItemsStorageInterface
      *
      * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
      * @psalm-param Item::TYPE_* $type
+     *
      * @return Permission|Role|null Either role or permission, depending on initial type specified. `null` is returned
      * when no item was found by given condition.
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)|null
@@ -296,11 +299,13 @@ final class ItemsStorage implements ItemsStorageInterface
      *
      * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
      * @psalm-param Item::TYPE_* $type
+     *
      * @param string $name Unique name.
      * @param int|string $createdAt UNIX timestamp for creation time.
      * @param int|string $updatedAt UNIX timestamp for updating time.
      * @param string|null $description Optional description.
      * @param string|null $ruleName Optional associated rule name.
+     *
      * @return Permission|Role Either role or permission, depending on initial type specified.
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)
      */
@@ -311,8 +316,7 @@ final class ItemsStorage implements ItemsStorageInterface
         int|string $updatedAt,
         string|null $description = null,
         string|null $ruleName = null,
-    ): Permission|Role
-    {
+    ): Permission|Role {
         return $this->createItemByTypeAndName($type, $name)
             ->withDescription($description ?? '')
             ->withRuleName($ruleName ?? null)
@@ -325,6 +329,7 @@ final class ItemsStorage implements ItemsStorageInterface
      *
      * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
      * @psalm-param Item::TYPE_* $type
+     *
      * @return Permission|Role Either role or permission, depending on initial type specified.
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)
      */
