@@ -64,7 +64,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $command = new RbacCycleInit(
             itemsTable: self::ITEMS_TABLE,
             assignmentsTable: self::ASSIGNMENTS_TABLE,
-            dbal: $this->getDbal(),
+            database: $this->getDbal()->database(),
             itemsChildrenTable: $itemsChildrenTable,
         );
         $app->add($command);

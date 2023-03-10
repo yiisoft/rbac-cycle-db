@@ -48,7 +48,7 @@ class RbacCycleInitTest extends TestCase
      */
     public function testInitWithEmptyTableNames(array $tableNameArguments, $expectedWrongTableName): void
     {
-        $arguments = ['dbal' => $this->getDbal()];
+        $arguments = ['database' => $this->getDbal()->database()];
         $arguments = array_merge($tableNameArguments, $arguments);
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("$expectedWrongTableName table name can't be empty.");
