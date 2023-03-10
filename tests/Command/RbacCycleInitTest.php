@@ -284,6 +284,8 @@ class RbacCycleInitTest extends TestCase
         $this->assertSame(128, $child->getSize());
         $this->assertFalse($child->isNullable());
 
+        $this->assertSame(['parent', 'child'], $table->getPrimaryKeys());
+
         $this->assertCount(2, $table->getForeignKeys());
         foreach ($table->getForeignKeys() as $foreignKey) {
             $columns = $foreignKey->getColumns();
