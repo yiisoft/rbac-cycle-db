@@ -34,6 +34,15 @@ composer require yiisoft/rbac-cycle-db
 rbac/cycle/init
 ```
 
+By default, when called repeatedly, the creation of tables will be skipped if they are already exist. The `--force` flag 
+can be added to force dropping of existing tables and recreate them:
+
+```shell
+rbac/cycle/init --force
+```
+
+> **Note:** All existing data will be erased as well.
+
 ## Testing
 
 ### Unit testing

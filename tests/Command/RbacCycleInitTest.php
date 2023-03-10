@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Rbac\Cycle\Tests;
+namespace Yiisoft\Rbac\Cycle\Tests\Command;
 
 use Cycle\Database\ForeignKeyInterface;
 use Cycle\Database\Schema\AbstractForeignKey;
@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use Yiisoft\Rbac\Cycle\Command\RbacCycleInit;
+use Yiisoft\Rbac\Cycle\Tests\TestCase;
 use Yiisoft\Rbac\Item;
 
 class RbacCycleInitTest extends TestCase
@@ -47,7 +48,7 @@ class RbacCycleInitTest extends TestCase
      */
     public function testInitWithEmptyTableNames(array $tableNameArguments, $expectedWrongTableName): void
     {
-        $arguments = ['dbal' => $this->getDbal()];
+        $arguments = ['database' => $this->getDbal()->database()];
         $arguments = array_merge($tableNameArguments, $arguments);
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("$expectedWrongTableName table name can't be empty.");
@@ -282,6 +283,8 @@ class RbacCycleInitTest extends TestCase
         $this->assertSame('string', $child->getType());
         $this->assertSame(128, $child->getSize());
         $this->assertFalse($child->isNullable());
+
+        $this->assertSame(['parent', 'child'], $table->getPrimaryKeys());
 
         $this->assertCount(2, $table->getForeignKeys());
         foreach ($table->getForeignKeys() as $foreignKey) {

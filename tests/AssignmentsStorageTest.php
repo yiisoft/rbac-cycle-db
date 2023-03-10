@@ -214,6 +214,6 @@ class AssignmentsStorageTest extends TestCase
 
     private function getStorage(): AssignmentsStorage
     {
-        return new AssignmentsStorage(self::ASSIGNMENTS_TABLE, $this->getDbal());
+        return new AssignmentsStorage(self::ASSIGNMENTS_TABLE, $this->getDbal()->database());
     }
 }

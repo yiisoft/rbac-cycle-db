@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\DatabaseInterface;
-use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Database\Injection\Fragment;
 use Cycle\Database\Table;
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 
 /**
+ * Storage for RBAC assignments in the form of database table. Operations are performed using Cycle ORM.
+ *
  * @psalm-type RawAssignment = array{
  *     itemName: string,
  *     userId: string,
@@ -20,16 +21,16 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
  */
 final class AssignmentsStorage implements AssignmentsStorageInterface
 {
-    private DatabaseInterface $database;
-
     /**
+     * @param string $tableName A name of the table for storing RBAC assignments.
      * @psalm-param non-empty-string $tableName
+     *
+     * @param DatabaseInterface $database Cycle database instance.
      */
     public function __construct(
         private string $tableName,
-        DatabaseProviderInterface $dbal,
+        private DatabaseInterface $database,
     ) {
-        $this->database = $dbal->database();
     }
 
     public function getAll(): array
@@ -45,7 +46,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             $assignments[$row['userId']][$row['itemName']] = new Assignment(
                 $row['userId'],
                 $row['itemName'],
-                (int) $row['createdAt']
+                (int) $row['createdAt'],
             );
         }
 
