@@ -24,6 +24,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     /**
      * @param string $tableName A name of the table for storing RBAC assignments.
      * @psalm-param non-empty-string $tableName
+     *
      * @param DatabaseInterface $database Cycle database instance.
      */
     public function __construct(
