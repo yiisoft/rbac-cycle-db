@@ -101,6 +101,7 @@ final class RbacCycleInit extends Command
 
     /**
      * Creates table for storing RBAC items (roles and permissions).
+     *
      * @see $itemsTable
      */
     private function createItemsTable(): void
@@ -123,6 +124,7 @@ final class RbacCycleInit extends Command
 
     /**
      * Creates table for storing relations between RBAC items.
+     *
      * @see $itemsChildrenTable
      */
     private function createItemsChildrenTable(): void
@@ -150,6 +152,7 @@ final class RbacCycleInit extends Command
 
     /**
      * Creates table for storing RBAC assignments.
+     *
      * @see $assignmentsTable
      */
     private function createAssignmentsTable(): void
@@ -174,8 +177,10 @@ final class RbacCycleInit extends Command
     /**
      * Basic method for creating RBAC related table. When a table already exists, creation is skipped. Operations are
      * accompanied by explanations printed to console.
+     *
      * @param string $tableName A name of created table.
      * @psalm-param non-empty-string $tableName
+     *
      * @param OutputInterface $output Output for writing messages.
      */
     private function createTable(string $tableName, OutputInterface $output): void
@@ -202,8 +207,10 @@ final class RbacCycleInit extends Command
     /**
      * Basic method for dropping RBAC related table. When a table already exists, dropping is skipped. Operations are
      * accompanied by explanations printed to console.
+     *
      * @param string $tableName A name of created table.
      * @psalm-param non-empty-string $tableName
+     *
      * @param OutputInterface $output Output for writing messages.
      */
     private function dropTable(string $tableName, OutputInterface $output): void
