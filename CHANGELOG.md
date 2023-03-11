@@ -2,7 +2,7 @@
 
 ## 1.0.1 under development
 
-- no changes in this release.
+- Fix #42: Use integer type instead of timestamp (@arogachev)
 
 ## 1.0.0 March 10, 2023
 
