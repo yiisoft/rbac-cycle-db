@@ -114,8 +114,8 @@ final class RbacCycleInit extends Command
         $schema->enum('type', [Item::TYPE_ROLE, Item::TYPE_PERMISSION])->nullable(false);
         $schema->string('description', 191);
         $schema->string('ruleName', 64);
-        $schema->timestamp('createdAt')->nullable(false);
-        $schema->timestamp('updatedAt')->nullable(false);
+        $schema->integer('createdAt')->nullable(false);
+        $schema->integer('updatedAt')->nullable(false);
         $schema->index(['type']);
         $schema->setPrimaryKeys(['name']);
 
@@ -164,7 +164,7 @@ final class RbacCycleInit extends Command
         $schema->string('itemName', 128)->nullable(false);
         $schema->string('userId', 128)->nullable(false);
         $schema->setPrimaryKeys(['itemName', 'userId']);
-        $schema->timestamp('createdAt')->nullable(false);
+        $schema->integer('createdAt')->nullable(false);
 
         $schema->foreignKey(['itemName'])
             ->references($this->itemsTable, ['name'])

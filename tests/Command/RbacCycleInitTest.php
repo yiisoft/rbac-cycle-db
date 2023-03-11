@@ -211,12 +211,12 @@ class RbacCycleInitTest extends TestCase
 
         $this->assertArrayHasKey('createdAt', $columns);
         $createdAt = $columns['createdAt'];
-        $this->assertSame('string', $createdAt->getType());
+        $this->assertSame('int', $createdAt->getType());
         $this->assertFalse($createdAt->isNullable());
 
         $this->assertArrayHasKey('updatedAt', $columns);
         $updatedAt = $columns['updatedAt'];
-        $this->assertSame('string', $updatedAt->getType());
+        $this->assertSame('int', $updatedAt->getType());
         $this->assertFalse($updatedAt->isNullable());
 
         $this->assertCount(1, $table->getIndexes());
@@ -249,7 +249,7 @@ class RbacCycleInitTest extends TestCase
 
         $this->assertArrayHasKey('createdAt', $columns);
         $createdAt = $columns['createdAt'];
-        $this->assertSame('string', $createdAt->getType());
+        $this->assertSame('int', $createdAt->getType());
         $this->assertFalse($createdAt->isNullable());
 
         $this->assertSame(['itemName', 'userId'], $table->getPrimaryKeys());
