@@ -83,7 +83,7 @@ final class RbacCycleInit extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $force = filter_var($input->getOption('force') ?? true, FILTER_VALIDATE_BOOLEAN);
+        $force = $input->getOption('force') ?? true;
         if ($force) {
             $this->dropTable($this->itemsChildrenTable, $output);
             $this->dropTable($this->assignmentsTable, $output);
