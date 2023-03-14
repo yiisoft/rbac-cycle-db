@@ -10,7 +10,6 @@ use Cycle\Database\Table;
 use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Yiisoft\Rbac\Item;
 
@@ -23,16 +22,19 @@ final class RbacCycleInit extends Command
 
     /**
      * @var string A name of the table for storing RBAC items (roles and permissions).
+     *
      * @psalm-var non-empty-string
      */
     private string $itemsTable;
     /**
      * @var string A name of the table for storing RBAC assignments.
+     *
      * @psalm-var non-empty-string
      */
     private string $assignmentsTable;
     /**
      * @var string A name of the table for storing relations between RBAC items.
+     *
      * @psalm-var non-empty-string
      */
     private string $itemsChildrenTable;
@@ -179,6 +181,7 @@ final class RbacCycleInit extends Command
      * accompanied by explanations printed to console.
      *
      * @param string $tableName A name of created table.
+     *
      * @psalm-param non-empty-string $tableName
      *
      * @param OutputInterface $output Output for writing messages.
@@ -209,6 +212,7 @@ final class RbacCycleInit extends Command
      * accompanied by explanations printed to console.
      *
      * @param string $tableName A name of created table.
+     *
      * @psalm-param non-empty-string $tableName
      *
      * @param OutputInterface $output Output for writing messages.
