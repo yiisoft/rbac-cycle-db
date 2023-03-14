@@ -2,7 +2,7 @@
 
 ## 1.0.1 under development
 
-- Bug #46: Fix not working `--force` flag for `RbacCycleInit` console command (@arogachev).
+- Bug #46: Fix not working `--force` flag for `RbacCycleInit` console command (@arogachev)
 - Fix #42: Use integer type instead of timestamp (@arogachev)
 
 ## 1.0.0 March 10, 2023
