@@ -78,12 +78,12 @@ final class RbacCycleInit extends Command
         $this
             ->setDescription('Create RBAC schemas')
             ->setHelp('This command creates schemas for RBAC using Cycle DBAL')
-            ->addOption('force', 'f', InputOption::VALUE_OPTIONAL, 'Force recreation of schemas if they exist', false);
+            ->addOption(name: 'force', shortcut: 'f', description: 'Force recreation of schemas if they exist');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $force = $input->getOption('force') === true;
+        $force = $input->getOption('force');
         if ($force === true) {
             $this->dropTable($this->itemsChildrenTable, $output);
             $this->dropTable($this->assignmentsTable, $output);
