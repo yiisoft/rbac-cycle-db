@@ -23,7 +23,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 {
     /**
      * @param string $tableName A name of the table for storing RBAC assignments.
-     *
      * @psalm-param non-empty-string $tableName
      *
      * @param DatabaseInterface $database Cycle database instance.
@@ -103,7 +102,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     {
         /**
          * @var array<0, 1>|false $result
-         *
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
          * - IncrementInteger, limit.

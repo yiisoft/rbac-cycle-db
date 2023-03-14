@@ -35,13 +35,11 @@ final class ItemsStorage implements ItemsStorageInterface
 
     /**
      * @param string $tableName A name of the table for storing RBAC items.
-     *
      * @psalm-param non-empty-string $tableName
      *
      * @param DatabaseInterface $database Cycle database instance.
      * @param string|null $childrenTableName A name of the table for storing relations between RBAC items. When set to
      * `null`, it will be automatically generated using {@see $tableName}.
-     *
      * @psalm-param non-empty-string|null $childrenTableName
      */
     public function __construct(
@@ -89,7 +87,6 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         /**
          * @var array<0, 1>|false $result
-         *
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
          * - IncrementInteger, limit.
@@ -208,7 +205,6 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         /**
          * @var array<0, 1>|false $result
-         *
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
          * - IncrementInteger, limit.
@@ -251,11 +247,9 @@ final class ItemsStorage implements ItemsStorageInterface
      * Gets either all existing roles or permissions, depending on specified type.
      *
      * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
-     *
      * @psalm-param Item::TYPE_* $type
      *
      * @return array A list of roles / permissions.
-     *
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission[] : Role[])
      */
     private function getItemsByType(string $type): array
@@ -277,19 +271,16 @@ final class ItemsStorage implements ItemsStorageInterface
      * Gets single item by its type and name.
      *
      * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
-     *
      * @psalm-param Item::TYPE_* $type
      *
      * @return Permission|Role|null Either role or permission, depending on initial type specified. `null` is returned
      * when no item was found by given condition.
-     *
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)|null
      */
     private function getItemByTypeAndName(string $type, string $name): Permission|Role|null
     {
         /**
          * @psalm-var RawItem|null $row
-         *
          * @infection-ignore-all
          * - ArrayItemRemoval, where, type.
          */
@@ -307,7 +298,6 @@ final class ItemsStorage implements ItemsStorageInterface
      * A factory method for creating single item with all attributes filled.
      *
      * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
-     *
      * @psalm-param Item::TYPE_* $type
      *
      * @param string $name Unique name.
@@ -317,7 +307,6 @@ final class ItemsStorage implements ItemsStorageInterface
      * @param string|null $ruleName Optional associated rule name.
      *
      * @return Permission|Role Either role or permission, depending on initial type specified.
-     *
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)
      */
     private function createItem(
@@ -339,11 +328,9 @@ final class ItemsStorage implements ItemsStorageInterface
      * A basic factory method for creating single item with name only.
      *
      * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
-     *
      * @psalm-param Item::TYPE_* $type
      *
      * @return Permission|Role Either role or permission, depending on initial type specified.
-     *
      * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission : Role)
      */
     private function createItemByTypeAndName(string $type, string $name): Permission|Role
