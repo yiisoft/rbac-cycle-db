@@ -22,19 +22,16 @@ final class RbacCycleInit extends Command
 
     /**
      * @var string A name of the table for storing RBAC items (roles and permissions).
-     *
      * @psalm-var non-empty-string
      */
     private string $itemsTable;
     /**
      * @var string A name of the table for storing RBAC assignments.
-     *
      * @psalm-var non-empty-string
      */
     private string $assignmentsTable;
     /**
      * @var string A name of the table for storing relations between RBAC items.
-     *
      * @psalm-var non-empty-string
      */
     private string $itemsChildrenTable;
