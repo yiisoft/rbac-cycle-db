@@ -179,7 +179,6 @@ final class RbacCycleInit extends Command
      * accompanied by explanations printed to console.
      *
      * @param string $tableName A name of created table.
-     *
      * @psalm-param non-empty-string $tableName
      *
      * @param OutputInterface $output Output for writing messages.
@@ -210,7 +209,6 @@ final class RbacCycleInit extends Command
      * accompanied by explanations printed to console.
      *
      * @param string $tableName A name of created table.
-     *
      * @psalm-param non-empty-string $tableName
      *
      * @param OutputInterface $output Output for writing messages.
