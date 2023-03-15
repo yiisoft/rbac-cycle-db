@@ -27,6 +27,7 @@ jobs:
 
     env:
       extensions: pdo, pdo_sqlsrv-5.10.1
+      key: cache
 
     runs-on: ${{ matrix.os }}
 
