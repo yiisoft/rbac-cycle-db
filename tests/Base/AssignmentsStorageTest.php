@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Rbac\Cycle\Tests;
+namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\Cycle\AssignmentsStorage;
 use Yiisoft\Rbac\Item;
 
-class AssignmentsStorageTest extends TestCase
+abstract class AssignmentsStorageTest extends TestCase
 {
     public function testHasItem(): void
     {

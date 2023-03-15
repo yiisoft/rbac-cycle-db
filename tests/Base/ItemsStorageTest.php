@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Rbac\Cycle\Tests;
+namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 
-class ItemsStorageTest extends TestCase
+abstract class ItemsStorageTest extends TestCase
 {
     public function testUpdate(): void
     {
