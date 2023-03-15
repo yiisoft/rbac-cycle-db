@@ -17,7 +17,7 @@ trait MysqlTrait
             [
                 'default' => 'default',
                 'databases' => [
-                    'default' => ['connection' => 'sqlite'],
+                    'default' => ['connection' => 'mysql'],
                 ],
                 'connections' => [
                     'mysql' => new MySQLDriverConfig(new DsnConnectionConfig(
