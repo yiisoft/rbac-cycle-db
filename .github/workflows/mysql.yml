@@ -22,20 +22,28 @@ on:
 name: mysql
 
 jobs:
-  phpunit:
-    uses: yiisoft/actions/.github/workflows/phpunit.yml@master
-    with:
-      extensions: pdo, pdo_mysql
-      os: >-
-        ['ubuntu-latest', 'windows-latest']
-      php: >-
-        ['8.0', '8.1']
+  tests:
     name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
+
+    env:
+      extensions: pdo, pdo_mysql
+      key: cache-v1
+
+    runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
+        os:
+          - ubuntu-latest
+
+        php:
+          - 8.0
+          - 8.1
+
         mysql:
           - 5.7
           - latest
+
     services:
       mysql:
         image: mysql:${{ matrix.mysql }}
@@ -46,3 +54,30 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install PHP with extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ${{ env.extensions }}
+          ini-values: date.timezone='UTC'
+          coverage: pcov
+
+      - name: Determine composer cache directory
+        if: matrix.os == 'ubuntu-latest'
+        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+
+      - name: Cache dependencies installed with composer
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: php${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            php${{ matrix.php }}-composer-
+
+      - name: Run tests with phpunit
+        run: vendor/bin/phpunit --colors=always
