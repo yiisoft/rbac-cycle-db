@@ -20,11 +20,11 @@ trait MysqlTrait
                     'default' => ['connection' => 'sqlite'],
                 ],
                 'connections' => [
-                     'mysql' => new MySQLDriverConfig(new DsnConnectionConfig(
-                         'mysql:host=127.0.0.1;port=3306;dbname=yiitest',
-                         'root',
-                         '',
-                     )),
+                    'mysql' => new MySQLDriverConfig(new DsnConnectionConfig(
+                        'mysql:host=127.0.0.1;port=3306;dbname=yiitest',
+                        'root',
+                        '',
+                    )),
                 ],
             ]
         );
