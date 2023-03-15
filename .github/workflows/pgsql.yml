@@ -1,32 +1,32 @@
 on:
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
+pull_request:
+  paths-ignore:
+    - 'docs/**'
+    - 'README.md'
+    - 'CHANGELOG.md'
+    - '.gitignore'
+    - '.gitattributes'
+    - 'infection.json.dist'
+    - 'psalm.xml'
 
-  push:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
+push:
+  paths-ignore:
+    - 'docs/**'
+    - 'README.md'
+    - 'CHANGELOG.md'
+    - '.gitignore'
+    - '.gitattributes'
+    - 'infection.json.dist'
+    - 'psalm.xml'
 
-name: mysql
+name: pgsql
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
+    name: PHP ${{ matrix.php }}-pgsql-${{ matrix.pgsql }}
 
     env:
-      extensions: pdo, pdo_mysql
+      extensions: pdo, pdo_pgsql
 
     runs-on: ${{ matrix.os }}
 
@@ -39,20 +39,24 @@ jobs:
           - 8.0
           - 8.1
 
-        mysql:
-          - 5.7
-          - latest
+        pgsql:
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
+          - 14
 
     services:
-      mysql:
-        image: mysql:${{ matrix.mysql }}
+      postgres:
+        image: postgres:${{ matrix.pgsql }}
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
-          MYSQL_PASSWORD: ''
-          MYSQL_DATABASE: yiitest
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: yiitest
         ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+          - 5432:5432
+        options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout
@@ -65,6 +69,7 @@ jobs:
           extensions: ${{ env.extensions }}
           ini-values: date.timezone='UTC'
           coverage: pcov
+          tools: composer:v2
 
       - name: Determine composer cache directory
         if: matrix.os == 'ubuntu-latest'
@@ -85,4 +90,4 @@ jobs:
         run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run tests with phpunit
-        run: vendor/bin/phpunit --testsuite Mysql --colors=always
+        run: vendor/bin/phpunit --testsuite Pgsql --colors=always
