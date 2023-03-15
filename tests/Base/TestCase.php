@@ -23,8 +23,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function getDbal(): DatabaseManager
     {
         if ($this->databaseManager === null) {
-            $this->createConnection();
+            $this->databaseManager = $this->createDbManager();
         }
+
         return $this->databaseManager;
     }
 
@@ -65,7 +66,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return $app;
     }
 
-    abstract protected function createConnection(): void;
+    abstract protected function createDbManager(): DatabaseManager;
 
     abstract protected function populateDb(): void;
 }

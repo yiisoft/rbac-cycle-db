@@ -11,7 +11,7 @@ use Cycle\Database\DatabaseManager;
 
 trait MysqlTrait
 {
-    protected function createConnection(): void
+    protected function createDbManager(): DatabaseManager
     {
         $dbConfig = new DatabaseConfig(
             [
@@ -29,6 +29,6 @@ trait MysqlTrait
             ]
         );
 
-        $this->databaseManager = new DatabaseManager($dbConfig);
+        return new DatabaseManager($dbConfig);
     }
 }

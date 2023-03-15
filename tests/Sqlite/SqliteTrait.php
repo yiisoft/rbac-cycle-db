@@ -11,7 +11,7 @@ use Cycle\Database\DatabaseManager;
 
 trait SqliteTrait
 {
-    protected function createConnection(): void
+    protected function createDbManager(): DatabaseManager
     {
         $dbPath = __DIR__ . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'test.db';
         $dbConfig = new DatabaseConfig(
@@ -26,6 +26,6 @@ trait SqliteTrait
             ]
         );
 
-        $this->databaseManager = new DatabaseManager($dbConfig);
+        return new DatabaseManager($dbConfig);
     }
 }
