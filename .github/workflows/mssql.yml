@@ -96,4 +96,4 @@ jobs:
         run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run tests with phpunit
-        run: vendor/bin/phpunit --group Mssql --colors=always
+        run: vendor/bin/phpunit --testsuite Mssql --colors=always
