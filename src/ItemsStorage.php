@@ -52,11 +52,13 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function clear(): void
     {
-        if ($this->database->hasTable($this->tableName)) {
-            /** @var Table $table */
-            $table = $this->database->table($this->tableName);
-            $table->eraseData();
-        }
+        /** @var Table $childrenTable */
+        $childrenTable = $this->database->table($this->childrenTableName);
+        $childrenTable->eraseData();
+
+        /** @var Table $table */
+        $table = $this->database->table($this->tableName);
+        $table->eraseData();
     }
 
     public function getAll(): array
@@ -86,7 +88,7 @@ final class ItemsStorage implements ItemsStorageInterface
     public function exists(string $name): bool
     {
         /**
-         * @var array<0, 1>|false $result
+         * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
          * - IncrementInteger, limit.
@@ -204,7 +206,7 @@ final class ItemsStorage implements ItemsStorageInterface
     public function hasChildren(string $name): bool
     {
         /**
-         * @var array<0, 1>|false $result
+         * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
          * - IncrementInteger, limit.

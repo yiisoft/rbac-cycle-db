@@ -101,7 +101,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     public function hasItem(string $name): bool
     {
         /**
-         * @var array<0, 1>|false $result
+         * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
          * - IncrementInteger, limit.

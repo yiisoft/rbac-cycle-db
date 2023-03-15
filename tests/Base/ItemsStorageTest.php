@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
+use Cycle\Database\Injection\Fragment;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\Permission;
@@ -85,6 +86,17 @@ abstract class ItemsStorageTest extends TestCase
         $storage->clear();
 
         $this->assertEmpty($storage->getAll());
+
+        /** @psalm-var array<0, 1>|false $itemsChildrenExist */
+        $itemsChildrenExist = $this
+            ->getDbal()
+            ->database()
+            ->select([new Fragment('1')])
+            ->from(self::ITEMS_CHILDREN_TABLE)
+            ->limit(1)
+            ->run()
+            ->fetch();
+        $this->assertSame(false, $itemsChildrenExist);
     }
 
     public function testGetChildren(): void
