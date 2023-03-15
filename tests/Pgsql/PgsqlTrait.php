@@ -21,7 +21,7 @@ trait PgsqlTrait
                 ],
                 'connections' => [
                     'pgsql' => new PostgresDriverConfig(new DsnConnectionConfig(
-                        'mysql:host=127.0.0.1;port=5432;dbname=yiitest',
+                        'postgresql:host=127.0.0.1;port=5432;dbname=yiitest',
                         'root',
                         'root',
                     )),
