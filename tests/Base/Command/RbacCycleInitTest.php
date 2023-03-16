@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Rbac\Cycle\Tests\Command;
+namespace Yiisoft\Rbac\Cycle\Tests\Base\Command;
 
 use Cycle\Database\ForeignKeyInterface;
 use Cycle\Database\Schema\AbstractForeignKey;
@@ -12,10 +12,10 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use Yiisoft\Rbac\Cycle\Command\RbacCycleInit;
-use Yiisoft\Rbac\Cycle\Tests\TestCase;
+use Yiisoft\Rbac\Cycle\Tests\Base\TestCase;
 use Yiisoft\Rbac\Item;
 
-class RbacCycleInitTest extends TestCase
+abstract class RbacCycleInitTest extends TestCase
 {
     protected function setUp(): void
     {

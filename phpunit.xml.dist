@@ -6,6 +6,7 @@
          bootstrap="vendor/autoload.php"
          failOnRisky="true"
          failOnWarning="true"
+         defaultTestSuite="Sqlite"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
     <coverage>
         <include>
@@ -20,8 +21,17 @@
         <ini name="error_reporting" value="-1"/>
     </php>
     <testsuites>
-        <testsuite name="Yii Rbac Cycle Db tests">
-            <directory>./tests</directory>
+        <testsuite name="Sqlite">
+            <directory>./tests/Sqlite</directory>
+        </testsuite>
+        <testsuite name="Mysql">
+            <directory>./tests/Mysql</directory>
+        </testsuite>
+        <testsuite name="Pgsql">
+            <directory>./tests/Pgsql</directory>
+        </testsuite>
+        <testsuite name="Mssql">
+            <directory>./tests/Mssql</directory>
         </testsuite>
     </testsuites>
 </phpunit>
