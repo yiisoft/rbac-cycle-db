@@ -194,7 +194,7 @@ abstract class RbacCycleInitTest extends TestCase
         $this->assertArrayHasKey('type', $columns);
         $type = $columns['type'];
         $this->assertSame('string', $type->getType());
-        $this->assertSame([Item::TYPE_ROLE, Item::TYPE_PERMISSION], $type->getEnumValues());
+        $this->assertEqualsCanonicalizing([Item::TYPE_ROLE, Item::TYPE_PERMISSION], $type->getEnumValues());
         $this->assertFalse($type->isNullable());
 
         $this->assertArrayHasKey('description', $columns);

@@ -123,7 +123,7 @@ abstract class ItemsStorageTest extends TestCase
         $itemsChildrenExist = $this
             ->getDbal()
             ->database()
-            ->select([new Fragment('1')])
+            ->select([new Fragment('1 as item_exists')])
             ->from(self::ITEMS_CHILDREN_TABLE)
             ->limit(1)
             ->run()
@@ -295,7 +295,7 @@ abstract class ItemsStorageTest extends TestCase
         $itemsChildrenCount = $this
             ->getDbal()
             ->database()
-            ->select([new Fragment('1')])
+            ->select([new Fragment('1 as item_exists')])
             ->from(self::ITEMS_CHILDREN_TABLE)
             ->count();
         $this->assertSame(1, $itemsChildrenCount);

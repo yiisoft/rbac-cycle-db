@@ -104,7 +104,7 @@ final class ItemsStorage implements ItemsStorageInterface
          */
         $result = $this
             ->database
-            ->select([new Fragment('1')])
+            ->select([new Fragment('1 as item_exists')])
             ->from($this->tableName)
             ->where(['name' => $name])
             ->limit(1)
@@ -269,7 +269,7 @@ final class ItemsStorage implements ItemsStorageInterface
          */
         $result = $this
             ->database
-            ->select([new Fragment('1')])
+            ->select([new Fragment('1 as item_exists')])
             ->from($this->childrenTableName)
             ->where(['parent' => $name])
             ->limit(1)
