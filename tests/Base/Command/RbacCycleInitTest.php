@@ -295,8 +295,8 @@ abstract class RbacCycleInitTest extends TestCase
 
             $this->assertSame(self::ITEMS_TABLE, $foreignKey->getForeignTable());
             $this->assertSame(['name'], $foreignKey->getForeignKeys());
-            $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getUpdateRule());
-            $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getDeleteRule());
+            $this->assertSame(ForeignKeyInterface::NO_ACTION, $foreignKey->getUpdateRule());
+            $this->assertSame(ForeignKeyInterface::NO_ACTION, $foreignKey->getDeleteRule());
         }
     }
 

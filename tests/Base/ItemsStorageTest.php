@@ -15,6 +15,7 @@ abstract class ItemsStorageTest extends TestCase
     public function testUpdate(): void
     {
         $storage = $this->getStorage();
+
         $item = $storage->get('Parent 1');
         $this->assertNull($item->getRuleName());
 
@@ -22,8 +23,33 @@ abstract class ItemsStorageTest extends TestCase
             ->withName('Super Admin')
             ->withRuleName('super admin');
         $storage->update('Parent 1', $item);
-        $this->assertSame('Super Admin', $storage->get('Super Admin')?->getName());
-        $this->assertSame('super admin', $storage->get('Super Admin')?->getRuleName());
+
+        $item = $storage->get('Super Admin');
+        $this->assertNotNull($item);
+
+        $this->assertSame('Super Admin', $item->getName());
+        $this->assertSame('super admin', $item->getRuleName());
+
+        $this->assertTrue($storage->hasChildren('Super Admin'));
+    }
+
+    public function testUpdateWithNoChildren(): void
+    {
+        // TODO: Use data provider.
+        $storage = $this->getStorage();
+
+        $item = $storage->get('Parent 3');
+        $this->assertNull($item->getRuleName());
+
+        $item = $item
+            ->withName('Super Admin')
+            ->withRuleName('super admin');
+        $storage->update('Parent 3', $item);
+
+        $this->assertSame('Super Admin', $item->getName());
+        $this->assertSame('super admin', $item->getRuleName());
+
+        $this->assertFalse($storage->hasChildren('Super Admin'));
     }
 
     public function testGet(): void
@@ -34,6 +60,12 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertInstanceOf(Permission::class, $item);
         $this->assertSame(Item::TYPE_PERMISSION, $item->getType());
         $this->assertSame('Parent 3', $item->getName());
+    }
+
+    public function testGetWithNonExistingName(): void
+    {
+        $storage = $this->getStorage();
+        $this->assertNull($storage->get('Non-existing name'));
     }
 
     public function existsProvider(): array
@@ -123,17 +155,31 @@ abstract class ItemsStorageTest extends TestCase
         $storage = $this->getStorage();
         $permissions = $storage->getPermissions();
 
-        $this->assertCount(2, $permissions);
+        $this->assertCount(5, $permissions);
         $this->assertContainsOnlyInstancesOf(Permission::class, $permissions);
     }
 
     public function testRemove(): void
     {
         $storage = $this->getStorage();
-        $storage->remove('Parent 3');
+        $storage->remove('Parent 2');
 
-        $this->assertEmpty($storage->get('Parent 3'));
+        $this->assertNull($storage->get('Parent 2'));
         $this->assertNotEmpty($storage->getAll());
+        $this->assertFalse($storage->hasChildren('Parent 2'));
+
+        $itemsChildren = $this
+            ->getDbal()
+            ->database()
+            ->select()
+            ->from(self::ITEMS_CHILDREN_TABLE)
+            ->fetchAll();
+        $expectedItemsChildren = [
+            ['parent' => 'Parent 1', 'child' => 'Child 1'],
+            ['parent' => 'Parent 4', 'child' => 'Child 4'],
+            ['parent' => 'Parent 5', 'child' => 'Child 5'],
+        ];
+        $this->assertSame($expectedItemsChildren, $itemsChildren);
     }
 
     public function getParentsProvider(): array
@@ -203,7 +249,7 @@ abstract class ItemsStorageTest extends TestCase
     public function testGetAll(): void
     {
         $storage = $this->getStorage();
-        $this->assertCount(6, $storage->getAll());
+        $this->assertCount(10, $storage->getAll());
     }
 
     public function testHasChildren(): void
@@ -222,6 +268,18 @@ abstract class ItemsStorageTest extends TestCase
         $all = $storage->getAll();
         $this->assertNotEmpty($all);
         $this->assertContainsOnlyInstancesOf(Role::class, $all);
+
+        $itemsChildren = $this
+            ->getDbal()
+            ->database()
+            ->select()
+            ->from(self::ITEMS_CHILDREN_TABLE)
+            ->fetchAll();
+        $expectedItemsChildren = [
+            ['parent' => 'Parent 2', 'child' => 'Child 2'],
+            ['parent' => 'Parent 2', 'child' => 'Child 3'],
+        ];
+        $this->assertSame($expectedItemsChildren, $itemsChildren);
     }
 
     public function testClearRoles(): void
@@ -232,80 +290,67 @@ abstract class ItemsStorageTest extends TestCase
         $all = $storage->getAll();
         $this->assertNotEmpty($all);
         $this->assertContainsOnlyInstancesOf(Permission::class, $storage->getAll());
+
+        $this->assertTrue($storage->hasChildren('Parent 5'));
+        $itemsChildrenCount = $this
+            ->getDbal()
+            ->database()
+            ->select([new Fragment('1')])
+            ->from(self::ITEMS_CHILDREN_TABLE)
+            ->count();
+        $this->assertSame(1, $itemsChildrenCount);
     }
 
     protected function populateDb(): void
     {
         $time = time();
         $items = [
-            [
-                'name' => 'Parent 1',
-                'type' => Item::TYPE_ROLE,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
-            [
-                'name' => 'Parent 2',
-                'type' => Item::TYPE_ROLE,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
+            ['Parent 1', Item::TYPE_ROLE],
+            ['Parent 2', Item::TYPE_ROLE],
             // Parent without children
-            [
-                'name' => 'Parent 3',
-                'type' => Item::TYPE_PERMISSION,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
-            [
-                'name' => 'Child 1',
-                'type' => Item::TYPE_PERMISSION,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
-            [
-                'name' => 'Child 2',
-                'type' => Item::TYPE_ROLE,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
-            [
-                'name' => 'Child 3',
-                'type' => Item::TYPE_ROLE,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
+            ['Parent 3', Item::TYPE_PERMISSION],
+            ['Parent 4', Item::TYPE_PERMISSION],
+            ['Parent 5', Item::TYPE_PERMISSION],
+            ['Child 1', Item::TYPE_PERMISSION],
+            ['Child 2', Item::TYPE_ROLE],
+            ['Child 3', Item::TYPE_ROLE],
+            ['Child 4', Item::TYPE_ROLE],
+            ['Child 5', Item::TYPE_PERMISSION],
         ];
+        $items = array_map(
+            static function (array $item) use ($time): array {
+                $item[] = $time;
+                $item[] = $time;
+
+                return $item;
+            },
+            $items,
+        );
         $itemsChildren = [
-            [
-                'parent' => 'Parent 1',
-                'child' => 'Child 1',
-            ],
-            [
-                'parent' => 'Parent 2',
-                'child' => 'Child 2',
-            ],
-            [
-                'parent' => 'Parent 2',
-                'child' => 'Child 3',
-            ],
+            // Parent: role, child: permission
+            ['parent' => 'Parent 1', 'child' => 'Child 1'],
+            // Parent: role, child: role
+            ['parent' => 'Parent 2', 'child' => 'Child 2'],
+            ['parent' => 'Parent 2', 'child' => 'Child 3'],
+            // Parent: permission, child: role
+            ['parent' => 'Parent 4', 'child' => 'Child 4'],
+            // Parent: permission, child: permission
+            ['parent' => 'Parent 5', 'child' => 'Child 5'],
         ];
 
-        foreach ($items as $item) {
-            $this->getDbal()
-                ->database()
-                ->insert(self::ITEMS_TABLE)
-                ->values($item)
-                ->run();
-        }
+        $this->getDbal()
+            ->database()
+            ->insert(self::ITEMS_TABLE)
+            ->columns(['name', 'type', 'createdAt', 'updatedAt'])
+            ->values($items)
+            ->run();
 
-        foreach ($itemsChildren as $itemChild) {
-            $this->getDbal()
-                ->database()
-                ->insert(self::ITEMS_CHILDREN_TABLE)
-                ->values($itemChild)
-                ->run();
-        }
+        $this->getDbal()
+            ->database()
+            ->insert(self::ITEMS_CHILDREN_TABLE)
+            ->columns(['parent', 'child'])
+            ->values($itemsChildren)
+            ->run();
     }
 
     private function getStorage(): ItemsStorage

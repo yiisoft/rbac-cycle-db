@@ -137,15 +137,13 @@ final class RbacCycleInit extends Command
         $schema->string('child', 128)->nullable(false);
         $schema->setPrimaryKeys(['parent', 'child']);
 
-        $schema->foreignKey(['parent'])
-            ->references($this->itemsTable, ['name'])
-            ->onDelete(ForeignKeyInterface::CASCADE)
-            ->onUpdate(ForeignKeyInterface::CASCADE);
+        $schema
+            ->foreignKey(['parent'])
+            ->references($this->itemsTable, ['name']);
 
-        $schema->foreignKey(['child'])
-            ->references($this->itemsTable, ['name'])
-            ->onDelete(ForeignKeyInterface::CASCADE)
-            ->onUpdate(ForeignKeyInterface::CASCADE);
+        $schema
+            ->foreignKey(['child'])
+            ->references($this->itemsTable, ['name']);
 
         $schema->save();
     }
@@ -166,7 +164,8 @@ final class RbacCycleInit extends Command
         $schema->setPrimaryKeys(['itemName', 'userId']);
         $schema->integer('createdAt')->nullable(false);
 
-        $schema->foreignKey(['itemName'])
+        $schema
+            ->foreignKey(['itemName'])
             ->references($this->itemsTable, ['name'])
             ->onUpdate(ForeignKeyInterface::CASCADE)
             ->onDelete(ForeignKeyInterface::CASCADE);

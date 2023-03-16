@@ -6,7 +6,7 @@ namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\Injection\Fragment;
-use Cycle\Database\Table;
+use RuntimeException;
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 
@@ -36,7 +36,8 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     public function getAll(): array
     {
         /** @psalm-var RawAssignment[] $rows */
-        $rows = $this->database
+        $rows = $this
+            ->database
             ->select()
             ->from($this->tableName)
             ->fetchAll();
@@ -65,8 +66,8 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         return array_combine(
             array_column($rows, 'itemName'),
             array_map(
-                static fn(array $row) => new Assignment($userId, $row['itemName'], (int) $row['createdAt']),
-                $rows
+                static fn(array $row): Assignment => new Assignment($userId, $row['itemName'], (int) $row['createdAt']),
+                $rows,
             )
         );
     }
@@ -74,7 +75,8 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     public function get(string $itemName, string $userId): ?Assignment
     {
         /** @psalm-var RawAssignment|false $row */
-        $row = $this->database
+        $row = $this
+            ->database
             ->select()
             ->from($this->tableName)
             ->where(['itemName' => $itemName, 'userId' => $userId])
@@ -86,7 +88,8 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 
     public function add(string $itemName, string $userId): void
     {
-        $this->database
+        $this
+            ->database
             ->insert($this->tableName)
             ->values(
                 [
@@ -120,39 +123,39 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 
     public function renameItem(string $oldName, string $newName): void
     {
-        if ($oldName === $newName) {
-            return;
-        }
-        $this->database
-            ->update($this->tableName, ['itemName' => $newName], ['itemName' => $oldName])
-            ->run();
+        $message = 'Use "ItemStorage::update()" instead, all related assignments will be updated automatically.';
+        throw new RuntimeException($message);
     }
 
     public function remove(string $itemName, string $userId): void
     {
-        $this->database
+        $this
+            ->database
             ->delete($this->tableName, ['itemName' => $itemName, 'userId' => $userId])
             ->run();
     }
 
     public function removeByUserId(string $userId): void
     {
-        $this->database
+        $this
+            ->database
             ->delete($this->tableName, ['userId' => $userId])
             ->run();
     }
 
     public function removeByItemName(string $itemName): void
     {
-        $this->database
+        $this
+            ->database
             ->delete($this->tableName, ['itemName' => $itemName])
             ->run();
     }
 
     public function clear(): void
     {
-        /** @var Table $table */
-        $table = $this->database->table($this->tableName);
-        $table->eraseData();
+        $this
+            ->database
+            ->delete($this->tableName)
+            ->run();
     }
 }
