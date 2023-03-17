@@ -12,17 +12,31 @@ use Yiisoft\Rbac\Role;
 
 abstract class ItemsStorageTest extends TestCase
 {
-    public function testUpdate(): void
+    public function dataUpdate(): array
+    {
+        return [
+            'present as parent in items children' => ['Parent 1', 'Super Admin', true],
+            'no children' => ['Parent 3', 'Super Admin', false],
+            'present as child in items children' => ['Child 1', 'Parent 1', true],
+        ];
+    }
+
+    /**
+     * @dataProvider dataUpdate
+     */
+    public function testUpdate(string $itemName, string $parentNameForChildrenCheck, bool $expectedHasChildren): void
     {
         $storage = $this->getStorage();
 
-        $item = $storage->get('Parent 1');
+        $item = $storage->get($itemName);
         $this->assertNull($item->getRuleName());
 
         $item = $item
             ->withName('Super Admin')
             ->withRuleName('super admin');
-        $storage->update('Parent 1', $item);
+        $storage->update($itemName, $item);
+
+        $this->assertNull($storage->get($itemName));
 
         $item = $storage->get('Super Admin');
         $this->assertNotNull($item);
@@ -30,26 +44,7 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertSame('Super Admin', $item->getName());
         $this->assertSame('super admin', $item->getRuleName());
 
-        $this->assertTrue($storage->hasChildren('Super Admin'));
-    }
-
-    public function testUpdateWithNoChildren(): void
-    {
-        // TODO: Use data provider.
-        $storage = $this->getStorage();
-
-        $item = $storage->get('Parent 3');
-        $this->assertNull($item->getRuleName());
-
-        $item = $item
-            ->withName('Super Admin')
-            ->withRuleName('super admin');
-        $storage->update('Parent 3', $item);
-
-        $this->assertSame('Super Admin', $item->getName());
-        $this->assertSame('super admin', $item->getRuleName());
-
-        $this->assertFalse($storage->hasChildren('Super Admin'));
+        $this->assertSame($expectedHasChildren, $storage->hasChildren($parentNameForChildrenCheck));
     }
 
     public function testGet(): void
