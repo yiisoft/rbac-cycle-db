@@ -18,6 +18,8 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
  *     userId: string,
  *     createdAt: int|string,
  * }
+ *
+ * @internal Do not use directly. Use with `Manager` from {@link https://github.com/yiisoft/rbac} package.
  */
 final class AssignmentsStorage implements AssignmentsStorageInterface
 {

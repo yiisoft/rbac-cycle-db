@@ -25,6 +25,8 @@ use Yiisoft\Rbac\Role;
  *     createdAt: int|string,
  *     updatedAt: int|string
  * }
+ *
+ * @internal Do not use directly. Use with `Manager` from {@link https://github.com/yiisoft/rbac} package.
  */
 final class ItemsStorage implements ItemsStorageInterface
 {
@@ -427,12 +429,11 @@ final class ItemsStorage implements ItemsStorageInterface
                     ->from(
                         new Fragment(
                             '(' .
-                            $database
+                            (string) $database
                                 ->select('parent')
                                 ->distinct()
-                                ->from($itemsStorage->childrenTableName)
-                                ->sqlStatement() .
-                            ') as parents',
+                                ->from($itemsStorage->childrenTableName) .
+                            ') AS parents',
                         ),
                     )
                     ->leftJoin($itemsStorage->tableName, 'parent_items')
@@ -443,23 +444,16 @@ final class ItemsStorage implements ItemsStorageInterface
                     ->from(
                         new Fragment(
                             '(' .
-                            $database
+                            (string) $database
                                 ->select('child')
                                 ->distinct()
-                                ->from($itemsStorage->childrenTableName)
-                                ->sqlStatement() .
-                            ') as children',
+                                ->from($itemsStorage->childrenTableName) .
+                            ') AS children',
                         ),
                     )
                     ->leftJoin($itemsStorage->tableName, 'child_items')
                     ->on('child_items.name', 'children.child')
                     ->where(['child_items.type' => $type]);
-                $r = $database
-                    ->delete()
-                    ->from($itemsStorage->childrenTableName)
-                    ->where('parent', 'IN', $parentsSubQuery)
-                    ->orWhere('child', 'IN', $childrenSubQuery)
-                    ->sqlStatement();
                 $database
                     ->delete()
                     ->from($itemsStorage->childrenTableName)
