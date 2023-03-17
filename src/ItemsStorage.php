@@ -429,7 +429,7 @@ final class ItemsStorage implements ItemsStorageInterface
                     ->from(
                         new Fragment(
                             '(' .
-                            (string) $database
+                            $database
                                 ->select('parent')
                                 ->distinct()
                                 ->from($itemsStorage->childrenTableName) .
@@ -444,7 +444,7 @@ final class ItemsStorage implements ItemsStorageInterface
                     ->from(
                         new Fragment(
                             '(' .
-                            (string) $database
+                            $database
                                 ->select('child')
                                 ->distinct()
                                 ->from($itemsStorage->childrenTableName) .
