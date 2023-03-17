@@ -404,6 +404,12 @@ final class ItemsStorage implements ItemsStorageInterface
         return $type === Item::TYPE_PERMISSION ? new Permission($name) : new Role($name);
     }
 
+    /**
+     * Removes all related records in items children table for a given item name.
+     *
+     * @param Database $database Cycle database instance.
+     * @param string $name Item name.
+     */
     private function removeRelatedItemsChildren(Database $database, string $name): void
     {
         $database
@@ -415,6 +421,8 @@ final class ItemsStorage implements ItemsStorageInterface
     }
 
     /**
+     * Removes all existing items of specified type.
+     *
      * @param string $type Either {@see Item::TYPE_ROLE} or {@see Item::TYPE_PERMISSION}.
      * @psalm-param Item::TYPE_* $type
      */
