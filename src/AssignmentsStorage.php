@@ -111,7 +111,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
          */
         $result = $this
             ->database
-            ->select([new Fragment('1 as assignment_exists')])
+            ->select([new Fragment('1 AS assignment_exists')])
             ->from($this->tableName)
             ->where(['itemName' => $name])
             ->limit(1)

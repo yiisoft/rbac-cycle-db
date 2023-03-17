@@ -104,7 +104,7 @@ final class ItemsStorage implements ItemsStorageInterface
          */
         $result = $this
             ->database
-            ->select([new Fragment('1 as item_exists')])
+            ->select([new Fragment('1 AS item_exists')])
             ->from($this->tableName)
             ->where(['name' => $name])
             ->limit(1)
@@ -269,7 +269,7 @@ final class ItemsStorage implements ItemsStorageInterface
          */
         $result = $this
             ->database
-            ->select([new Fragment('1 as item_exists')])
+            ->select([new Fragment('1 AS item_exists')])
             ->from($this->childrenTableName)
             ->where(['parent' => $name])
             ->limit(1)
@@ -423,25 +423,43 @@ final class ItemsStorage implements ItemsStorageInterface
             ->database
             ->transaction(static function (Database $database) use ($itemsStorage, $type): void {
                 $parentsSubQuery = $database
-                    ->select($itemsStorage->childrenTableName . '.parent')
+                    ->select('parents.parent')
                     ->from(
-                        $database
-                            ->select('parent')
-                            ->from($itemsStorage->childrenTableName),
+                        new Fragment(
+                            '(' .
+                            $database
+                                ->select('parent')
+                                ->distinct()
+                                ->from($itemsStorage->childrenTableName)
+                                ->sqlStatement() .
+                            ') as parents',
+                        ),
                     )
-                    ->leftJoin($itemsStorage->tableName)
-                    ->on($itemsStorage->tableName . '.name', $itemsStorage->childrenTableName . '.parent')
-                    ->where([$itemsStorage->tableName . '.type' => $type]);
+                    ->leftJoin($itemsStorage->tableName, 'parent_items')
+                    ->on('parent_items.name', 'parents.parent')
+                    ->where(['parent_items.type' => $type]);
                 $childrenSubQuery = $database
-                    ->select($itemsStorage->childrenTableName . '.child')
+                    ->select('children.child')
                     ->from(
-                        $database
-                            ->select('child')
-                            ->from($itemsStorage->childrenTableName),
+                        new Fragment(
+                            '(' .
+                            $database
+                                ->select('child')
+                                ->distinct()
+                                ->from($itemsStorage->childrenTableName)
+                                ->sqlStatement() .
+                            ') as children',
+                        ),
                     )
-                    ->leftJoin($itemsStorage->tableName)
-                    ->on($itemsStorage->tableName . '.name', $itemsStorage->childrenTableName . '.child')
-                    ->where([$itemsStorage->tableName . '.type' => $type]);
+                    ->leftJoin($itemsStorage->tableName, 'child_items')
+                    ->on('child_items.name', 'children.child')
+                    ->where(['child_items.type' => $type]);
+                $r = $database
+                    ->delete()
+                    ->from($itemsStorage->childrenTableName)
+                    ->where('parent', 'IN', $parentsSubQuery)
+                    ->orWhere('child', 'IN', $childrenSubQuery)
+                    ->sqlStatement();
                 $database
                     ->delete()
                     ->from($itemsStorage->childrenTableName)
