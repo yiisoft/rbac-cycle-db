@@ -305,22 +305,22 @@ abstract class ItemsStorageTest extends TestCase
     {
         $time = time();
         $items = [
-            ['Parent 1', Item::TYPE_ROLE],
-            ['Parent 2', Item::TYPE_ROLE],
+            ['name' => 'Parent 1', 'type' => Item::TYPE_ROLE],
+            ['name' => 'Parent 2', 'type' => Item::TYPE_ROLE],
             // Parent without children
-            ['Parent 3', Item::TYPE_PERMISSION],
-            ['Parent 4', Item::TYPE_PERMISSION],
-            ['Parent 5', Item::TYPE_PERMISSION],
-            ['Child 1', Item::TYPE_PERMISSION],
-            ['Child 2', Item::TYPE_ROLE],
-            ['Child 3', Item::TYPE_ROLE],
-            ['Child 4', Item::TYPE_ROLE],
-            ['Child 5', Item::TYPE_PERMISSION],
+            ['name' => 'Parent 3', 'type' => Item::TYPE_PERMISSION],
+            ['name' => 'Parent 4', 'type' => Item::TYPE_PERMISSION],
+            ['name' => 'Parent 5', 'type' => Item::TYPE_PERMISSION],
+            ['name' => 'Child 1', 'type' => Item::TYPE_PERMISSION],
+            ['name' => 'Child 2', 'type' => Item::TYPE_ROLE],
+            ['name' => 'Child 3', 'type' => Item::TYPE_ROLE],
+            ['name' => 'Child 4', 'type' => Item::TYPE_ROLE],
+            ['name' => 'Child 5', 'type' => Item::TYPE_PERMISSION],
         ];
         $items = array_map(
             static function (array $item) use ($time): array {
-                $item[] = $time;
-                $item[] = $time;
+                $item['createdAt'] = $time;
+                $item['updatedAt'] = $time;
 
                 return $item;
             },
