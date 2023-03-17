@@ -140,7 +140,6 @@ abstract class AssignmentsStorageTest extends TestCase
         $assignments = array_map(
             static function (array $item) use ($time): array {
                 $item['createdAt'] = $time;
-                $item['updatedAt'] = $time;
 
                 return $item;
             },
