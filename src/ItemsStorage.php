@@ -423,17 +423,25 @@ final class ItemsStorage implements ItemsStorageInterface
             ->database
             ->transaction(static function (Database $database) use ($itemsStorage, $type): void {
                 $parentsSubQuery = $database
-                    ->select('parents.parent')
-                    ->from($itemsStorage->childrenTableName . ' as parents')
-                    ->leftJoin($itemsStorage->tableName, 'parent_items')
-                    ->on('parent_items.name', 'parents.parent')
-                    ->where(['parent_items.type' => $type]);
+                    ->select($itemsStorage->childrenTableName . '.parent')
+                    ->from(
+                        $database
+                            ->select('parent')
+                            ->from($itemsStorage->childrenTableName),
+                    )
+                    ->leftJoin($itemsStorage->tableName)
+                    ->on($itemsStorage->tableName . '.name', $itemsStorage->childrenTableName . '.parent')
+                    ->where([$itemsStorage->tableName . '.type' => $type]);
                 $childrenSubQuery = $database
-                    ->select('children.child')
-                    ->from($itemsStorage->childrenTableName . ' as children')
-                    ->leftJoin($itemsStorage->tableName, 'child_items')
-                    ->on('child_items.name', 'children.child')
-                    ->where(['child_items.type' => $type]);
+                    ->select($itemsStorage->childrenTableName . '.child')
+                    ->from(
+                        $database
+                            ->select('child')
+                            ->from($itemsStorage->childrenTableName),
+                    )
+                    ->leftJoin($itemsStorage->tableName)
+                    ->on($itemsStorage->tableName . '.name', $itemsStorage->childrenTableName . '.child')
+                    ->where([$itemsStorage->tableName . '.type' => $type]);
                 $database
                     ->delete()
                     ->from($itemsStorage->childrenTableName)
