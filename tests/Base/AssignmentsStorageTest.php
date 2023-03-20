@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
-use RuntimeException;
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\Cycle\AssignmentsStorage;
 use Yiisoft\Rbac\Item;
@@ -21,11 +20,10 @@ abstract class AssignmentsStorageTest extends TestCase
     public function testRenameItem(): void
     {
         $storage = $this->getStorage();
-
-        $this->expectException(RuntimeException::class);
-        $message = 'Use "ItemStorage::update()" instead, all related assignments will be updated automatically.';
-        $this->expectExceptionMessage($message);
         $storage->renameItem('Accountant', 'Senior accountant');
+
+        $this->assertTrue($storage->hasItem('Accountant'));
+        $this->assertFalse($storage->hasItem('Senior accountant'));
     }
 
     public function testGetAll(): void

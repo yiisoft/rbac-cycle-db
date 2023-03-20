@@ -6,7 +6,6 @@ namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\Injection\Fragment;
-use RuntimeException;
 use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 
@@ -123,10 +122,14 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         return $result !== false;
     }
 
+    /**
+     * @inheritdoc
+     *
+     * When calling {@see ItemsStorage::update()}, all related assignments will be updated automatically.
+     */
     public function renameItem(string $oldName, string $newName): void
     {
-        $message = 'Use "ItemStorage::update()" instead, all related assignments will be updated automatically.';
-        throw new RuntimeException($message);
+        // Skip
     }
 
     public function remove(string $itemName, string $userId): void
