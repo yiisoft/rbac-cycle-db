@@ -12,11 +12,11 @@ use Yiisoft\Rbac\Role;
 
 abstract class ItemsStorageTest extends TestCase
 {
-    private $initialRolesCount = 0;
-    private $initialPermissionsCount = 0;
-    private $initialBothRolesChildrenCount = 0;
-    private $initialBothPermissionsChildrenCount = 0;
-    private $initialItemsChildrenCount = 0;
+    private int $initialRolesCount = 0;
+    private int $initialPermissionsCount = 0;
+    private int $initialBothRolesChildrenCount = 0;
+    private int $initialBothPermissionsChildrenCount = 0;
+    private int $initialItemsChildrenCount = 0;
 
     public function dataUpdate(): array
     {
