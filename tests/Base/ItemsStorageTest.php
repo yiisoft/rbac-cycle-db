@@ -182,6 +182,12 @@ abstract class ItemsStorageTest extends TestCase
         return [
             ['Child 1', ['Parent 1']],
             ['Child 2', ['Parent 2']],
+            ['posts.view', ['posts.admin', 'posts.redactor', 'posts.viewer']],
+            ['posts.create', ['posts.admin', 'posts.redactor']],
+            ['posts.delete', ['posts.admin']],
+            ['posts.viewer', ['posts.admin', 'posts.redactor']],
+            ['posts.redactor', ['posts.admin']],
+            ['posts.admin', []],
         ];
     }
 
@@ -302,15 +308,29 @@ abstract class ItemsStorageTest extends TestCase
         $items = [
             ['name' => 'Parent 1', 'type' => Item::TYPE_ROLE],
             ['name' => 'Parent 2', 'type' => Item::TYPE_ROLE],
+
             // Parent without children
             ['name' => 'Parent 3', 'type' => Item::TYPE_PERMISSION],
+
             ['name' => 'Parent 4', 'type' => Item::TYPE_PERMISSION],
             ['name' => 'Parent 5', 'type' => Item::TYPE_PERMISSION],
+
+            // Parent with multiple generations of children
+            ['name' => 'posts.admin', 'type' => Item::TYPE_ROLE],
+            ['name' => 'posts.redactor', 'type' => Item::TYPE_ROLE],
+            ['name' => 'posts.viewer', 'type' => Item::TYPE_ROLE],
+
             ['name' => 'Child 1', 'type' => Item::TYPE_PERMISSION],
             ['name' => 'Child 2', 'type' => Item::TYPE_ROLE],
             ['name' => 'Child 3', 'type' => Item::TYPE_ROLE],
             ['name' => 'Child 4', 'type' => Item::TYPE_ROLE],
             ['name' => 'Child 5', 'type' => Item::TYPE_PERMISSION],
+
+            // Children of multiple generations
+            ['name' => 'posts.view', 'type' => Item::TYPE_PERMISSION],
+            ['name' => 'posts.create', 'type' => Item::TYPE_PERMISSION],
+            ['name' => 'posts.update', 'type' => Item::TYPE_PERMISSION],
+            ['name' => 'posts.delete', 'type' => Item::TYPE_PERMISSION],
         ];
         $items = array_map(
             static function (array $item) use ($time): array {
@@ -331,6 +351,14 @@ abstract class ItemsStorageTest extends TestCase
             ['parent' => 'Parent 4', 'child' => 'Child 4'],
             // Parent: permission, child: permission
             ['parent' => 'Parent 5', 'child' => 'Child 5'],
+
+            // Multiple generations of children
+            ['parent' => 'posts.viewer', 'child' => 'posts.view'],
+            ['parent' => 'posts.redactor', 'child' => 'posts.create'],
+            ['parent' => 'posts.redactor', 'child' => 'posts.update'],
+            ['parent' => 'posts.admin', 'child' => 'posts.delete'],
+            ['parent' => 'posts.admin', 'child' => 'posts.redactor'],
+            ['parent' => 'posts.redactor', 'child' => 'posts.viewer'],
         ];
 
         $this->getDbal()

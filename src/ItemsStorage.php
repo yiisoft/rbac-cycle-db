@@ -224,21 +224,29 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getParents(string $name): array
     {
-        /** @psalm-var RawItem[] $parentRows */
-        $parentRows = $this
+        $sql = "WITH RECURSIVE
+            parent_of(name) AS (
+                VALUES(:name)
+                UNION
+                SELECT parent FROM $this->childrenTableName AS item_child_recursive, parent_of
+                WHERE item_child_recursive.child=parent_of.name
+            )
+        SELECT DISTINCT item.* FROM $this->childrenTableName AS item_child
+        LEFT JOIN $this->tableName AS item ON item.name = item_child.parent
+        WHERE item_child.parent IN parent_of
+            AND item_child.parent != :name";
+        /** @psalm-var RawItem[] $rawItems */
+        $rawItems = $this
             ->database
-            ->select($this->tableName . '.*')
-            ->from([$this->tableName, $this->childrenTableName])
-            ->where(['child' => $name, 'name' => new Expression('parent')])
+            ->query($sql, [':name' => $name])
             ->fetchAll();
 
-        return array_combine(
-            array_column($parentRows, 'name'),
-            array_map(
-                fn(array $row): Item => $this->createItem(...$row),
-                $parentRows,
-            ),
-        );
+        $items = [];
+        foreach ($rawItems as $rawItem) {
+            $items[$rawItem['name']] = $this->createItem(...$rawItem);
+        }
+
+        return $items;
     }
 
     public function getChildren(string $name): array
