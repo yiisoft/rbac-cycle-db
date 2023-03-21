@@ -226,7 +226,7 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         $sql = "WITH RECURSIVE
             parent_of(name) AS (
-                VALUES(:name)
+                VALUES(:name_for_recursion)
                 UNION
                 SELECT parent FROM $this->childrenTableName AS item_child_recursive, parent_of
                 WHERE item_child_recursive.child=parent_of.name
@@ -234,11 +234,11 @@ final class ItemsStorage implements ItemsStorageInterface
         SELECT DISTINCT item.* FROM $this->childrenTableName AS item_child
         LEFT JOIN $this->tableName AS item ON item.name = item_child.parent
         WHERE item_child.parent IN parent_of
-            AND item_child.parent != :name";
+            AND item_child.parent != :excluded_name";
         /** @psalm-var RawItem[] $rawItems */
         $rawItems = $this
             ->database
-            ->query($sql, [':name' => $name])
+            ->query($sql, [':name_for_recursion' => $name, ':excluded_name' => $name])
             ->fetchAll();
 
         $items = [];
