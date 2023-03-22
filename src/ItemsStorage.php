@@ -6,6 +6,7 @@ namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\Database;
 use Cycle\Database\DatabaseInterface;
+use Cycle\Database\Driver\SQLServer\SQLServerDriver;
 use Cycle\Database\Injection\Expression;
 use Cycle\Database\Injection\Fragment;
 use Yiisoft\Rbac\Item;
@@ -224,9 +225,15 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getParents(string $name): array
     {
-        $sql = "WITH RECURSIVE parent_of(child_name) AS (
-            VALUES(:name_for_recursion)
-            UNION
+        $sql = 'WITH ';
+        if (!$this->database->getDriver() instanceof SQLServerDriver) {
+            $sql .=  ' RECURSIVE ';
+        }
+
+        $itemNameColumn = $this->database->table($this->tableName)->getColumns()['name'];
+        $sql .= "parent_of(child_name) AS (
+            SELECT CAST(:name_for_recursion AS {$itemNameColumn->getAbstractType()}({$itemNameColumn->getSize()}))
+            UNION ALL
             SELECT parent FROM $this->childrenTableName AS item_child_recursive, parent_of
             WHERE item_child_recursive.child = parent_of.child_name
         )
