@@ -499,12 +499,10 @@ final class ItemsStorage implements ItemsStorageInterface
         LEFT JOIN $this->tableName AS item ON item.name = parent_of.child_name
         WHERE item.name != :excluded_name";
         /** @psalm-var RawItem[] $rawItems */
-        $rawItems = $this
+        return $this
             ->database
             ->query($sql, [':name_for_recursion' => $name, ':excluded_name' => $name])
             ->fetchAll();
-
-        return $rawItems;
     }
 
     /**
@@ -512,20 +510,17 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     private function getParentRowsForMysql5(string $name): array
     {
-
-        $sql = "SELECT DISTINCT child_name FROM (
+        $sql = 'SELECT DISTINCT child_name FROM (
             SELECT @r AS child_name,
             (SELECT @r := parent FROM auth_item_child WHERE child = child_name) AS parent,
             @l := @l + 1 AS level
             FROM (SELECT @r := :name, @l := 0) val, auth_item_child
         ) s
-        WHERE child_name <> :name";
+        WHERE child_name <> :name';
         /** @psalm-var RawItem[] $rawItems */
-        $rawItems = $this
+        return $this
             ->database
             ->query($sql, [':name' => $name])
             ->fetchAll();
-
-        return $rawItems;
     }
 }
