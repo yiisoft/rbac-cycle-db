@@ -6,6 +6,7 @@ namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\Database;
 use Cycle\Database\DatabaseInterface;
+use Cycle\Database\Driver\MySQL\MySQLDriver;
 use Cycle\Database\Driver\SQLServer\SQLServerDriver;
 use Cycle\Database\Injection\Expression;
 use Cycle\Database\Injection\Fragment;
@@ -225,26 +226,16 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getParents(string $name): array
     {
-        $sql = 'WITH ';
-        if (!$this->database->getDriver() instanceof SQLServerDriver) {
-            $sql .=  ' RECURSIVE ';
+        $rawItems = null;
+
+        if ($this->database->getDriver() instanceof MySQLDriver) {
+            $version = $this->database->query('SELECT VERSION() AS version')->fetch()['version'];
+            if (str_starts_with($version, '5')) {
+                $rawItems = $this->getParentRowsForMysql5($name);
+            }
         }
 
-        $itemNameColumn = $this->database->table($this->tableName)->getColumns()['name'];
-        $sql .= "parent_of(child_name) AS (
-            SELECT CAST(:name_for_recursion AS {$itemNameColumn->getInternalType()}({$itemNameColumn->getSize()}))
-            UNION ALL
-            SELECT parent FROM $this->childrenTableName AS item_child_recursive, parent_of
-            WHERE item_child_recursive.child = parent_of.child_name
-        )
-        SELECT item.* FROM parent_of
-        LEFT JOIN $this->tableName AS item ON item.name = parent_of.child_name
-        WHERE item.name != :excluded_name";
-        /** @psalm-var RawItem[] $rawItems */
-        $rawItems = $this
-            ->database
-            ->query($sql, [':name_for_recursion' => $name, ':excluded_name' => $name])
-            ->fetchAll();
+        $rawItems ??= $this->getParentRowsWithCte($name);
 
         $items = [];
         foreach ($rawItems as $rawItem) {
@@ -485,5 +476,56 @@ final class ItemsStorage implements ItemsStorageInterface
                     ->delete($itemsStorage->tableName, ['type' => $type])
                     ->run();
             });
+    }
+
+    /**
+     * @psalm-return RawItem[]
+     */
+    private function getParentRowsWithCte(string $name): array
+    {
+        $sql = 'WITH ';
+        if (!$this->database->getDriver() instanceof SQLServerDriver) {
+            $sql .=  ' RECURSIVE ';
+        }
+
+        $itemNameColumn = $this->database->table($this->tableName)->getColumns()['name'];
+        $sql .= "parent_of(child_name) AS (
+            SELECT CAST(:name_for_recursion AS {$itemNameColumn->getInternalType()}({$itemNameColumn->getSize()}))
+            UNION ALL
+            SELECT parent FROM $this->childrenTableName AS item_child_recursive, parent_of
+            WHERE item_child_recursive.child = parent_of.child_name
+        )
+        SELECT item.* FROM parent_of
+        LEFT JOIN $this->tableName AS item ON item.name = parent_of.child_name
+        WHERE item.name != :excluded_name";
+        /** @psalm-var RawItem[] $rawItems */
+        $rawItems = $this
+            ->database
+            ->query($sql, [':name_for_recursion' => $name, ':excluded_name' => $name])
+            ->fetchAll();
+
+        return $rawItems;
+    }
+
+    /**
+     * @psalm-return RawItem[]
+     */
+    private function getParentRowsForMysql5(string $name): array
+    {
+
+        $sql = "SELECT DISTINCT child_name FROM (
+            SELECT @r AS child_name,
+            (SELECT @r := parent FROM auth_item_child WHERE child = child_name) AS parent,
+            @l := @l + 1 AS level
+            FROM (SELECT @r := :name, @l := 0) val, auth_item_child
+        ) s
+        WHERE child_name <> :name";
+        /** @psalm-var RawItem[] $rawItems */
+        $rawItems = $this
+            ->database
+            ->query($sql, [':name' => $name])
+            ->fetchAll();
+
+        return $rawItems;
     }
 }
