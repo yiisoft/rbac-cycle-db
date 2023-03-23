@@ -489,8 +489,11 @@ final class ItemsStorage implements ItemsStorageInterface
         }
 
         $itemNameColumn = $this->database->table($this->tableName)->getColumns()['name'];
+        $itemNameColumnType = $this->database->getDriver() instanceof MySQLDriver
+            ? 'char'
+            : $itemNameColumn->getInternalType();
         $sql .= "parent_of(child_name) AS (
-            SELECT CAST(:name_for_recursion AS {$itemNameColumn->getInternalType()}({$itemNameColumn->getSize()}))
+            SELECT CAST(:name_for_recursion AS $itemNameColumnType({$itemNameColumn->getSize()}))
             UNION ALL
             SELECT parent FROM $this->childrenTableName AS item_child_recursive, parent_of
             WHERE item_child_recursive.child = parent_of.child_name
