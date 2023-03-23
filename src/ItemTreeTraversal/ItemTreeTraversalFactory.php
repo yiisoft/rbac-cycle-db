@@ -24,8 +24,7 @@ class ItemTreeTraversalFactory
         DatabaseInterface $database,
         string $tableName,
         string $childrenTableName,
-    ): ItemTreeTraversalInterface
-    {
+    ): ItemTreeTraversalInterface {
         $arguments = [$database, $tableName, $childrenTableName];
         $driver = $database->getDriver();
 
