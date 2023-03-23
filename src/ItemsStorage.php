@@ -6,10 +6,10 @@ namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\Database;
 use Cycle\Database\DatabaseInterface;
-use Cycle\Database\Driver\MySQL\MySQLDriver;
-use Cycle\Database\Driver\SQLServer\SQLServerDriver;
 use Cycle\Database\Injection\Expression;
 use Cycle\Database\Injection\Fragment;
+use Yiisoft\Rbac\Cycle\ItemTreeTraversal\ItemTreeTraversalFactory;
+use Yiisoft\Rbac\Cycle\ItemTreeTraversal\ItemTreeTraversalInterface;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
@@ -36,6 +36,7 @@ final class ItemsStorage implements ItemsStorageInterface
      * @psalm-var non-empty-string A name of the table for storing relations between RBAC items.
      */
     private string $childrenTableName;
+    private ItemTreeTraversalInterface $treeTraversal;
 
     /**
      * @param string $tableName A name of the table for storing RBAC items.
@@ -52,6 +53,11 @@ final class ItemsStorage implements ItemsStorageInterface
         ?string $childrenTableName = null,
     ) {
         $this->childrenTableName = $childrenTableName ?? $tableName . '_child';
+        $this->treeTraversal = ItemTreeTraversalFactory::getItemTreeTraversal(
+            $this->database,
+            $this->tableName,
+            $this->childrenTableName,
+        );
     }
 
     public function clear(): void
@@ -226,18 +232,9 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getParents(string $name): array
     {
-        $rawItems = null;
-
-        if ($this->database->getDriver() instanceof MySQLDriver) {
-            $version = $this->database->query('SELECT VERSION() AS version')->fetch()['version'];
-            if (str_starts_with($version, '5')) {
-                $rawItems = $this->getParentRowsForMysql5($name);
-            }
-        }
-
-        $rawItems ??= $this->getParentRowsWithCte($name);
-
+        $rawItems = $this->treeTraversal->getParentRows($name);
         $items = [];
+
         foreach ($rawItems as $rawItem) {
             $items[$rawItem['name']] = $this->createItem(...$rawItem);
         }
@@ -476,55 +473,5 @@ final class ItemsStorage implements ItemsStorageInterface
                     ->delete($itemsStorage->tableName, ['type' => $type])
                     ->run();
             });
-    }
-
-    /**
-     * @psalm-return RawItem[]
-     */
-    private function getParentRowsWithCte(string $name): array
-    {
-        $sql = 'WITH ';
-        if (!$this->database->getDriver() instanceof SQLServerDriver) {
-            $sql .=  ' RECURSIVE ';
-        }
-
-        $itemNameColumn = $this->database->table($this->tableName)->getColumns()['name'];
-        $itemNameColumnType = $this->database->getDriver() instanceof MySQLDriver
-            ? 'char'
-            : $itemNameColumn->getInternalType();
-        $sql .= "parent_of(child_name) AS (
-            SELECT CAST(:name_for_recursion AS $itemNameColumnType({$itemNameColumn->getSize()}))
-            UNION ALL
-            SELECT parent FROM $this->childrenTableName AS item_child_recursive, parent_of
-            WHERE item_child_recursive.child = parent_of.child_name
-        )
-        SELECT item.* FROM parent_of
-        LEFT JOIN $this->tableName AS item ON item.name = parent_of.child_name
-        WHERE item.name != :excluded_name";
-        /** @psalm-var RawItem[] $rawItems */
-        return $this
-            ->database
-            ->query($sql, [':name_for_recursion' => $name, ':excluded_name' => $name])
-            ->fetchAll();
-    }
-
-    /**
-     * @psalm-return RawItem[]
-     */
-    private function getParentRowsForMysql5(string $name): array
-    {
-        $sql = "SELECT DISTINCT item.* FROM (
-            SELECT @r AS child_name,
-            (SELECT @r := parent FROM $this->childrenTableName WHERE child = child_name) AS parent,
-            @l := @l + 1 AS level
-            FROM (SELECT @r := :name, @l := 0) val, $this->childrenTableName
-        ) s
-        LEFT JOIN $this->tableName AS item ON item.name = s.child_name
-        WHERE item.name != :name";
-        /** @psalm-var RawItem[] $rawItems */
-        return $this
-            ->database
-            ->query($sql, [':name' => $name])
-            ->fetchAll();
     }
 }
