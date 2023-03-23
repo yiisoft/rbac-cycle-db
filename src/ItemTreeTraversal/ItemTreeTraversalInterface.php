@@ -17,4 +17,9 @@ interface ItemTreeTraversalInterface
      * @psalm-return RawItem[]
      */
     public function getParentRows(string $name): array;
+
+    /**
+     * @psalm-return RawItem[]
+     */
+    public function getChildrenRows(string $name): array;
 }

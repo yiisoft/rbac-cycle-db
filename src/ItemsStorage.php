@@ -244,22 +244,14 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getChildren(string $name): array
     {
-        /** @psalm-var RawItem[] $childrenRows */
-        $childrenRows = $this
-            ->database
-            ->select($this->tableName . '.*')
-            ->from([$this->tableName, $this->childrenTableName])
-            ->where(['parent' => $name, 'name' => new Expression('child')])
-            ->fetchAll();
+        $rawItems = $this->treeTraversal->getChildrenRows($name);
+        $items = [];
 
-        $keys = array_column($childrenRows, 'name');
-        return array_combine(
-            $keys,
-            array_map(
-                fn(array $row): Item => $this->createItem(...$row),
-                $childrenRows,
-            ),
-        );
+        foreach ($rawItems as $rawItem) {
+            $items[$rawItem['name']] = $this->createItem(...$rawItem);
+        }
+
+        return $items;
     }
 
     public function hasChildren(string $name): bool

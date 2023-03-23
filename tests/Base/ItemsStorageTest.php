@@ -132,14 +132,37 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertSame(false, $itemsChildrenExist);
     }
 
-    public function testGetChildren(): void
+    public function dataGetChildren(): array
+    {
+        return [
+            ['Parent 1', ['Child 1']],
+            ['Parent 2', ['Child 2', 'Child 3']],
+            ['posts.view', []],
+            ['posts.create', []],
+            ['posts.update', []],
+            ['posts.delete', []],
+            ['posts.viewer', ['posts.view']],
+            ['posts.redactor', ['posts.viewer', 'posts.view', 'posts.create', 'posts.update']],
+            [
+                'posts.admin',
+                ['posts.redactor', 'posts.viewer', 'posts.view', 'posts.create', 'posts.update', 'posts.delete'],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataGetChildren
+     */
+    public function testGetChildren(string $parentName, array $expectedChildren): void
     {
         $storage = $this->getStorage();
+        $children = $storage->getChildren($parentName);
 
-        $children = $storage->getChildren('Parent 1');
-
-        $this->assertCount(1, $children);
-        $this->assertContainsOnlyInstancesOf(Item::class, $children);
+        $this->assertCount(count($expectedChildren), $children);
+        foreach ($children as $childName => $child) {
+            $this->assertContains($childName, $expectedChildren);
+            $this->assertSame($childName, $child->getName());
+        }
     }
 
     public function testGetRoles(): void
@@ -186,6 +209,7 @@ abstract class ItemsStorageTest extends TestCase
             ['Child 2', ['Parent 2']],
             ['posts.view', ['posts.admin', 'posts.redactor', 'posts.viewer']],
             ['posts.create', ['posts.admin', 'posts.redactor']],
+            ['posts.update', ['posts.admin', 'posts.redactor']],
             ['posts.delete', ['posts.admin']],
             ['posts.viewer', ['posts.admin', 'posts.redactor']],
             ['posts.redactor', ['posts.admin']],

@@ -30,4 +30,9 @@ final class MysqlItemTreeTraversal extends BaseItemTreeTraversal implements Item
             ->query($sql, [':name' => $name])
             ->fetchAll();
     }
+
+    public function getChildrenRows(string $name): array
+    {
+        return [];
+    }
 }
