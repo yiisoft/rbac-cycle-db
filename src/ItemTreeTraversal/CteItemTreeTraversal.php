@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\ItemTreeTraversal;
 
 use Cycle\Database\ColumnInterface;
+use Yiisoft\Rbac\Cycle\ItemsStorage;
 
 /**
  * @internal
+ *
+ * @psalm-import-type RawItem from ItemsStorage
  */
 abstract class CteItemTreeTraversal extends BaseItemTreeTraversal implements ItemTreeTraversalInterface
 {
@@ -25,6 +28,7 @@ abstract class CteItemTreeTraversal extends BaseItemTreeTraversal implements Ite
         LEFT JOIN $this->tableName AS item ON item.name = parent_of.child_name
         WHERE item.name != :excluded_name";
 
+        /** @psalm-var RawItem[] */
         return $this
             ->database
             ->query($sql, [':name_for_recursion' => $name, ':excluded_name' => $name])

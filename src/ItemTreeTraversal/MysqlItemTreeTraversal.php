@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle\ItemTreeTraversal;
 
+use Yiisoft\Rbac\Cycle\ItemsStorage;
+
 /**
  * @internal
+ *
+ * @psalm-import-type RawItem from ItemsStorage
  */
 final class MysqlItemTreeTraversal extends BaseItemTreeTraversal implements ItemTreeTraversalInterface
 {
@@ -20,6 +24,7 @@ final class MysqlItemTreeTraversal extends BaseItemTreeTraversal implements Item
         LEFT JOIN $this->tableName AS item ON item.name = s.child_name
         WHERE item.name != :name";
 
+        /** @psalm-var RawItem[] */
         return $this
             ->database
             ->query($sql, [':name' => $name])

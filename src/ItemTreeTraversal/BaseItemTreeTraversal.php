@@ -11,6 +11,10 @@ use Cycle\Database\DatabaseInterface;
  */
 class BaseItemTreeTraversal
 {
+    /**
+     * @psalm-param non-empty-string $tableName
+     * @psalm-param non-empty-string $childrenTableName
+     */
     public function __construct(
         protected DatabaseInterface $database,
         protected string $tableName,

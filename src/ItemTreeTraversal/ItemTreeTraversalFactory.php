@@ -16,6 +16,10 @@ use RuntimeException;
  */
 class ItemTreeTraversalFactory
 {
+    /**
+     * @psalm-param non-empty-string $tableName
+     * @psalm-param non-empty-string $childrenTableName
+     */
     public static function getItemTreeTraversal(
         DatabaseInterface $database,
         string $tableName,
@@ -30,7 +34,9 @@ class ItemTreeTraversalFactory
         }
 
         if ($driver instanceof MySQLDriver) {
-            $version = $database->query('SELECT VERSION() AS version')->fetch()['version'];
+            /** @psalm-var array{version: string} $row */
+            $row = $database->query('SELECT VERSION() AS version')->fetch();
+            $version = $row['version'];
 
             return str_starts_with($version, '5')
                 ? new MysqlItemTreeTraversal(...$arguments)
