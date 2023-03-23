@@ -2,6 +2,7 @@
 
 ## 1.0.1 under development
 
+- Bug #48: Fix various DBMS support (@arogachev)
 - Bug #46: Fix not working `--force` flag for `RbacCycleInit` console command (@arogachev)
 - Fix #42: Use integer type instead of timestamp (@arogachev)
 

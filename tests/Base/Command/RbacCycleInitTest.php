@@ -194,7 +194,7 @@ abstract class RbacCycleInitTest extends TestCase
         $this->assertArrayHasKey('type', $columns);
         $type = $columns['type'];
         $this->assertSame('string', $type->getType());
-        $this->assertSame([Item::TYPE_ROLE, Item::TYPE_PERMISSION], $type->getEnumValues());
+        $this->assertEqualsCanonicalizing([Item::TYPE_ROLE, Item::TYPE_PERMISSION], $type->getEnumValues());
         $this->assertFalse($type->isNullable());
 
         $this->assertArrayHasKey('description', $columns);
@@ -295,8 +295,8 @@ abstract class RbacCycleInitTest extends TestCase
 
             $this->assertSame(self::ITEMS_TABLE, $foreignKey->getForeignTable());
             $this->assertSame(['name'], $foreignKey->getForeignKeys());
-            $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getUpdateRule());
-            $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getDeleteRule());
+            $this->assertSame(ForeignKeyInterface::NO_ACTION, $foreignKey->getUpdateRule());
+            $this->assertSame(ForeignKeyInterface::NO_ACTION, $foreignKey->getDeleteRule());
         }
     }
 

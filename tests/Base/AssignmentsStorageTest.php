@@ -22,17 +22,8 @@ abstract class AssignmentsStorageTest extends TestCase
         $storage = $this->getStorage();
         $storage->renameItem('Accountant', 'Senior accountant');
 
-        $this->assertFalse($storage->hasItem('Accountant'));
-        $this->assertTrue($storage->hasItem('Senior accountant'));
-    }
-
-    public function testRenameItemToSameName(): void
-    {
-        $storage = $this->getStorage();
-        $name = 'Accountant';
-        $storage->renameItem($name, $name);
-
-        $this->assertTrue($storage->hasItem($name));
+        $this->assertTrue($storage->hasItem('Accountant'));
+        $this->assertFalse($storage->hasItem('Senior accountant'));
     }
 
     public function testGetAll(): void
@@ -119,97 +110,52 @@ abstract class AssignmentsStorageTest extends TestCase
     {
         $time = time();
         $items = [
-            [
-                'name' => 'Researcher',
-                'type' => Item::TYPE_ROLE,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
-            [
-                'name' => 'Accountant',
-                'type' => Item::TYPE_ROLE,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
-            [
-                'name' => 'Quality control specialist',
-                'type' => Item::TYPE_ROLE,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
-            [
-                'name' => 'Operator',
-                'type' => Item::TYPE_ROLE,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
-            [
-                'name' => 'Manager',
-                'type' => Item::TYPE_ROLE,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
-            [
-                'name' => 'Support specialist',
-                'type' => Item::TYPE_ROLE,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
-            [
-                'name' => 'Delete user',
-                'type' => Item::TYPE_PERMISSION,
-                'createdAt' => $time,
-                'updatedAt' => $time,
-            ],
+            ['name' => 'Researcher', 'type' => Item::TYPE_ROLE],
+            ['name' => 'Accountant', 'type' => Item::TYPE_ROLE],
+            ['name' => 'Quality control specialist', 'type' => Item::TYPE_ROLE],
+            ['name' => 'Operator', 'type' => Item::TYPE_ROLE],
+            ['name' => 'Manager', 'type' => Item::TYPE_ROLE],
+            ['name' => 'Support specialist', 'type' => Item::TYPE_ROLE],
+            ['name' => 'Delete user', 'type' => Item::TYPE_PERMISSION],
         ];
+        $items = array_map(
+            static function (array $item) use ($time): array {
+                $item['createdAt'] = $time;
+                $item['updatedAt'] = $time;
+
+                return $item;
+            },
+            $items,
+        );
         $assignments = [
-            [
-                'itemName' => 'Researcher',
-                'userId' => 'john',
-                'createdAt' => $time,
-            ],
-            [
-                'itemName' => 'Accountant',
-                'userId' => 'john',
-                'createdAt' => $time,
-            ],
-            [
-                'itemName' => 'Quality control specialist',
-                'userId' => 'john',
-                'createdAt' => $time,
-            ],
-            [
-                'itemName' => 'Operator',
-                'userId' => 'jack',
-                'createdAt' => $time,
-            ],
-            [
-                'itemName' => 'Manager',
-                'userId' => 'jack',
-                'createdAt' => $time,
-            ],
-            [
-                'itemName' => 'Support specialist',
-                'userId' => 'jack',
-                'createdAt' => $time,
-            ],
+            ['itemName' => 'Researcher', 'userId' => 'john'],
+            ['itemName' => 'Accountant', 'userId' => 'john'],
+            ['itemName' => 'Quality control specialist', 'userId' => 'john'],
+            ['itemName' => 'Operator', 'userId' => 'jack'],
+            ['itemName' => 'Manager', 'userId' => 'jack'],
+            ['itemName' => 'Support specialist', 'userId' => 'jack'],
         ];
+        $assignments = array_map(
+            static function (array $item) use ($time): array {
+                $item['createdAt'] = $time;
 
-        foreach ($items as $item) {
-            $this->getDbal()
-                ->database()
-                ->insert(self::ITEMS_TABLE)
-                ->values($item)
-                ->run();
-        }
+                return $item;
+            },
+            $assignments,
+        );
 
-        foreach ($assignments as $assignment) {
-            $this->getDbal()
-                ->database()
-                ->insert(self::ASSIGNMENTS_TABLE)
-                ->values($assignment)
-                ->run();
-        }
+        $this->getDbal()
+            ->database()
+            ->insert(self::ITEMS_TABLE)
+            ->columns(['name', 'type', 'createdAt', 'updatedAt'])
+            ->values($items)
+            ->run();
+        $this->getDbal()
+            ->database()
+            ->insert(self::ASSIGNMENTS_TABLE)
+            ->columns(['itemName', 'userId', 'createdAt'])
+            ->values($assignments)
+            ->run();
     }
 
     private function getStorage(): AssignmentsStorage

@@ -25,7 +25,9 @@ trait SqliteTrait
                 ],
             ]
         );
+        $dbManager = new DatabaseManager($dbConfig);
+        $dbManager->database()->execute('PRAGMA foreign_keys = ON;');
 
-        return new DatabaseManager($dbConfig);
+        return $dbManager;
     }
 }

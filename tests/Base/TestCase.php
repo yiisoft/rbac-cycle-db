@@ -18,7 +18,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected const ITEMS_TABLE = 'auth_item';
     protected const ASSIGNMENTS_TABLE = 'auth_assignment';
     protected const ITEMS_CHILDREN_TABLE = 'auth_item_child';
-    private const TABLES = [self::ITEMS_TABLE, self::ASSIGNMENTS_TABLE, self::ITEMS_CHILDREN_TABLE];
+    private const TABLES_FOR_DROPPING = [self::ITEMS_CHILDREN_TABLE, self::ASSIGNMENTS_TABLE, self::ITEMS_TABLE];
 
     protected function getDbal(): DatabaseManager
     {
@@ -37,7 +37,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function tearDown(): void
     {
-        foreach (self::TABLES as $name) {
+        foreach (self::TABLES_FOR_DROPPING as $name) {
             $table = $this->getDbal()->database()->table($name);
             /** @var AbstractTable $schema */
             $schema = $table->getSchema();
