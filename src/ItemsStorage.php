@@ -6,7 +6,6 @@ namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\Database;
 use Cycle\Database\DatabaseInterface;
-use Cycle\Database\Injection\Expression;
 use Cycle\Database\Injection\Fragment;
 use Yiisoft\Rbac\Cycle\ItemTreeTraversal\ItemTreeTraversalFactory;
 use Yiisoft\Rbac\Cycle\ItemTreeTraversal\ItemTreeTraversalInterface;
