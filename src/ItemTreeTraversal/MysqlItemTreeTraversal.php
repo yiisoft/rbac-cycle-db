@@ -33,6 +33,15 @@ final class MysqlItemTreeTraversal extends BaseItemTreeTraversal implements Item
 
     public function getChildrenRows(string $name): array
     {
-        return [];
+        $sql = "SELECT DISTINCT child
+        FROM (SELECT * FROM auth_item_child ORDER by parent) item_child_sorted,
+        (SELECT @pv := :name) init
+        WHERE find_in_sett(parent, @pv) AND length(@pv := concat(@pv, ',', child))";
+
+        /** @psalm-var RawItem[] */
+        return $this
+            ->database
+            ->query($sql, [':name' => $name])
+            ->fetchAll();
     }
 }
