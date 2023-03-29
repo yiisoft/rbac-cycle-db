@@ -49,13 +49,15 @@ jobs:
 
       - name: Install SQLite
         run: |
+          which sqlite3
           sqlite3 --version
           wget -O sqlite-source.tar.gz https://github.com/sqlite/sqlite/archive/refs/tags/version-${{ matrix.sqlite }}.tar.gz
           tar -xvf sqlite-source.tar.gz && cd sqlite-version-${{ matrix.sqlite }}
           ./configure
           make
-          sudo make install
+          make install
           export PATH="/usr/local/lib:$PATH"
+          which sqlite3
           sqlite3 --version
 
       - name: Install PHP with extensions

@@ -33,7 +33,7 @@ class ItemTreeTraversalFactory
             $row = $database->query('SELECT sqlite_version() AS version')->fetch();
             $version = $row['version'];
 
-            var_dump(\SQLite3::version());
+            var_dump($version);
             exit;
 
             return version_compare($version, '3.8.3', '>=')
