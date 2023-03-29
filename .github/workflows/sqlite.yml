@@ -50,7 +50,7 @@ jobs:
       - name: Install SQLite
         run: |
           wget -O sqlite-source.tar.gz https://github.com/sqlite/sqlite/archive/refs/tags/version-${{ matrix.sqlite }}.tar.gz
-          tar -xvf sqlite-source.tar.gz && cd sqlite-version-${{ matrix.sqlite }}/autoconf
+          tar -xvf sqlite-source.tar.gz && cd sqlite-version-${{ matrix.sqlite }}
           ./configure
           make
           sudo make install
