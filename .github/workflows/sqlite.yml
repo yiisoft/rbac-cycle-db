@@ -90,6 +90,7 @@ jobs:
 
       - name: Run tests with phpunit
         run: |
+          which sqlite3
           sqlite3 --version
           vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
 
