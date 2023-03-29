@@ -29,7 +29,13 @@ class ItemTreeTraversalFactory
         $driver = $database->getDriver();
 
         if ($driver instanceof SQLiteDriver) {
-            return new SqliteCteItemTreeTraversal(...$arguments);
+            /** @psalm-var array{version: string} $row */
+            $row = $database->query('SELECT sqlite_version() AS version')->fetch();
+            $version = $row['version'];
+
+            return version_compare($version, '3.8.3', '>=')
+                ? new SqliteCteItemTreeTraversal(...$arguments)
+                : new SqliteItemTreeTraversal(...$arguments);
         }
 
         if ($driver instanceof MySQLDriver) {
