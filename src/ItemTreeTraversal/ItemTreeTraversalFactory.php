@@ -34,7 +34,7 @@ class ItemTreeTraversalFactory
             $version = $row['version'];
 
             var_dump($version);
-            exit();
+            exit;
 
             return version_compare($version, '3.8.3', '>=')
                 ? new SqliteCteItemTreeTraversal(...$arguments)
