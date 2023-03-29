@@ -91,3 +91,9 @@ jobs:
 
       - name: Run tests with phpunit
         run: vendor/bin/phpunit --testsuite Pgsql --colors=always
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
