@@ -73,7 +73,7 @@ jobs:
       - name: Install dependencies with composer
         run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
-      - name: Install SQLite
+      - name: Install SQLite and run tests with phpunit
         run: |
           which sqlite3
           sqlite3 --version
@@ -85,11 +85,6 @@ jobs:
           export PATH=$HOME/opt/sqlite/bin:$PATH
           export LD_LIBRARY_PATH=$HOME/opt/sqlite/lib
           export LD_RUN_PATH=$HOME/opt/sqlite/lib
-          which sqlite3
-          sqlite3 --version
-
-      - name: Run tests with phpunit
-        run: |
           which sqlite3
           sqlite3 --version
           vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
