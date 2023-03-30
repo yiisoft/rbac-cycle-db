@@ -22,75 +22,11 @@ on:
 name: sqlite
 
 jobs:
-  tests:
-    name: PHP ${{ matrix.php }}-sqlite-${{ matrix.sqlite }}
-
-    env:
+  phpunit:
+    uses: yiisoft/actions/.github/workflows/phpunit.yml@master
+    with:
       extensions: pdo, pdo_sqlite
-
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-
-        php:
-          - 8.0
-          - 8.1
-
-        sqlite:
-          - 3.8.2
-          - 3.41.2
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install PHP with extensions
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: ${{ env.extensions }}
-          ini-values: date.timezone='UTC'
-          coverage: pcov
-
-      - name: Determine composer cache directory
-        if: matrix.os == 'ubuntu-latest'
-        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
-
-      - name: Cache dependencies installed with composer
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.COMPOSER_CACHE_DIR }}
-          key: php${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: |
-            php${{ matrix.php }}-composer-
-
-      - name: Update composer
-        run: composer self-update
-
-      - name: Install dependencies with composer
-        run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
-
-      - name: Run tests with phpunit
-        run: |
-          which sqlite3
-          sqlite3 --version
-          wget -O sqlite-source.tar.gz https://github.com/sqlite/sqlite/archive/refs/tags/version-${{ matrix.sqlite }}.tar.gz
-          tar -xvf sqlite-source.tar.gz
-          cd sqlite-version-${{ matrix.sqlite }}
-          ./configure
-          make
-          sudo make install
-          cd ..
-          export PATH=/usr/local/bin:$PATH
-          which sqlite3
-          sqlite3 --version
-          vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
-
-      - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest'
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage.xml
+      os: >-
+        ['ubuntu-latest', 'windows-latest']
+      php: >-
+        ['8.0', '8.1']
