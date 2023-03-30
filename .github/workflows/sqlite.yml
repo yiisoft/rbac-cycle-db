@@ -51,6 +51,7 @@ jobs:
         run: |
           which sqlite3
           sqlite3 --version
+          sudo apt purge sqlite3 -y
           which sqlite3
           sqlite3 --version
           wget -O sqlite-source.tar.gz https://github.com/sqlite/sqlite/archive/refs/tags/version-${{ matrix.sqlite }}.tar.gz
