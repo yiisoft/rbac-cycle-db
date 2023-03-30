@@ -54,7 +54,7 @@ jobs:
           wget -O sqlite-source.tar.gz https://github.com/sqlite/sqlite/archive/refs/tags/version-${{ matrix.sqlite }}.tar.gz
           tar -xvf sqlite-source.tar.gz
           cd sqlite-version-${{ matrix.sqlite }}
-          ./configure --prefix=/usr/bin
+          ./configure --prefix=/usr/bin/sqlite3
           make
           sudo make install
           cd ..
