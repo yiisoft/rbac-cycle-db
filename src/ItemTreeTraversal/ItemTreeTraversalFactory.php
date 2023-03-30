@@ -52,6 +52,6 @@ class ItemTreeTraversalFactory
 
         // @codeCoverageIgnoreStart
         throw new RuntimeException('Unknown database driver.');
-        // @codeCoverageIgnoreStart
+        // @codeCoverageIgnoreEnd
     }
 }
