@@ -14,7 +14,7 @@ use Cycle\Database\ColumnInterface;
  */
 final class MysqlCteItemTreeTraversal extends CteItemTreeTraversal
 {
-    protected function getCastedColumnType(ColumnInterface $column): string
+    protected function getCastedNameType(ColumnInterface $column): string
     {
         return 'char';
     }

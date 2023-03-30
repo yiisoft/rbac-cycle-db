@@ -21,7 +21,7 @@ abstract class CteItemTreeTraversal extends BaseItemTreeTraversal implements Ite
     public function getParentRows(string $name): array
     {
         $itemNameColumn = $this->database->table($this->tableName)->getColumns()['name'];
-        $itemNameColumnType = $this->getCastedColumnType($itemNameColumn);
+        $itemNameColumnType = $this->getCastedNameType($itemNameColumn);
         $sql = "{$this->getWithExpression()} parent_of(child_name) AS (
             SELECT CAST(:name_for_recursion AS $itemNameColumnType({$itemNameColumn->getSize()}))
             UNION ALL
@@ -42,7 +42,7 @@ abstract class CteItemTreeTraversal extends BaseItemTreeTraversal implements Ite
     public function getChildrenRows(string $name): array
     {
         $itemNameColumn = $this->database->table($this->tableName)->getColumns()['name'];
-        $itemNameColumnType = $this->getCastedColumnType($itemNameColumn);
+        $itemNameColumnType = $this->getCastedNameType($itemNameColumn);
         $sql = "{$this->getWithExpression()} child_of(parent_name) AS (
             SELECT CAST(:name_for_recursion AS $itemNameColumnType({$itemNameColumn->getSize()}))
             UNION ALL
@@ -74,16 +74,16 @@ abstract class CteItemTreeTraversal extends BaseItemTreeTraversal implements Ite
     }
 
     /**
-     * Gets type for casting column's value. Defaults to a type initially defined in schema.
+     * Gets type for casting "name" column's value. Defaults to a type initially defined in schema.
      *
      * @param ColumnInterface $column Cycle column instance.
      *
-     * @return string Type for casting column's value.
+     * @return string Type for casting "name" column's value.
      *
      * @infection-ignore-all
      * - ProtectedVisibility.
      */
-    protected function getCastedColumnType(ColumnInterface $column): string
+    protected function getCastedNameType(ColumnInterface $column): string
     {
         return $column->getInternalType();
     }
