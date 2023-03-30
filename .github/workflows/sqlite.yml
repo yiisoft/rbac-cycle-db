@@ -84,6 +84,7 @@ jobs:
           make
           sudo make install
           cd ..
+          export PATH=/usr/local/bin:$PATH
           which sqlite3
           sqlite3 --version
           vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
