@@ -56,11 +56,19 @@ abstract class CteItemTreeTraversal extends BaseItemTreeTraversal implements Ite
             ->fetchAll();
     }
 
+    /**
+     * @infection-ignore-all
+     * - ProtectedVisibility.
+     */
     protected function getWithExpression(): string
     {
         return 'WITH RECURSIVE';
     }
 
+    /**
+     * @infection-ignore-all
+     * - ProtectedVisibility.
+     */
     protected function getCastedColumnType(ColumnInterface $column): string
     {
         return $column->getInternalType();
