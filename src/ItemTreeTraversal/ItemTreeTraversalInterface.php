@@ -23,7 +23,6 @@ interface ItemTreeTraversalInterface
      *
      * @return array Flat list of all parents.
      * @psalm-return RawItem[]
-     *
      */
     public function getParentRows(string $name): array;
 
