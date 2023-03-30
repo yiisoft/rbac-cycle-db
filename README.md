@@ -19,7 +19,7 @@ The package provides [Cycle Database](https://github.com/cycle/database) storage
 ## Requirements
 
 - PHP 8.0 or higher.
-- In case of using SQLite RDBMS, minimal required version is 3.8.3.
+- In case of using with SQLite, minimal required version is 3.8.3.
 
 ## Installation
 
