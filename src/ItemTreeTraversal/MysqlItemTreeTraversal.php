@@ -7,6 +7,9 @@ namespace Yiisoft\Rbac\Cycle\ItemTreeTraversal;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 
 /**
+ * A RBAC item tree traversal strategy based on specific functionality for MySQL 5, without support for CTE (Common
+ * Table Expressions).
+ *
  * @internal
  *
  * @psalm-import-type RawItem from ItemsStorage

@@ -12,13 +12,27 @@ use Cycle\Database\Driver\SQLServer\SQLServerDriver;
 use RuntimeException;
 
 /**
+ * A factory for creating item tree traversal strategy depending on used RDBMS.
+ *
  * @internal
  */
 class ItemTreeTraversalFactory
 {
     /**
+     * Creates item tree traversal strategy depending on used RDBMS.
+     *
+     * @param DatabaseInterface $database Cycle database instance.
+     *
+     * @param string $tableName A name of the table for storing RBAC items.
      * @psalm-param non-empty-string $tableName
+     *
+     * @param string $childrenTableName A name of the table for storing relations between RBAC items.
      * @psalm-param non-empty-string $childrenTableName
+     *
+     * @return ItemTreeTraversalInterface Item tree traversal strategy.
+     *
+     * @throws RuntimeException When a database was configured with unknown driver, either not supported by Cycle out of
+     * the box or newly added by Cycle and not supported / tested yet in this package.
      */
     public static function getItemTreeTraversal(
         DatabaseInterface $database,
@@ -50,6 +64,7 @@ class ItemTreeTraversalFactory
             return new SqlserverCteItemTreeTraversal(...$arguments);
         }
 
+        // Ignored due to a complexity of testing and preventing splitting of database argument.
         // @codeCoverageIgnoreStart
         throw new RuntimeException('Unknown database driver.');
         // @codeCoverageIgnoreEnd

@@ -8,6 +8,10 @@ use Cycle\Database\ColumnInterface;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 
 /**
+ * A RBAC item tree traversal strategy based on CTE (common table expression). Uses `WITH` expression to form a
+ * recursive query. The base queries are unified as much possible to work for all RDBMS supported by Cycle with minimal
+ * differences.
+ *
  * @internal
  *
  * @psalm-import-type RawItem from ItemsStorage
@@ -57,8 +61,12 @@ abstract class CteItemTreeTraversal extends BaseItemTreeTraversal implements Ite
     }
 
     /**
+     * Gets `WITH` expression used in DB query.
+     *
      * @infection-ignore-all
      * - ProtectedVisibility.
+     *
+     * @return string `WITH` expression.
      */
     protected function getWithExpression(): string
     {
@@ -66,6 +74,12 @@ abstract class CteItemTreeTraversal extends BaseItemTreeTraversal implements Ite
     }
 
     /**
+     * Gets type for casting column's value. Defaults to a type initially defined in schema.
+     *
+     * @param ColumnInterface $column Cycle column instance.
+     *
+     * @return string Type for casting column's value.
+     *
      * @infection-ignore-all
      * - ProtectedVisibility.
      */
