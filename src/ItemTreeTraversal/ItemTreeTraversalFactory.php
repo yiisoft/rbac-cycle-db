@@ -43,13 +43,15 @@ class ItemTreeTraversalFactory
         }
 
         if ($driver instanceof PostgresDriver) {
-            return new PostgresCteItemTreeTraversal($database, $tableName, $childrenTableName);
+            return new PostgresCteItemTreeTraversal(...$arguments);
         }
 
-        if ($database->getDriver() instanceof SQLServerDriver) {
+        if ($driver instanceof SQLServerDriver) {
             return new SqlserverCteItemTreeTraversal(...$arguments);
         }
 
+        // @codeCoverageIgnoreStart
         throw new RuntimeException('Unknown database driver.');
+        // @codeCoverageIgnoreStart
     }
 }
