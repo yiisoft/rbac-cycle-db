@@ -47,20 +47,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install SQLite
-        run: |
-          which sqlite3
-          sqlite3 --version
-          wget -O sqlite-source.tar.gz https://github.com/sqlite/sqlite/archive/refs/tags/version-${{ matrix.sqlite }}.tar.gz
-          tar -xvf sqlite-source.tar.gz
-          cd sqlite-version-${{ matrix.sqlite }}
-          ./configure --prefix=/usr/bin/sqlite3
-          make
-          sudo make install
-          cd ..
-          which sqlite3
-          sqlite3 --version
-
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
         with:
@@ -89,6 +75,15 @@ jobs:
 
       - name: Run tests with phpunit
         run: |
+          which sqlite3
+          sqlite3 --version
+          wget -O sqlite-source.tar.gz https://github.com/sqlite/sqlite/archive/refs/tags/version-${{ matrix.sqlite }}.tar.gz
+          tar -xvf sqlite-source.tar.gz
+          cd sqlite-version-${{ matrix.sqlite }}
+          ./configure
+          make
+          sudo make install
+          cd ..
           which sqlite3
           sqlite3 --version
           vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
