@@ -51,7 +51,6 @@ jobs:
         run: |
           which sqlite3
           sqlite3 --version
-          sudo apt-get -o Debug::pkgProblemResolver=true -o Debug::Acquire::http=true remove sqlite3 -y
           which sqlite3
           sqlite3 --version
           wget -O sqlite-source.tar.gz https://github.com/sqlite/sqlite/archive/refs/tags/version-${{ matrix.sqlite }}.tar.gz
@@ -98,8 +97,6 @@ jobs:
           which sqlite3
           sqlite3 --version
           export PATH=$HOME/opt/sqlite/bin:$PATH
-          export LD_LIBRARY_PATH=$HOME/opt/sqlite/lib
-          export LD_RUN_PATH=$HOME/opt/sqlite/lib
           which sqlite3
           sqlite3 --version
           vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
