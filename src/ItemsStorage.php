@@ -39,7 +39,7 @@ final class ItemsStorage implements ItemsStorageInterface
      * @var ItemTreeTraversalInterface|null Lazily created RBAC item tree traversal strategy.
      * @psalm-suppress PropertyNotSetInConstructor
      */
-    private ?ItemTreeTraversalInterface $treeTraversal;
+    private ?ItemTreeTraversalInterface $treeTraversal = null;
 
     /**
      * @param string $tableName A name of the table for storing RBAC items.
