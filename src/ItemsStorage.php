@@ -35,7 +35,11 @@ final class ItemsStorage implements ItemsStorageInterface
      * @psalm-var non-empty-string A name of the table for storing relations between RBAC items.
      */
     private string $childrenTableName;
-    private ItemTreeTraversalInterface $treeTraversal;
+    /**
+     * @var ItemTreeTraversalInterface|null Lazily created RBAC item tree traversal strategy.
+     * @psalm-suppress PropertyNotSetInConstructor
+     */
+    private ?ItemTreeTraversalInterface $treeTraversal;
 
     /**
      * @param string $tableName A name of the table for storing RBAC items.
@@ -52,11 +56,6 @@ final class ItemsStorage implements ItemsStorageInterface
         ?string $childrenTableName = null,
     ) {
         $this->childrenTableName = $childrenTableName ?? $tableName . '_child';
-        $this->treeTraversal = ItemTreeTraversalFactory::getItemTreeTraversal(
-            $this->database,
-            $this->tableName,
-            $this->childrenTableName,
-        );
     }
 
     public function clear(): void
@@ -231,7 +230,7 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getParents(string $name): array
     {
-        $rawItems = $this->treeTraversal->getParentRows($name);
+        $rawItems = $this->getTreeTraversal()->getParentRows($name);
         $items = [];
 
         foreach ($rawItems as $rawItem) {
@@ -243,7 +242,7 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getChildren(string $name): array
     {
-        $rawItems = $this->treeTraversal->getChildrenRows($name);
+        $rawItems = $this->getTreeTraversal()->getChildrenRows($name);
         $items = [];
 
         foreach ($rawItems as $rawItem) {
@@ -464,5 +463,22 @@ final class ItemsStorage implements ItemsStorageInterface
                     ->delete($itemsStorage->tableName, ['type' => $type])
                     ->run();
             });
+    }
+
+    /**
+     * Creates RBAC item tree traversal strategy and returns it. In case it was already created, just retrieves
+     * previously saved instance.
+     */
+    private function getTreeTraversal(): ItemTreeTraversalInterface
+    {
+        if ($this->treeTraversal === null) {
+            $this->treeTraversal = ItemTreeTraversalFactory::getItemTreeTraversal(
+                $this->database,
+                $this->tableName,
+                $this->childrenTableName,
+            );
+        }
+
+        return $this->treeTraversal;
     }
 }
