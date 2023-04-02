@@ -65,7 +65,7 @@ class ItemTreeTraversalFactory
 
         // Ignored due to a complexity of testing and preventing splitting of database argument.
         // @codeCoverageIgnoreStart
-        throw new RuntimeException('Unknown database driver.');
+        throw new RuntimeException("{$driver->getType()} database driver is not supported.");
         // @codeCoverageIgnoreEnd
     }
 }
