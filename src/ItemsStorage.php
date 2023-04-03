@@ -6,8 +6,9 @@ namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\Database;
 use Cycle\Database\DatabaseInterface;
-use Cycle\Database\Injection\Expression;
 use Cycle\Database\Injection\Fragment;
+use Yiisoft\Rbac\Cycle\ItemTreeTraversal\ItemTreeTraversalFactory;
+use Yiisoft\Rbac\Cycle\ItemTreeTraversal\ItemTreeTraversalInterface;
 use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
@@ -34,6 +35,10 @@ final class ItemsStorage implements ItemsStorageInterface
      * @psalm-var non-empty-string A name of the table for storing relations between RBAC items.
      */
     private string $childrenTableName;
+    /**
+     * @var ItemTreeTraversalInterface|null Lazily created RBAC item tree traversal strategy.
+     */
+    private ?ItemTreeTraversalInterface $treeTraversal = null;
 
     /**
      * @param string $tableName A name of the table for storing RBAC items.
@@ -224,41 +229,26 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getParents(string $name): array
     {
-        /** @psalm-var RawItem[] $parentRows */
-        $parentRows = $this
-            ->database
-            ->select($this->tableName . '.*')
-            ->from([$this->tableName, $this->childrenTableName])
-            ->where(['child' => $name, 'name' => new Expression('parent')])
-            ->fetchAll();
+        $rawItems = $this->getTreeTraversal()->getParentRows($name);
+        $items = [];
 
-        return array_combine(
-            array_column($parentRows, 'name'),
-            array_map(
-                fn(array $row): Item => $this->createItem(...$row),
-                $parentRows,
-            ),
-        );
+        foreach ($rawItems as $rawItem) {
+            $items[$rawItem['name']] = $this->createItem(...$rawItem);
+        }
+
+        return $items;
     }
 
     public function getChildren(string $name): array
     {
-        /** @psalm-var RawItem[] $childrenRows */
-        $childrenRows = $this
-            ->database
-            ->select($this->tableName . '.*')
-            ->from([$this->tableName, $this->childrenTableName])
-            ->where(['parent' => $name, 'name' => new Expression('child')])
-            ->fetchAll();
+        $rawItems = $this->getTreeTraversal()->getChildrenRows($name);
+        $items = [];
 
-        $keys = array_column($childrenRows, 'name');
-        return array_combine(
-            $keys,
-            array_map(
-                fn(array $row): Item => $this->createItem(...$row),
-                $childrenRows,
-            ),
-        );
+        foreach ($rawItems as $rawItem) {
+            $items[$rawItem['name']] = $this->createItem(...$rawItem);
+        }
+
+        return $items;
     }
 
     public function hasChildren(string $name): bool
@@ -472,5 +462,22 @@ final class ItemsStorage implements ItemsStorageInterface
                     ->delete($itemsStorage->tableName, ['type' => $type])
                     ->run();
             });
+    }
+
+    /**
+     * Creates RBAC item tree traversal strategy and returns it. In case it was already created, just retrieves
+     * previously saved instance.
+     */
+    private function getTreeTraversal(): ItemTreeTraversalInterface
+    {
+        if ($this->treeTraversal === null) {
+            $this->treeTraversal = ItemTreeTraversalFactory::getItemTreeTraversal(
+                $this->database,
+                $this->tableName,
+                $this->childrenTableName,
+            );
+        }
+
+        return $this->treeTraversal;
     }
 }

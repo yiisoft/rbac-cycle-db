@@ -12,6 +12,12 @@ use Yiisoft\Rbac\Role;
 
 abstract class ItemsStorageTest extends TestCase
 {
+    private int $initialRolesCount = 0;
+    private int $initialPermissionsCount = 0;
+    private int $initialBothRolesChildrenCount = 0;
+    private int $initialBothPermissionsChildrenCount = 0;
+    private int $initialItemsChildrenCount = 0;
+
     public function dataUpdate(): array
     {
         return [
@@ -126,14 +132,37 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertSame(false, $itemsChildrenExist);
     }
 
-    public function testGetChildren(): void
+    public function dataGetChildren(): array
+    {
+        return [
+            ['Parent 1', ['Child 1']],
+            ['Parent 2', ['Child 2', 'Child 3']],
+            ['posts.view', []],
+            ['posts.create', []],
+            ['posts.update', []],
+            ['posts.delete', []],
+            ['posts.viewer', ['posts.view']],
+            ['posts.redactor', ['posts.viewer', 'posts.view', 'posts.create', 'posts.update']],
+            [
+                'posts.admin',
+                ['posts.redactor', 'posts.viewer', 'posts.view', 'posts.create', 'posts.update', 'posts.delete'],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataGetChildren
+     */
+    public function testGetChildren(string $parentName, array $expectedChildren): void
     {
         $storage = $this->getStorage();
+        $children = $storage->getChildren($parentName);
 
-        $children = $storage->getChildren('Parent 1');
-
-        $this->assertCount(1, $children);
-        $this->assertContainsOnlyInstancesOf(Item::class, $children);
+        $this->assertCount(count($expectedChildren), $children);
+        foreach ($children as $childName => $child) {
+            $this->assertContains($childName, $expectedChildren);
+            $this->assertSame($childName, $child->getName());
+        }
     }
 
     public function testGetRoles(): void
@@ -141,7 +170,7 @@ abstract class ItemsStorageTest extends TestCase
         $storage = $this->getStorage();
         $roles = $storage->getRoles();
 
-        $this->assertNotEmpty($roles);
+        $this->assertCount($this->initialRolesCount, $roles);
         $this->assertContainsOnlyInstancesOf(Role::class, $roles);
     }
 
@@ -150,13 +179,14 @@ abstract class ItemsStorageTest extends TestCase
         $storage = $this->getStorage();
         $permissions = $storage->getPermissions();
 
-        $this->assertCount(5, $permissions);
+        $this->assertCount($this->initialPermissionsCount, $permissions);
         $this->assertContainsOnlyInstancesOf(Permission::class, $permissions);
     }
 
     public function testRemove(): void
     {
         $storage = $this->getStorage();
+        $initialItemChildrenCount = count($storage->getChildren('Parent 2'));
         $storage->remove('Parent 2');
 
         $this->assertNull($storage->get('Parent 2'));
@@ -168,13 +198,8 @@ abstract class ItemsStorageTest extends TestCase
             ->database()
             ->select()
             ->from(self::ITEMS_CHILDREN_TABLE)
-            ->fetchAll();
-        $expectedItemsChildren = [
-            ['parent' => 'Parent 1', 'child' => 'Child 1'],
-            ['parent' => 'Parent 4', 'child' => 'Child 4'],
-            ['parent' => 'Parent 5', 'child' => 'Child 5'],
-        ];
-        $this->assertSame($expectedItemsChildren, $itemsChildren);
+            ->count();
+        $this->assertSame($this->initialItemsChildrenCount - $initialItemChildrenCount, $itemsChildren);
     }
 
     public function getParentsProvider(): array
@@ -182,6 +207,13 @@ abstract class ItemsStorageTest extends TestCase
         return [
             ['Child 1', ['Parent 1']],
             ['Child 2', ['Parent 2']],
+            ['posts.view', ['posts.admin', 'posts.redactor', 'posts.viewer']],
+            ['posts.create', ['posts.admin', 'posts.redactor']],
+            ['posts.update', ['posts.admin', 'posts.redactor']],
+            ['posts.delete', ['posts.admin']],
+            ['posts.viewer', ['posts.admin', 'posts.redactor']],
+            ['posts.redactor', ['posts.admin']],
+            ['posts.admin', []],
         ];
     }
 
@@ -244,7 +276,7 @@ abstract class ItemsStorageTest extends TestCase
     public function testGetAll(): void
     {
         $storage = $this->getStorage();
-        $this->assertCount(10, $storage->getAll());
+        $this->assertCount($this->getItemsCount(), $storage->getAll());
     }
 
     public function testHasChildren(): void
@@ -269,12 +301,8 @@ abstract class ItemsStorageTest extends TestCase
             ->database()
             ->select()
             ->from(self::ITEMS_CHILDREN_TABLE)
-            ->fetchAll();
-        $expectedItemsChildren = [
-            ['parent' => 'Parent 2', 'child' => 'Child 2'],
-            ['parent' => 'Parent 2', 'child' => 'Child 3'],
-        ];
-        $this->assertSame($expectedItemsChildren, $itemsChildren);
+            ->count();
+        $this->assertSame($this->initialBothRolesChildrenCount, $itemsChildren);
     }
 
     public function testClearRoles(): void
@@ -293,34 +321,51 @@ abstract class ItemsStorageTest extends TestCase
             ->select([new Fragment('1 AS item_exists')])
             ->from(self::ITEMS_CHILDREN_TABLE)
             ->count();
-        $this->assertSame(1, $itemsChildrenCount);
+        $this->assertSame($this->initialBothPermissionsChildrenCount, $itemsChildrenCount);
     }
 
     protected function populateDb(): void
     {
         $time = time();
-        $items = [
-            ['name' => 'Parent 1', 'type' => Item::TYPE_ROLE],
-            ['name' => 'Parent 2', 'type' => Item::TYPE_ROLE],
-            // Parent without children
-            ['name' => 'Parent 3', 'type' => Item::TYPE_PERMISSION],
-            ['name' => 'Parent 4', 'type' => Item::TYPE_PERMISSION],
-            ['name' => 'Parent 5', 'type' => Item::TYPE_PERMISSION],
-            ['name' => 'Child 1', 'type' => Item::TYPE_PERMISSION],
-            ['name' => 'Child 2', 'type' => Item::TYPE_ROLE],
-            ['name' => 'Child 3', 'type' => Item::TYPE_ROLE],
-            ['name' => 'Child 4', 'type' => Item::TYPE_ROLE],
-            ['name' => 'Child 5', 'type' => Item::TYPE_PERMISSION],
-        ];
-        $items = array_map(
-            static function (array $item) use ($time): array {
-                $item['createdAt'] = $time;
-                $item['updatedAt'] = $time;
+        $itemsMap = [
+            'Parent 1' => Item::TYPE_ROLE,
+            'Parent 2' => Item::TYPE_ROLE,
 
-                return $item;
-            },
-            $items,
-        );
+            // Parent without children
+            'Parent 3' => Item::TYPE_PERMISSION,
+
+            'Parent 4' => Item::TYPE_PERMISSION,
+            'Parent 5' => Item::TYPE_PERMISSION,
+
+            // Parent with multiple generations of children
+            'posts.admin' => Item::TYPE_ROLE,
+            'posts.redactor' => Item::TYPE_ROLE,
+            'posts.viewer' => Item::TYPE_ROLE,
+
+            'Child 1' => Item::TYPE_PERMISSION,
+            'Child 2' => Item::TYPE_ROLE,
+            'Child 3' => Item::TYPE_ROLE,
+            'Child 4' => Item::TYPE_ROLE,
+            'Child 5' => Item::TYPE_PERMISSION,
+
+            // Children of multiple generations
+            'posts.view' => Item::TYPE_PERMISSION,
+            'posts.create' => Item::TYPE_PERMISSION,
+            'posts.update' => Item::TYPE_PERMISSION,
+            'posts.delete' => Item::TYPE_PERMISSION,
+        ];
+
+        $items = [];
+        foreach ($itemsMap as $name => $type) {
+            $items[] = [
+                'name' => $name,
+                'type' => $type,
+                'createdAt' => $time,
+                'updatedAt' => $time,
+            ];
+            $type === Item::TYPE_ROLE ? $this->initialRolesCount++ : $this->initialPermissionsCount++;
+        }
+
         $itemsChildren = [
             // Parent: role, child: permission
             ['parent' => 'Parent 1', 'child' => 'Child 1'],
@@ -331,7 +376,29 @@ abstract class ItemsStorageTest extends TestCase
             ['parent' => 'Parent 4', 'child' => 'Child 4'],
             // Parent: permission, child: permission
             ['parent' => 'Parent 5', 'child' => 'Child 5'],
+
+            // Multiple generations of children
+            ['parent' => 'posts.viewer', 'child' => 'posts.view'],
+            ['parent' => 'posts.redactor', 'child' => 'posts.create'],
+            ['parent' => 'posts.redactor', 'child' => 'posts.update'],
+            ['parent' => 'posts.admin', 'child' => 'posts.delete'],
+            ['parent' => 'posts.admin', 'child' => 'posts.redactor'],
+            ['parent' => 'posts.redactor', 'child' => 'posts.viewer'],
         ];
+        foreach ($itemsChildren as $itemChild) {
+            $parentItemType = $itemsMap[$itemChild['parent']];
+            $childItemType = $itemsMap[$itemChild['child']];
+
+            if ($parentItemType === Item::TYPE_ROLE && $childItemType === Item::TYPE_ROLE) {
+                $this->initialBothRolesChildrenCount++;
+            }
+
+            if ($parentItemType === Item::TYPE_PERMISSION && $childItemType === Item::TYPE_PERMISSION) {
+                $this->initialBothPermissionsChildrenCount++;
+            }
+
+            $this->initialItemsChildrenCount++;
+        }
 
         $this->getDbal()
             ->database()
@@ -351,5 +418,10 @@ abstract class ItemsStorageTest extends TestCase
     private function getStorage(): ItemsStorage
     {
         return new ItemsStorage(self::ITEMS_TABLE, $this->getDbal()->database());
+    }
+
+    private function getItemsCount(): int
+    {
+        return $this->initialRolesCount + $this->initialPermissionsCount;
     }
 }
