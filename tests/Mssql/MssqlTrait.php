@@ -8,6 +8,7 @@ use Cycle\Database\Config\DatabaseConfig;
 use Cycle\Database\Config\SQLServer\DsnConnectionConfig;
 use Cycle\Database\Config\SQLServerDriverConfig;
 use Cycle\Database\DatabaseInterface;
+use Cycle\Database\DatabaseManager;
 
 trait MssqlTrait
 {
