@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Yiisoft\Rbac\Assignment;
+use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\Cycle\AssignmentsStorage;
 use Yiisoft\Rbac\Item;
 
@@ -106,7 +107,7 @@ abstract class AssignmentsStorageTest extends TestCase
         $this->assertInstanceOf(Assignment::class, $storage->get('Operator', 'john'));
     }
 
-    protected function populateDb(): void
+    protected function populateDatabase(): void
     {
         $time = time();
         $items = [
@@ -144,22 +145,20 @@ abstract class AssignmentsStorageTest extends TestCase
             $assignments,
         );
 
-        $this->getDbal()
-            ->database()
+        $this->getDatabase()
             ->insert(self::ITEMS_TABLE)
             ->columns(['name', 'type', 'createdAt', 'updatedAt'])
             ->values($items)
             ->run();
-        $this->getDbal()
-            ->database()
+        $this->getDatabase()
             ->insert(self::ASSIGNMENTS_TABLE)
             ->columns(['itemName', 'userId', 'createdAt'])
             ->values($assignments)
             ->run();
     }
 
-    private function getStorage(): AssignmentsStorage
+    private function getStorage(): AssignmentsStorageInterface
     {
-        return new AssignmentsStorage(self::ASSIGNMENTS_TABLE, $this->getDbal()->database());
+        return new AssignmentsStorage(self::ASSIGNMENTS_TABLE, $this->getDatabase());
     }
 }

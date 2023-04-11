@@ -7,11 +7,12 @@ namespace Yiisoft\Rbac\Cycle\Tests\Mysql;
 use Cycle\Database\Config\DatabaseConfig;
 use Cycle\Database\Config\MySQL\DsnConnectionConfig;
 use Cycle\Database\Config\MySQLDriverConfig;
+use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
 
 trait MysqlTrait
 {
-    protected function createDbManager(): DatabaseManager
+    protected function makeDatabase(): DatabaseInterface
     {
         $dbConfig = new DatabaseConfig(
             [
@@ -29,6 +30,6 @@ trait MysqlTrait
             ]
         );
 
-        return new DatabaseManager($dbConfig);
+        return (new DatabaseManager($dbConfig))->database();
     }
 }

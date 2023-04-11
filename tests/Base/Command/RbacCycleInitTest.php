@@ -29,6 +29,11 @@ abstract class RbacCycleInitTest extends TestCase
         }
     }
 
+    protected function populateDatabase(): void
+    {
+        // Skip
+    }
+
     public function dataInitWithEmptyTableNames(): array
     {
         return [
@@ -298,9 +303,5 @@ abstract class RbacCycleInitTest extends TestCase
             $this->assertSame(ForeignKeyInterface::NO_ACTION, $foreignKey->getUpdateRule());
             $this->assertSame(ForeignKeyInterface::NO_ACTION, $foreignKey->getDeleteRule());
         }
-    }
-
-    protected function populateDb(): void
-    {
     }
 }

@@ -7,6 +7,7 @@ namespace Yiisoft\Rbac\Cycle\Tests\Base;
 use Cycle\Database\Injection\Fragment;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\Item;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 
@@ -122,8 +123,7 @@ abstract class ItemsStorageTest extends TestCase
 
         /** @psalm-var array<0, 1>|false $itemsChildrenExist */
         $itemsChildrenExist = $this
-            ->getDbal()
-            ->database()
+            ->getDatabase()
             ->select([new Fragment('1 AS item_exists')])
             ->from(self::ITEMS_CHILDREN_TABLE)
             ->limit(1)
@@ -194,8 +194,7 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertFalse($storage->hasChildren('Parent 2'));
 
         $itemsChildren = $this
-            ->getDbal()
-            ->database()
+            ->getDatabase()
             ->select()
             ->from(self::ITEMS_CHILDREN_TABLE)
             ->count();
@@ -297,8 +296,7 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertContainsOnlyInstancesOf(Role::class, $all);
 
         $itemsChildren = $this
-            ->getDbal()
-            ->database()
+            ->getDatabase()
             ->select()
             ->from(self::ITEMS_CHILDREN_TABLE)
             ->count();
@@ -316,15 +314,14 @@ abstract class ItemsStorageTest extends TestCase
 
         $this->assertTrue($storage->hasChildren('Parent 5'));
         $itemsChildrenCount = $this
-            ->getDbal()
-            ->database()
+            ->getDatabase()
             ->select([new Fragment('1 AS item_exists')])
             ->from(self::ITEMS_CHILDREN_TABLE)
             ->count();
         $this->assertSame($this->initialBothPermissionsChildrenCount, $itemsChildrenCount);
     }
 
-    protected function populateDb(): void
+    protected function populateDatabase(): void
     {
         $time = time();
         $itemsMap = [
@@ -400,24 +397,24 @@ abstract class ItemsStorageTest extends TestCase
             $this->initialItemsChildrenCount++;
         }
 
-        $this->getDbal()
-            ->database()
+        $this
+            ->getDatabase()
             ->insert(self::ITEMS_TABLE)
             ->columns(['name', 'type', 'createdAt', 'updatedAt'])
             ->values($items)
             ->run();
 
-        $this->getDbal()
-            ->database()
+        $this
+            ->getDatabase()
             ->insert(self::ITEMS_CHILDREN_TABLE)
             ->columns(['parent', 'child'])
             ->values($itemsChildren)
             ->run();
     }
 
-    private function getStorage(): ItemsStorage
+    private function getStorage(): ItemsStorageInterface
     {
-        return new ItemsStorage(self::ITEMS_TABLE, $this->getDbal()->database());
+        return new ItemsStorage(self::ITEMS_TABLE, $this->getDatabase());
     }
 
     private function getItemsCount(): int
