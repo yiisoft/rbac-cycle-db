@@ -7,7 +7,7 @@ namespace Yiisoft\Rbac\Cycle\Tests\Base;
 use Cycle\Database\Injection\Fragment;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\ItemsStorageInterface;
-use Yiisoft\Rbac\Tests\Db\ItemsStorageTestTrait;
+use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
 abstract class ItemsStorageTest extends TestCase
 {
@@ -52,12 +52,12 @@ abstract class ItemsStorageTest extends TestCase
     {
         $this->traitTestClearPermissions();
 
-        $itemsChildren = $this
+        $itemsChildrenCount = $this
             ->getDatabase()
             ->select()
             ->from(self::ITEMS_CHILDREN_TABLE)
             ->count();
-        $this->assertSame($this->initialBothRolesChildrenCount, $itemsChildren);
+        $this->assertSame($this->initialBothRolesChildrenCount, $itemsChildrenCount);
     }
 
     public function testClearRoles(): void
