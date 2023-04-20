@@ -7,11 +7,12 @@ namespace Yiisoft\Rbac\Cycle\Tests\Mssql;
 use Cycle\Database\Config\DatabaseConfig;
 use Cycle\Database\Config\SQLServer\DsnConnectionConfig;
 use Cycle\Database\Config\SQLServerDriverConfig;
+use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
 
 trait MssqlTrait
 {
-    protected function createDbManager(): DatabaseManager
+    protected function makeDatabase(): DatabaseInterface
     {
         $dbConfig = new DatabaseConfig(
             [
@@ -29,6 +30,6 @@ trait MssqlTrait
             ]
         );
 
-        return new DatabaseManager($dbConfig);
+        return (new DatabaseManager($dbConfig))->database();
     }
 }

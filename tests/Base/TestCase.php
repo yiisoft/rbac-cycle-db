@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
-use Cycle\Database\DatabaseManager;
+use Cycle\Database\DatabaseInterface;
 use Cycle\Database\Schema\AbstractTable;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -13,32 +13,32 @@ use Yiisoft\Rbac\Cycle\Command\RbacCycleInit;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    private ?DatabaseManager $databaseManager = null;
+    private ?DatabaseInterface $database = null;
 
     protected const ITEMS_TABLE = 'auth_item';
     protected const ASSIGNMENTS_TABLE = 'auth_assignment';
     protected const ITEMS_CHILDREN_TABLE = 'auth_item_child';
     private const TABLES_FOR_DROPPING = [self::ITEMS_CHILDREN_TABLE, self::ASSIGNMENTS_TABLE, self::ITEMS_TABLE];
 
-    protected function getDbal(): DatabaseManager
+    protected function getDatabase(): DatabaseInterface
     {
-        if ($this->databaseManager === null) {
-            $this->databaseManager = $this->createDbManager();
+        if ($this->database === null) {
+            $this->database = $this->makeDatabase();
         }
 
-        return $this->databaseManager;
+        return $this->database;
     }
 
     protected function setUp(): void
     {
-        $this->createDbTables();
-        $this->populateDb();
+        $this->createDatabaseTables();
+        $this->populateDatabase();
     }
 
     protected function tearDown(): void
     {
         foreach (self::TABLES_FOR_DROPPING as $name) {
-            $table = $this->getDbal()->database()->table($name);
+            $table = $this->getDatabase()->table($name);
             /** @var AbstractTable $schema */
             $schema = $table->getSchema();
             $schema->declareDropped();
@@ -46,7 +46,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         }
     }
 
-    protected function createDbTables(): void
+    protected function createDatabaseTables(): void
     {
         $app = $this->createApplication();
         $app->find('rbac/cycle/init')->run(new ArrayInput([]), new NullOutput());
@@ -58,7 +58,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $command = new RbacCycleInit(
             itemsTable: self::ITEMS_TABLE,
             assignmentsTable: self::ASSIGNMENTS_TABLE,
-            database: $this->getDbal()->database(),
+            database: $this->getDatabase(),
             itemsChildrenTable: $itemsChildrenTable,
         );
         $app->add($command);
@@ -66,7 +66,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return $app;
     }
 
-    abstract protected function createDbManager(): DatabaseManager;
+    abstract protected function makeDatabase(): DatabaseInterface;
 
-    abstract protected function populateDb(): void;
+    abstract protected function populateDatabase(): void;
 }

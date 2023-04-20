@@ -7,11 +7,12 @@ namespace Yiisoft\Rbac\Cycle\Tests\Pgsql;
 use Cycle\Database\Config\DatabaseConfig;
 use Cycle\Database\Config\Postgres\DsnConnectionConfig;
 use Cycle\Database\Config\PostgresDriverConfig;
+use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
 
 trait PgsqlTrait
 {
-    protected function createDbManager(): DatabaseManager
+    protected function makeDatabase(): DatabaseInterface
     {
         $dbConfig = new DatabaseConfig(
             [
@@ -29,6 +30,6 @@ trait PgsqlTrait
             ]
         );
 
-        return new DatabaseManager($dbConfig);
+        return (new DatabaseManager($dbConfig))->database();
     }
 }

@@ -29,6 +29,11 @@ abstract class RbacCycleInitTest extends TestCase
         }
     }
 
+    protected function populateDatabase(): void
+    {
+        // Skip
+    }
+
     public function dataInitWithEmptyTableNames(): array
     {
         return [
@@ -48,7 +53,7 @@ abstract class RbacCycleInitTest extends TestCase
      */
     public function testInitWithEmptyTableNames(array $tableNameArguments, $expectedWrongTableName): void
     {
-        $arguments = ['database' => $this->getDbal()->database()];
+        $arguments = ['database' => $this->getDatabase()];
         $arguments = array_merge($tableNameArguments, $arguments);
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("$expectedWrongTableName table name can't be empty.");
@@ -179,7 +184,7 @@ abstract class RbacCycleInitTest extends TestCase
 
     private function checkItemsTable(): void
     {
-        $database = $this->getDbal()->database();
+        $database = $this->getDatabase();
         $this->assertTrue($database->hasTable(self::ITEMS_TABLE));
 
         $table = $database->table(self::ITEMS_TABLE);
@@ -229,7 +234,7 @@ abstract class RbacCycleInitTest extends TestCase
 
     private function checkAssignmentsTable(): void
     {
-        $database = $this->getDbal()->database();
+        $database = $this->getDatabase();
         $this->assertTrue($database->hasTable(self::ASSIGNMENTS_TABLE));
 
         $table = $database->table(self::ASSIGNMENTS_TABLE);
@@ -266,7 +271,7 @@ abstract class RbacCycleInitTest extends TestCase
 
     private function checkItemsChildrenTable(): void
     {
-        $database = $this->getDbal()->database();
+        $database = $this->getDatabase();
         $this->assertTrue($database->hasTable(self::ITEMS_CHILDREN_TABLE));
 
         $table = $database->table(self::ITEMS_CHILDREN_TABLE);
@@ -298,9 +303,5 @@ abstract class RbacCycleInitTest extends TestCase
             $this->assertSame(ForeignKeyInterface::NO_ACTION, $foreignKey->getUpdateRule());
             $this->assertSame(ForeignKeyInterface::NO_ACTION, $foreignKey->getDeleteRule());
         }
-    }
-
-    protected function populateDb(): void
-    {
     }
 }
