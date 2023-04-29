@@ -10,6 +10,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Yiisoft\Rbac\Cycle\Command\RbacCycleInit;
+use Yiisoft\Rbac\Cycle\SchemaManager;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -55,12 +56,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function createApplication(string|null $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE): Application
     {
         $app = new Application();
-        $command = new RbacCycleInit(
+        $schemaManager = new SchemaManager(
             itemsTable: self::ITEMS_TABLE,
             assignmentsTable: self::ASSIGNMENTS_TABLE,
             database: $this->getDatabase(),
             itemsChildrenTable: $itemsChildrenTable,
         );
+        $command = new RbacCycleInit($schemaManager);
         $app->add($command);
 
         return $app;

@@ -11,7 +11,7 @@ use InvalidArgumentException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
-use Yiisoft\Rbac\Cycle\Command\RbacCycleInit;
+use Yiisoft\Rbac\Cycle\SchemaManager;
 use Yiisoft\Rbac\Cycle\Tests\Base\TestCase;
 use Yiisoft\Rbac\Item;
 
@@ -57,7 +57,7 @@ abstract class RbacCycleInitTest extends TestCase
         $arguments = array_merge($tableNameArguments, $arguments);
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("$expectedWrongTableName table name can't be empty.");
-        new RbacCycleInit(...$arguments);
+        new SchemaManager(...$arguments);
     }
 
     public function dataExecute(): array
