@@ -22,7 +22,6 @@
     "require": {
         "php": "^8.0",
         "cycle/database": "^2.1",
-        "symfony/console": "^5.3|^6.0",
         "yiisoft/rbac": "dev-schema-manager"
     },
     "require-dev": {
@@ -32,7 +31,11 @@
         "rector/rector": "^0.15.0",
         "roave/infection-static-analysis-plugin": "^1.25",
         "spatie/phpunit-watcher": "^1.23",
+        "symfony/console": "^5.3|^6.0",
         "vimeo/psalm": "^4.30|^5.2"
+    },
+    "suggest": {
+        "symfony/console": "For using console command to create schemas"
     },
     "autoload": {
         "psr-4": {
