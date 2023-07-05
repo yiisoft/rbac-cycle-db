@@ -36,23 +36,31 @@ composer require yiisoft/rbac-cycle-db
 Configuration depends on a selected driver. Here is an example for PostgreSQL:
 
 ```php
-use Yiisoft\Cache\ArrayCache; // Requires https://github.com/yiisoft/cache
-use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Pgsql\Connection;
-use Yiisoft\Db\Pgsql\Driver;
+use Cycle\Database\Config\DatabaseConfig;
+use Cycle\Database\Config\Postgres\DsnConnectionConfig;
+use Cycle\Database\Config\PostgresDriverConfig;
+use Cycle\Database\DatabaseManager;
 
-$pdoDriver = new Driver('pgsql:host=127.0.0.1;dbname=yiitest;port=5432', 'user', 'password');
-$pdoDriver->charset('UTF8');
-$connection = Connection(
-    $pdoDriver, 
-    new SchemaCache(
-        new ArrayCache(), // Any other PSR-16 compatible cache can be used.
-    )
+$dbConfig = new DatabaseConfig(
+    [
+        'default' => 'default',
+        'databases' => [
+            'default' => ['connection' => 'pgsql'],
+        ],
+        'connections' => [
+            'pgsql' => new PostgresDriverConfig(new DsnConnectionConfig(
+                'pgsql:host=127.0.0.1;dbname=yiitest;port=5432',
+                'user',
+                'password',
+            )),
+        ],
+    ]
 );
+$database = (new DatabaseManager($dbConfig))->database();
 ```
 
 More comprehensive examples can be found at
-[Yii Database docs](https://github.com/yiisoft/db/blob/master/docs/en/README.md#prerequisites).
+[Cycle Database docs](https://cycle-orm.dev/docs/database-configuration#declare-connection).
 
 ### Working with schema
 
@@ -62,8 +70,7 @@ options to choose from:
 - Use migration tool like [Yii DB Migration](https://github.com/yiisoft/yii-db-migration). Migrations are dumped as
   plain SQL in `sql/migrations` folder.
 - Without migrations, `DbSchemaManager` class can be used. An example of CLI command containing it can be found
-  [here](examples/Command/RbacDbInit.php).
-  changes manually.
+  [here](examples/Command/RbacCycleInit.php).
 - Use plain SQL that is actual at the moment of installing `rbac-db` package (located at the root of `sql` folder).
 
 The structure of plain SQL files:
