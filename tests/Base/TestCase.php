@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\DatabaseInterface;
-use Yiisoft\Rbac\Cycle\SchemaManager;
+use Yiisoft\Rbac\Cycle\DbSchemaManager;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -32,17 +32,17 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function tearDown(): void
     {
-        $this->createSchemaManager()->dropAll();
+        $this->createSchemaManager()->ensureNoTables();
     }
 
     protected function createDatabaseTables(): void
     {
-        $this->createSchemaManager()->createAll();
+        $this->createSchemaManager()->ensureTables();
     }
 
-    protected function createSchemaManager(string|null $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE): SchemaManager
+    protected function createSchemaManager(string|null $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE): DbSchemaManager
     {
-        return new SchemaManager(
+        return new DbSchemaManager(
             itemsTable: self::ITEMS_TABLE,
             assignmentsTable: self::ASSIGNMENTS_TABLE,
             database: $this->getDatabase(),

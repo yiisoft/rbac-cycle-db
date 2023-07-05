@@ -13,7 +13,7 @@ use Yiisoft\Rbac\Item;
 /**
  * Command for creating RBAC related database tables using Cycle ORM.
  */
-final class SchemaManager
+final class DbSchemaManager
 {
     /**
      * @var string A name of the table for storing RBAC items (roles and permissions).
@@ -137,14 +137,14 @@ final class SchemaManager
         $schema->save();
     }
 
-    public function createAll(): void
+    public function ensureTables(): void
     {
         $this->createItemsTable();
         $this->createItemsChildrenTable();
         $this->createAssignmentsTable();
     }
 
-    public function dropAll(): void
+    public function ensureNoTables(): void
     {
         $this->dropTable($this->itemsChildrenTable);
         $this->dropTable($this->assignmentsTable);

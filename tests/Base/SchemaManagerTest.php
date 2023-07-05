@@ -8,7 +8,7 @@ use Cycle\Database\ForeignKeyInterface;
 use Cycle\Database\Schema\AbstractForeignKey;
 use Cycle\Database\Schema\AbstractIndex;
 use InvalidArgumentException;
-use Yiisoft\Rbac\Cycle\SchemaManager;
+use Yiisoft\Rbac\Cycle\DbSchemaManager;
 use Yiisoft\Rbac\Item;
 
 abstract class SchemaManagerTest extends TestCase
@@ -53,7 +53,7 @@ abstract class SchemaManagerTest extends TestCase
         $arguments = array_merge($tableNameArguments, $arguments);
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("$expectedWrongTableName table name can't be empty.");
-        new SchemaManager(...$arguments);
+        new DbSchemaManager(...$arguments);
     }
 
     public function dataCreateTablesSeparately(): array
@@ -80,12 +80,12 @@ abstract class SchemaManagerTest extends TestCase
     public function testCreateAllMultiple(): void
     {
         $schemaManager = $this->createSchemaManager();
-        $schemaManager->createAll();
+        $schemaManager->ensureTables();
 
         $this->checkTables();
 
         // $this->expectException(DbException::class);
-        $schemaManager->createAll();
+        $schemaManager->ensureTables();
     }
 
     private function checkTables(): void

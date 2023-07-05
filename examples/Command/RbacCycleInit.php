@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Yiisoft\Rbac\Cycle\SchemaManager;
+use Yiisoft\Rbac\Cycle\DbSchemaManager;
 
 /**
  * Command for creating RBAC related database tables using Cycle DBAL.
@@ -21,7 +21,7 @@ class RbacCycleInit extends Command
      * @throws InvalidArgumentException When a table name is set to the empty string.
      */
     public function __construct(
-        private SchemaManager $schemaManager,
+        private DbSchemaManager $schemaManager,
     ) {
         parent::__construct();
     }
