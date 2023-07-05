@@ -11,7 +11,7 @@ use InvalidArgumentException;
 use Yiisoft\Rbac\Cycle\DbSchemaManager;
 use Yiisoft\Rbac\Item;
 
-abstract class SchemaManagerTest extends TestCase
+abstract class DbSchemaManagerTest extends TestCase
 {
     protected function setUp(): void
     {

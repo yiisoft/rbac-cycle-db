@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle\Tests\Mssql;
 
-class SchemaManagerTest extends \Yiisoft\Rbac\Cycle\Tests\Base\SchemaManagerTest
+class DbSchemaManagerTest extends \Yiisoft\Rbac\Cycle\Tests\Base\DbSchemaManagerTest
 {
     use MssqlTrait;
 }
