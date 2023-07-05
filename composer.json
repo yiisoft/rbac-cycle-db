@@ -33,6 +33,9 @@
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.30|^5.2"
     },
+    "suggest": {
+        "yiisoft/yii-db-migration": "For automating schema migration"
+    },
     "autoload": {
         "psr-4": {
             "Yiisoft\\Rbac\\Cycle\\": "src"
