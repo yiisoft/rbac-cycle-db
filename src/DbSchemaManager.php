@@ -66,7 +66,7 @@ final class DbSchemaManager
         $schema->string('ruleName', 64);
         $schema->integer('createdAt')->nullable(false);
         $schema->integer('updatedAt')->nullable(false);
-        $schema->index(['type']);
+        $schema->index(['type'])->setName("idx-$this->itemsTable-type");
         $schema->setPrimaryKeys(['name']);
 
         $schema->save();
