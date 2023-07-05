@@ -91,11 +91,13 @@ final class DbSchemaManager
             ->foreignKey(['parent'])
             ->references($this->itemsTable, ['name'])
             ->setName("fk-$this->itemsChildrenTable-parent");
+        $schema->renameIndex(['parent'], "idx-$this->itemsChildrenTable-parent");
 
         $schema
             ->foreignKey(['child'])
             ->references($this->itemsTable, ['name'])
             ->setName("fk-$this->itemsChildrenTable-child");
+        $schema->renameIndex(['child'], "idx-$this->itemsChildrenTable-child");
 
         $schema->save();
     }
@@ -122,6 +124,7 @@ final class DbSchemaManager
             ->onUpdate(ForeignKeyInterface::CASCADE)
             ->onDelete(ForeignKeyInterface::CASCADE)
             ->setName("fk-$this->assignmentsTable-itemName");
+        $schema->renameIndex(['itemName'], "idx-$this->assignmentsTable-itemName");
 
         $schema->save();
     }
