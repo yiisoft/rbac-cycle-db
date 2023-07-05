@@ -89,11 +89,13 @@ final class DbSchemaManager
 
         $schema
             ->foreignKey(['parent'])
-            ->references($this->itemsTable, ['name']);
+            ->references($this->itemsTable, ['name'])
+            ->setName("fk-$this->itemsChildrenTable-parent");
 
         $schema
             ->foreignKey(['child'])
-            ->references($this->itemsTable, ['name']);
+            ->references($this->itemsTable, ['name'])
+            ->setName("fk-$this->itemsChildrenTable-child");
 
         $schema->save();
     }
@@ -118,7 +120,8 @@ final class DbSchemaManager
             ->foreignKey(['itemName'])
             ->references($this->itemsTable, ['name'])
             ->onUpdate(ForeignKeyInterface::CASCADE)
-            ->onDelete(ForeignKeyInterface::CASCADE);
+            ->onDelete(ForeignKeyInterface::CASCADE)
+            ->setName("fk-$this->assignmentsTable-itemName");
 
         $schema->save();
     }
