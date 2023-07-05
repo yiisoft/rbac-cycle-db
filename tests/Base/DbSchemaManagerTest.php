@@ -77,15 +77,13 @@ abstract class DbSchemaManagerTest extends TestCase
         $this->checkTables();
     }
 
-    public function testCreateAllMultiple(): void
+    public function testEnsureTablesMultiple(): void
     {
         $schemaManager = $this->createSchemaManager();
         $schemaManager->ensureTables();
+        $schemaManager->ensureTables();
 
         $this->checkTables();
-
-        // $this->expectException(DbException::class);
-        $schemaManager->ensureTables();
     }
 
     private function checkTables(): void
