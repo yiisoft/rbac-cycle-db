@@ -9,6 +9,7 @@ use Cycle\Database\Config\MySQL\DsnConnectionConfig;
 use Cycle\Database\Config\MySQLDriverConfig;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
+use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
 
 trait MysqlTrait
 {
@@ -27,9 +28,12 @@ trait MysqlTrait
                         '',
                     )),
                 ],
-            ]
+            ],
         );
+        $dbManager = new DatabaseManager($dbConfig);
+        // Uncomment to dump schema changes
+        $dbManager->setLogger(new Logger());
 
-        return (new DatabaseManager($dbConfig))->database();
+        return $dbManager->database();
     }
 }

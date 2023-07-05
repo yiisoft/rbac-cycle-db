@@ -9,6 +9,7 @@ use Cycle\Database\Config\SQLServer\DsnConnectionConfig;
 use Cycle\Database\Config\SQLServerDriverConfig;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
+use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
 
 trait MssqlTrait
 {
@@ -29,7 +30,10 @@ trait MssqlTrait
                 ],
             ]
         );
+        $dbManager = new DatabaseManager($dbConfig);
+        // Uncomment to dump schema changes
+        $dbManager->setLogger(new Logger());
 
-        return (new DatabaseManager($dbConfig))->database();
+        return $dbManager->database();
     }
 }

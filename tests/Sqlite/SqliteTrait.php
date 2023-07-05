@@ -30,7 +30,7 @@ trait SqliteTrait
         $dbManager = new DatabaseManager($dbConfig);
         $dbManager->database()->execute('PRAGMA foreign_keys = ON;');
         // Uncomment to dump schema changes
-        // $dbManager->setLogger(new Logger());
+        $dbManager->setLogger(new Logger());
 
         return $dbManager->database();
     }

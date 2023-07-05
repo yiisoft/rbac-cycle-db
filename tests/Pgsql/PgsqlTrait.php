@@ -9,6 +9,7 @@ use Cycle\Database\Config\Postgres\DsnConnectionConfig;
 use Cycle\Database\Config\PostgresDriverConfig;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
+use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
 
 trait PgsqlTrait
 {
@@ -29,7 +30,10 @@ trait PgsqlTrait
                 ],
             ]
         );
+        $dbManager = new DatabaseManager($dbConfig);
+        // Uncomment to dump schema changes
+        $dbManager->setLogger(new Logger());
 
-        return (new DatabaseManager($dbConfig))->database();
+        return $dbManager->database();
     }
 }
