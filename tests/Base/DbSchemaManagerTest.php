@@ -9,7 +9,6 @@ use Cycle\Database\Schema\AbstractForeignKey;
 use Cycle\Database\Schema\AbstractIndex;
 use InvalidArgumentException;
 use Yiisoft\Rbac\Cycle\DbSchemaManager;
-use Yiisoft\Rbac\Item;
 
 abstract class DbSchemaManagerTest extends TestCase
 {
@@ -20,9 +19,15 @@ abstract class DbSchemaManagerTest extends TestCase
 
     protected function tearDown(): void
     {
-        if (!str_starts_with($this->getName(), 'testInitWithEmptyTableNames')) {
-            parent::tearDown();
+        if (str_starts_with($this->getName(), 'testInitWithEmptyTableNames')) {
+            return;
         }
+
+        if ($this->getName() === 'testHasTableWithEmptyString' || $this->getName() === 'testDropTableWithEmptyString') {
+            return;
+        }
+
+        parent::tearDown();
     }
 
     protected function populateDatabase(): void
@@ -84,6 +89,24 @@ abstract class DbSchemaManagerTest extends TestCase
         $schemaManager->ensureTables();
 
         $this->checkTables();
+    }
+
+    public function testHasTableWithEmptyString(): void
+    {
+        $schemaManager = $this->createSchemaManager();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Table name must be non-empty.');
+        $schemaManager->hasTable('');
+    }
+
+    public function testDropTableWithEmptyString(): void
+    {
+        $schemaManager = $this->createSchemaManager();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Table name must be non-empty.');
+        $schemaManager->dropTable('');
     }
 
     private function checkTables(): void

@@ -8,10 +8,10 @@ use Cycle\Database\DatabaseInterface;
 use Cycle\Database\ForeignKeyInterface;
 use Cycle\Database\Table;
 use InvalidArgumentException;
-use Yiisoft\Rbac\Item;
 
 /**
- * Command for creating RBAC related database tables using Cycle ORM.
+ * A class for working with RBAC tables' schema using configured Cycle Database driver. Supports schema creation,
+ * deletion and checking its existence.
  */
 final class DbSchemaManager
 {
@@ -91,13 +91,13 @@ final class DbSchemaManager
             ->foreignKey(['parent'])
             ->references($this->itemsTable, ['name'])
             ->setName("fk-$this->itemsChildrenTable-parent");
-        $schema->renameIndex(['parent'], "idx-$this->itemsChildrenTable-parent");
+        $schema->dropIndex(['parent']);
 
         $schema
             ->foreignKey(['child'])
             ->references($this->itemsTable, ['name'])
             ->setName("fk-$this->itemsChildrenTable-child");
-        $schema->renameIndex(['child'], "idx-$this->itemsChildrenTable-child");
+        $schema->dropIndex(['child']);
 
         $schema->save();
     }
@@ -124,18 +124,42 @@ final class DbSchemaManager
             ->onUpdate(ForeignKeyInterface::CASCADE)
             ->onDelete(ForeignKeyInterface::CASCADE)
             ->setName("fk-$this->assignmentsTable-itemName");
-        $schema->renameIndex(['itemName'], "idx-$this->assignmentsTable-itemName");
+        $schema->dropIndex(['itemName']);
 
         $schema->save();
     }
 
+    /**
+     * Checks existence of a table in {@see $database} by a given name
+     *
+     * @param string $tableName Table name for checking.
+     *
+     * @return bool Whether a table exists: `true` - exists, `false` - doesn't exist.
+     *
+     * @throws InvalidArgumentException When a table name is set to the empty string.
+     */
     public function hasTable(string $tableName): bool
     {
-        return $this->database->hasTable($tableName) === true;
+        if ($tableName === '') {
+            throw new InvalidArgumentException('Table name must be non-empty.');
+        }
+
+        return $this->database->hasTable($tableName);
     }
 
+    /**
+     * Drops a table in {@see $database} by a given name.
+     *
+     * @param string $tableName Table name for dropping.
+     *
+     * @throws InvalidArgumentException When a table name is set to the empty string.
+     */
     public function dropTable(string $tableName): void
     {
+        if ($tableName === '') {
+            throw new InvalidArgumentException('Table name must be non-empty.');
+        }
+
         /** @var Table $table */
         $table = $this->database->table($tableName);
         $schema = $table->getSchema();
@@ -143,35 +167,85 @@ final class DbSchemaManager
         $schema->save();
     }
 
+    /**
+     * Ensures all Cycle RBAC related tables are present in the database. Creation is executed for each table only when
+     * it doesn't exist.
+     */
     public function ensureTables(): void
     {
-        $this->createItemsTable();
-        $this->createItemsChildrenTable();
-        $this->createAssignmentsTable();
+        if (!$this->hasTable($this->itemsTable)) {
+            $this->createItemsTable();
+        }
+
+        if (!$this->hasTable($this->itemsChildrenTable)) {
+            $this->createItemsChildrenTable();
+        }
+
+        if (!$this->hasTable($this->assignmentsTable)) {
+            $this->createAssignmentsTable();
+        }
     }
 
+    /**
+     * Ensures no Cycle RBAC related tables are present in the database. Drop is executed for each table only when it
+     * exists.
+     */
     public function ensureNoTables(): void
     {
-        $this->dropTable($this->itemsChildrenTable);
-        $this->dropTable($this->assignmentsTable);
-        $this->dropTable($this->itemsTable);
+        if ($this->hasTable($this->itemsChildrenTable)) {
+            $this->dropTable($this->itemsChildrenTable);
+        }
+
+        if ($this->hasTable($this->assignmentsTable)) {
+            $this->dropTable($this->assignmentsTable);
+        }
+
+        if ($this->hasTable($this->itemsTable)) {
+            $this->dropTable($this->itemsTable);
+        }
     }
 
+    /**
+     * Gets name of the table for storing RBAC items (roles and permissions).
+     *
+     * @return string Table name
+     *
+     * @see $itemsTable
+     */
     public function getItemsTable(): string
     {
         return $this->itemsTable;
     }
 
+    /**
+     * Gets name of the table for storing RBAC assignments.
+     *
+     * @return string Table name.
+     *
+     * @see $assignmentsTable
+     */
     public function getAssignmentsTable(): string
     {
         return $this->assignmentsTable;
     }
 
+    /**
+     * Gets name of the table for storing relations between RBAC items.
+     *
+     * @return string Table name
+     *
+     * @see $itemsChildrenTable
+     */
     public function getItemsChildrenTable(): string
     {
         return $this->itemsChildrenTable;
     }
 
+    /**
+     * Initializes table names.
+     *
+     * @throws InvalidArgumentException When a table name is set to the empty string.
+     */
     private function initTables(string $itemsTable, string $assignmentsTable, string|null $itemsChildrenTable): void
     {
         if ($itemsTable === '') {
