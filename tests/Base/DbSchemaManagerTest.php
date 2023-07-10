@@ -9,7 +9,6 @@ use Cycle\Database\Schema\AbstractForeignKey;
 use Cycle\Database\Schema\AbstractIndex;
 use InvalidArgumentException;
 use Yiisoft\Rbac\Cycle\DbSchemaManager;
-use Yiisoft\Rbac\Item;
 
 abstract class DbSchemaManagerTest extends TestCase
 {

@@ -8,7 +8,6 @@ use Cycle\Database\DatabaseInterface;
 use Cycle\Database\ForeignKeyInterface;
 use Cycle\Database\Table;
 use InvalidArgumentException;
-use Yiisoft\Rbac\Item;
 
 /**
  * Command for creating RBAC related database tables using Cycle ORM.
