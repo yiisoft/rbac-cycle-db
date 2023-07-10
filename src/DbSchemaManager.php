@@ -63,8 +63,7 @@ final class DbSchemaManager
         $schema->string('name', 128)->nullable(false);
         $schema
             ->enum('type', [Item::TYPE_ROLE, Item::TYPE_PERMISSION])
-            ->nullable(false)
-            ->setName("enum-$this->itemsTable-type");
+            ->nullable(false);
         $schema->string('description', 191);
         $schema->string('ruleName', 64);
         $schema->integer('createdAt')->nullable(false);
