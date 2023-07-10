@@ -134,9 +134,8 @@ final class DbSchemaManager
      *
      * @param string $tableName Table name for checking.
      *
-     * @return bool Whether a table exists: `true` - exists, `false` - doesn't exist.
-     *
      * @throws InvalidArgumentException When a table name is set to the empty string.
+     * @return bool Whether a table exists: `true` - exists, `false` - doesn't exist.
      */
     public function hasTable(string $tableName): bool
     {
