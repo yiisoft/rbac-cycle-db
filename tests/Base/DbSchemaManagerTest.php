@@ -110,7 +110,7 @@ abstract class DbSchemaManagerTest extends TestCase
         $this->assertArrayHasKey('type', $columns);
         $type = $columns['type'];
         $this->assertSame('string', $type->getType());
-        $this->assertEqualsCanonicalizing([Item::TYPE_ROLE, Item::TYPE_PERMISSION], $type->getEnumValues());
+        $this->assertSame(10, $type->getSize());
         $this->assertFalse($type->isNullable());
 
         $this->assertArrayHasKey('description', $columns);
