@@ -32,7 +32,7 @@ trait PgsqlTrait
         );
         $dbManager = new DatabaseManager($dbConfig);
         // Uncomment to dump schema changes
-        $dbManager->setLogger(new Logger());
+        // $dbManager->setLogger(new Logger());
 
         return $dbManager->database();
     }
