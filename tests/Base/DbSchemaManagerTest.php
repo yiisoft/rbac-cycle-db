@@ -25,6 +25,10 @@ abstract class DbSchemaManagerTest extends TestCase
             return;
         }
 
+        if (str_starts_with($this->getName(), 'testGet')) {
+            return;
+        }
+
         parent::tearDown();
     }
 
