@@ -237,8 +237,7 @@ abstract class DbSchemaManagerTest extends TestCase
 
     protected function checkAssignmentsTableForeignKeys(
         string $expectedItemNameForeignKeyName = 'fk-auth_assignment-itemName',
-    ): void
-    {
+    ): void {
         $this->assertCount(1, $this->getDatabase()->table(self::ASSIGNMENTS_TABLE)->getForeignKeys());
         $this->assertForeignKey(
             table: self::ASSIGNMENTS_TABLE,
@@ -254,8 +253,7 @@ abstract class DbSchemaManagerTest extends TestCase
     protected function checkItemsChildrenTableForeignKeys(
         string $expectedParentForeignKeyName = 'fk-auth_item_child-parent',
         string $expectedChildForeignKeyName = 'fk-auth_item_child-child',
-    ): void
-    {
+    ): void {
         $this->assertCount(2, $this->getDatabase()->table(self::ITEMS_CHILDREN_TABLE)->getForeignKeys());
         $this->assertForeignKey(
             table: self::ITEMS_CHILDREN_TABLE,
@@ -281,8 +279,7 @@ abstract class DbSchemaManagerTest extends TestCase
         string $expectedName,
         string $expectedUpdateRule = ForeignKeyInterface::NO_ACTION,
         string $expectedDeleteRule = ForeignKeyInterface::NO_ACTION,
-    ): void
-    {
+    ): void {
         $foreignKeys = $this->getDatabase()->table($table)->getForeignKeys();
 
         $this->assertArrayHasKey($expectedName, $foreignKeys);
