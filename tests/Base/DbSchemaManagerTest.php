@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\ForeignKeyInterface;
-use Cycle\Database\Schema\AbstractForeignKey;
-use Cycle\Database\Schema\AbstractIndex;
 use InvalidArgumentException;
 use Yiisoft\Rbac\Cycle\DbSchemaManager;
 
@@ -109,6 +107,21 @@ abstract class DbSchemaManagerTest extends TestCase
         $schemaManager->dropTable('');
     }
 
+    public function testGetItemsTable(): void
+    {
+        $this->assertSame(self::ITEMS_TABLE, $this->createSchemaManager()->getItemsTable());
+    }
+
+    public function testGetItemsChildrenTable(): void
+    {
+        $this->assertSame(self::ITEMS_CHILDREN_TABLE, $this->createSchemaManager()->getItemsChildrenTable());
+    }
+
+    public function testGetAssignmentsTable(): void
+    {
+        $this->assertSame(self::ASSIGNMENTS_TABLE, $this->createSchemaManager()->getAssignmentsTable());
+    }
+
     private function checkTables(): void
     {
         $this->checkItemsTable();
@@ -159,14 +172,12 @@ abstract class DbSchemaManagerTest extends TestCase
         $this->assertFalse($updatedAt->isNullable());
 
         $this->assertCount(1, $table->getIndexes());
-        /** @var AbstractIndex $index */
-        $index = array_values($table->getIndexes())[0];
-        $this->assertSame(['type'], $index->getColumns());
+        $this->assertIndex(self::ITEMS_TABLE, 'idx-auth_item-type', ['type']);
 
         $this->assertSame(['name'], $table->getPrimaryKeys());
     }
 
-    private function checkAssignmentsTable(): void
+    protected function checkAssignmentsTable(): void
     {
         $database = $this->getDatabase();
         $this->assertTrue($database->hasTable(self::ASSIGNMENTS_TABLE));
@@ -193,17 +204,11 @@ abstract class DbSchemaManagerTest extends TestCase
 
         $this->assertSame(['itemName', 'userId'], $table->getPrimaryKeys());
 
-        $this->assertCount(1, $table->getForeignKeys());
-        /** @var AbstractForeignKey $foreignKey */
-        $foreignKey = array_values($table->getForeignKeys())[0];
-        $this->assertSame(['itemName'], $foreignKey->getColumns());
-        $this->assertSame(self::ITEMS_TABLE, $foreignKey->getForeignTable());
-        $this->assertSame(['name'], $foreignKey->getForeignKeys());
-        $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getUpdateRule());
-        $this->assertSame(ForeignKeyInterface::CASCADE, $foreignKey->getDeleteRule());
+        $this->assertCount(1, $table->getIndexes());
+        $this->assertIndex(self::ASSIGNMENTS_TABLE, 'idx-auth_assignment-itemName', ['itemName']);
     }
 
-    private function checkItemsChildrenTable(): void
+    protected function checkItemsChildrenTable(): void
     {
         $database = $this->getDatabase();
         $this->assertTrue($database->hasTable(self::ITEMS_CHILDREN_TABLE));
@@ -225,17 +230,78 @@ abstract class DbSchemaManagerTest extends TestCase
 
         $this->assertSame(['parent', 'child'], $table->getPrimaryKeys());
 
-        $this->assertCount(2, $table->getForeignKeys());
-        foreach ($table->getForeignKeys() as $foreignKey) {
-            $columns = $foreignKey->getColumns();
-            $this->assertCount(1, $columns);
-            $column = $columns[0];
-            $this->assertContains($column, ['parent', 'child']);
+        $this->assertCount(2, $this->getDatabase()->table(self::ITEMS_CHILDREN_TABLE)->getIndexes());
+        $this->assertIndex(self::ITEMS_CHILDREN_TABLE, 'idx-auth_item_child-parent', ['parent']);
+        $this->assertIndex(self::ITEMS_CHILDREN_TABLE, 'idx-auth_item_child-child', ['child']);
+    }
 
-            $this->assertSame(self::ITEMS_TABLE, $foreignKey->getForeignTable());
-            $this->assertSame(['name'], $foreignKey->getForeignKeys());
-            $this->assertSame(ForeignKeyInterface::NO_ACTION, $foreignKey->getUpdateRule());
-            $this->assertSame(ForeignKeyInterface::NO_ACTION, $foreignKey->getDeleteRule());
-        }
+    protected function checkAssignmentsTableForeignKeys(
+        string $expectedItemNameForeignKeyName = 'fk-auth_assignment-itemName',
+    ): void
+    {
+        $this->assertCount(1, $this->getDatabase()->table(self::ASSIGNMENTS_TABLE)->getForeignKeys());
+        $this->assertForeignKey(
+            table: self::ASSIGNMENTS_TABLE,
+            expectedColumns: ['itemName'],
+            expectedForeignTable: self::ITEMS_TABLE,
+            expectedForeignKeys: ['name'],
+            expectedName: $expectedItemNameForeignKeyName,
+            expectedUpdateRule: ForeignKeyInterface::CASCADE,
+            expectedDeleteRule: ForeignKeyInterface::CASCADE,
+        );
+    }
+
+    protected function checkItemsChildrenTableForeignKeys(
+        string $expectedParentForeignKeyName = 'fk-auth_item_child-parent',
+        string $expectedChildForeignKeyName = 'fk-auth_item_child-child',
+    ): void
+    {
+        $this->assertCount(2, $this->getDatabase()->table(self::ITEMS_CHILDREN_TABLE)->getForeignKeys());
+        $this->assertForeignKey(
+            table: self::ITEMS_CHILDREN_TABLE,
+            expectedColumns: ['parent'],
+            expectedForeignTable: self::ITEMS_TABLE,
+            expectedForeignKeys: ['name'],
+            expectedName: $expectedParentForeignKeyName,
+        );
+        $this->assertForeignKey(
+            table: self::ITEMS_CHILDREN_TABLE,
+            expectedColumns: ['child'],
+            expectedForeignTable: self::ITEMS_TABLE,
+            expectedForeignKeys: ['name'],
+            expectedName: $expectedChildForeignKeyName,
+        );
+    }
+
+    private function assertForeignKey(
+        string $table,
+        array $expectedColumns,
+        string $expectedForeignTable,
+        array $expectedForeignKeys,
+        string $expectedName,
+        string $expectedUpdateRule = ForeignKeyInterface::NO_ACTION,
+        string $expectedDeleteRule = ForeignKeyInterface::NO_ACTION,
+    ): void
+    {
+        $foreignKeys = $this->getDatabase()->table($table)->getForeignKeys();
+
+        $this->assertArrayHasKey($expectedName, $foreignKeys);
+        $foreignKey = $foreignKeys[$expectedName];
+        $this->assertSame($expectedColumns, $foreignKey->getColumns());
+        $this->assertSame($expectedForeignTable, $foreignKey->getForeignTable());
+        $this->assertSame($expectedForeignKeys, $foreignKey->getForeignKeys());
+        $this->assertSame($expectedName, $foreignKey->getName());
+        $this->assertSame($expectedUpdateRule, $foreignKey->getUpdateRule());
+        $this->assertSame($expectedDeleteRule, $foreignKey->getDeleteRule());
+    }
+
+    private function assertIndex(string $table, string $expectedName, array $expectedColumns): void
+    {
+        $indexes = $this->getDatabase()->table($table)->getIndexes();
+
+        $this->assertArrayHasKey($expectedName, $indexes);
+        $index = $indexes[$expectedName];
+        $this->assertSame($expectedColumns, $index->getColumns());
+        $this->assertSame($expectedName, $index->getName());
     }
 }
