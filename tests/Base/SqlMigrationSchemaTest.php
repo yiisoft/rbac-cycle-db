@@ -21,14 +21,10 @@ abstract class SqlMigrationSchemaTest extends SqlSchemaTest
             $sqlBasePath = $migrationsFolderPath . DIRECTORY_SEPARATOR . $migrationFolder->getFilename();
 
             $upSqlPath = $sqlBasePath . DIRECTORY_SEPARATOR . "$driverName-up.sql";
-            $upSql = file_get_contents($upSqlPath);
-            $upQueries = explode(';' . PHP_EOL, trim($upSql));
-            self::$upQueries = array_merge(self::$upQueries, $upQueries);
+            self::$upQueries = array_merge(self::$upQueries, self::parseQueries($upSqlPath));
 
-            $downSqlPath = $migrationsFolderPath . DIRECTORY_SEPARATOR . $migrationFolder->getFilename() . DIRECTORY_SEPARATOR . "$driverName-down.sql";
-            $downSql = file_get_contents($downSqlPath);
-            $downQueries = explode(';' . PHP_EOL, trim($downSql));
-            self::$downQueries = array_merge(self::$downQueries, $downQueries);
+            $downSqlPath = $sqlBasePath . DIRECTORY_SEPARATOR . "$driverName-up.sql";
+            self::$downQueries = array_merge(self::$downQueries, self::parseQueries($downSqlPath));
         }
     }
 }

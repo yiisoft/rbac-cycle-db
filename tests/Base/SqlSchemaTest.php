@@ -17,14 +17,10 @@ abstract class SqlSchemaTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         $driverName = static::$driverName;
+        $sqlBasePath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'sql';
 
-        $upSqlPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . "$driverName-up.sql";
-        $upSql = file_get_contents($upSqlPath);
-        self::$upQueries = explode(';' . PHP_EOL, trim($upSqlPath));
-
-        $downSqlPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . "$driverName-down.sql";
-        $downSql = file_get_contents($downSqlPath);
-        self::$downQueries = explode(PHP_EOL, trim($downSql));
+        self::$upQueries = self::parseQueries($sqlBasePath . DIRECTORY_SEPARATOR . "$driverName-up.sql");
+        self::$downQueries = self::parseQueries($sqlBasePath . DIRECTORY_SEPARATOR . "$driverName-down.sql");
     }
 
     protected function setUp(): void
@@ -68,5 +64,12 @@ abstract class SqlSchemaTest extends TestCase
     {
         $this->createSchema();
         $this->checkTables();
+    }
+
+    protected static function parseQueries(string $sqlPath): array
+    {
+        $sql = file_get_contents($sqlPath);
+
+        return explode(';' . PHP_EOL, trim($sql));
     }
 }
