@@ -13,7 +13,7 @@ use Yiisoft\Rbac\Cycle\DbSchemaManager;
 /**
  * Command for creating RBAC related database tables using Cycle DBAL.
  */
-class RbacCycleInit extends Command
+final class RbacCycleInit extends Command
 {
     protected static $defaultName = 'rbac/cycle/init';
 
