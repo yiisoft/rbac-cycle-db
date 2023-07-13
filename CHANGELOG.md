@@ -2,7 +2,8 @@
 
 ## 3.0.0 under development
 
-- New #23: Remove CLI dependencies, add `DbSchemaManager`, dump SQL for working with schema (@arogachev)
+- New #23: Add `DbSchemaManager` and SQL dumps for working with schema (@arogachev)
+- Chg #23: Remove CLI dependencies (@arogachev)
 
 ## 2.0.0 April 20, 2023
 
