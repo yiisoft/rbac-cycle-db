@@ -22,7 +22,6 @@
     "require": {
         "php": "^8.0",
         "cycle/database": "^2.1",
-        "symfony/console": "^5.3|^6.0",
         "yiisoft/rbac": "^1.0.2"
     },
     "require-dev": {
@@ -33,6 +32,9 @@
         "roave/infection-static-analysis-plugin": "^1.25",
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.30|^5.2"
+    },
+    "suggest": {
+        "yiisoft/yii-db-migration": "For automating schema migration"
     },
     "autoload": {
         "psr-4": {

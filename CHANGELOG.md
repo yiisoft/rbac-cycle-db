@@ -1,8 +1,9 @@
 # Yii RBAC Cycle Database Storage Change Log
 
-## 2.0.1 under development
+## 3.0.0 under development
 
-- no changes in this release.
+- New #23: Add `DbSchemaManager` and SQL dumps for working with schema (@arogachev)
+- Chg #23: Remove CLI dependencies (@arogachev)
 
 ## 2.0.0 April 20, 2023
 
