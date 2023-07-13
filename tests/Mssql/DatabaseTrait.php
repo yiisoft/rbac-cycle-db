@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Rbac\Cycle\Tests\Pgsql;
+namespace Yiisoft\Rbac\Cycle\Tests\Mssql;
 
 use Cycle\Database\Config\DatabaseConfig;
-use Cycle\Database\Config\Postgres\DsnConnectionConfig;
-use Cycle\Database\Config\PostgresDriverConfig;
+use Cycle\Database\Config\SQLServer\DsnConnectionConfig;
+use Cycle\Database\Config\SQLServerDriverConfig;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
 use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
 
-trait PgsqlTrait
+trait DatabaseTrait
 {
     protected function makeDatabase(): DatabaseInterface
     {
@@ -19,13 +19,13 @@ trait PgsqlTrait
             [
                 'default' => 'default',
                 'databases' => [
-                    'default' => ['connection' => 'pgsql'],
+                    'default' => ['connection' => 'mssql'],
                 ],
                 'connections' => [
-                    'pgsql' => new PostgresDriverConfig(new DsnConnectionConfig(
-                        'pgsql:host=127.0.0.1;dbname=yiitest;port=5432',
-                        'root',
-                        'root',
+                    'mssql' => new SQLServerDriverConfig(new DsnConnectionConfig(
+                        'sqlsrv:Server=127.0.0.1,1433;Database=yiitest',
+                        'SA',
+                        'YourStrong!Passw0rd',
                     )),
                 ],
             ]
