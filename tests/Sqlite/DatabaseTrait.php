@@ -11,7 +11,7 @@ use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
 use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
 
-trait SqliteTrait
+trait DatabaseTrait
 {
     protected function makeDatabase(): DatabaseInterface
     {
