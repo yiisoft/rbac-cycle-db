@@ -40,6 +40,7 @@ abstract class SqlSchemaTest extends TestCase
 
     protected function createSchema(): void
     {
+        var_dump(self::$upQueries);
         $this
             ->getDatabase()
             ->transaction(static function (Database $database): void {
