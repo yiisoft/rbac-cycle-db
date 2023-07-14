@@ -40,7 +40,6 @@ abstract class SqlSchemaTest extends TestCase
 
     protected function createSchema(): void
     {
-        var_dump(self::$upQueries);
         $this
             ->getDatabase()
             ->transaction(static function (Database $database): void {
@@ -70,7 +69,9 @@ abstract class SqlSchemaTest extends TestCase
     protected static function parseQueries(string $sqlPath): array
     {
         $sql = file_get_contents($sqlPath);
+        $sql = trim($sql);
+        $sql = rtrim($sql, ';');
 
-        return preg_split('/;\R/', trim($sql));
+        return preg_split('/;\R/', $sql);
     }
 }
