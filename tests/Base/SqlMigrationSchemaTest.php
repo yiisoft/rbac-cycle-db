@@ -23,7 +23,7 @@ abstract class SqlMigrationSchemaTest extends SqlSchemaTest
             $upSqlPath = $sqlBasePath . DIRECTORY_SEPARATOR . "$driverName-up.sql";
             self::$upQueries = array_merge(self::$upQueries, self::parseQueries($upSqlPath));
 
-            $downSqlPath = $sqlBasePath . DIRECTORY_SEPARATOR . "$driverName-up.sql";
+            $downSqlPath = $sqlBasePath . DIRECTORY_SEPARATOR . "$driverName-down.sql";
             self::$downQueries = array_merge(self::$downQueries, self::parseQueries($downSqlPath));
         }
     }
