@@ -187,4 +187,13 @@ trait SchemaTrait
         $this->assertSame($expectedColumns, $index->getColumns());
         $this->assertSame($expectedName, $index->getName());
     }
+
+    private function checkNoTables(): void
+    {
+        $schemaManager = $this->createSchemaManager();
+
+        $this->assertFalse($schemaManager->hasTable($schemaManager->getItemsTable()));
+        $this->assertFalse($schemaManager->hasTable($schemaManager->getAssignmentsTable()));
+        $this->assertFalse($schemaManager->hasTable($schemaManager->getItemsChildrenTable()));
+    }
 }

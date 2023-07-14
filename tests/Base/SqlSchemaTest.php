@@ -25,11 +25,6 @@ abstract class SqlSchemaTest extends TestCase
 
     protected function setUp(): void
     {
-        // Skip
-    }
-
-    protected function tearDown(): void
-    {
         $this->createSchemaManager()->ensureNoTables();
     }
 
@@ -62,22 +57,16 @@ abstract class SqlSchemaTest extends TestCase
 
     public function testCreateSchema(): void
     {
-        $this->createSchemaManager()->ensureNoTables();
         $this->createSchema();
         $this->checkTables();
     }
 
-//    public function testDropSchema(): void
-//    {
-//        $schemaManager = $this->createSchemaManager();
-//        $schemaManager->ensureTables();
-//
-//        $this->dropSchema();
-//
-//        $this->assertFalse($this->createSchemaManager()->hasTable($schemaManager->getItemsTable()));
-//        $this->assertFalse($this->createSchemaManager()->hasTable($schemaManager->getAssignmentsTable()));
-//        $this->assertFalse($this->createSchemaManager()->hasTable($schemaManager->getItemsChildrenTable()));
-//    }
+    public function testDropSchema(): void
+    {
+        $this->createSchemaManager()->ensureTables();
+        $this->dropSchema();
+        $this->checkNoTables();
+    }
 
     protected static function parseQueries(string $sqlPath): array
     {
