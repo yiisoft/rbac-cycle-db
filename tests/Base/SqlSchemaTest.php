@@ -71,6 +71,6 @@ abstract class SqlSchemaTest extends TestCase
     {
         $sql = file_get_contents($sqlPath);
 
-        return explode(';' . PHP_EOL, trim($sql));
+        return preg_split('/;\R/', trim($sql));
     }
 }
