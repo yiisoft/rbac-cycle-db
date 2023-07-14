@@ -62,9 +62,7 @@ abstract class SqlSchemaTest extends TestCase
 
     public function testCreateSchema(): void
     {
-        var_dump($this->createSchemaManager()->hasTable(self::ITEMS_TABLE));
         $this->createSchemaManager()->ensureNoTables();
-        var_dump($this->createSchemaManager()->hasTable(self::ITEMS_TABLE));
         $this->createSchema();
         $this->checkTables();
     }
