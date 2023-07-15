@@ -132,6 +132,7 @@ abstract class DbSchemaManagerTest extends TestCase
         $schemaManager = $this->createSchemaManager();
         $schemaManager->ensureTables();
         $schemaManager->ensureNoTables();
+
         $this->checkNoTables();
     }
 }
