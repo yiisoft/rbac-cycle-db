@@ -126,4 +126,12 @@ abstract class DbSchemaManagerTest extends TestCase
     {
         $this->assertSame(self::ASSIGNMENTS_TABLE, $this->createSchemaManager()->getAssignmentsTable());
     }
+
+    public function testEnsureNoTables(): void
+    {
+        $schemaManager = $this->createSchemaManager();
+        $schemaManager->ensureTables();
+        $schemaManager->ensureNoTables();
+        $this->checkNoTables();
+    }
 }
