@@ -28,6 +28,11 @@ abstract class SqlSchemaTest extends TestCase
         $this->createSchemaManager()->ensureNoTables();
     }
 
+    protected function tearDown(): void
+    {
+        $this->getDatabase()->getDriver()->disconnect();
+    }
+
     protected function populateDatabase(): void
     {
         // Skip
