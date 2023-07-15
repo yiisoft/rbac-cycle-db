@@ -64,6 +64,8 @@ abstract class SqlSchemaTest extends TestCase
     public function testDropSchema(): void
     {
         $this->createSchemaManager()->ensureTables();
+        $this->getDatabase()->getDriver()->disconnect();
+
         $this->dropSchema();
         $this->checkNoTables();
     }
