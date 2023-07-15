@@ -13,6 +13,8 @@ abstract class SqlMigrationSchemaTest extends SqlSchemaTest
         $driverName = static::$driverName;
         $migrationsFolderPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . 'migrations';
         $migrationsFolderIterator = new DirectoryIterator($migrationsFolderPath);
+        self::$upQueries = [];
+        self::$downQueries = [];
         foreach ($migrationsFolderIterator as $migrationFolder) {
             if (!$migrationFolder->isDir() || $migrationFolder->isDot()) {
                 continue;
