@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Sqlite;
 
 use Cycle\Database\Config\DatabaseConfig;
-use Cycle\Database\Config\SQLite\FileConnectionConfig;
+use Cycle\Database\Config\SQLite\MemoryConnectionConfig;
 use Cycle\Database\Config\SQLiteDriverConfig;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
@@ -23,7 +23,7 @@ trait DatabaseTrait
                     'default' => ['connection' => 'sqlite'],
                 ],
                 'connections' => [
-                    'sqlite' => new SQLiteDriverConfig(new FileConnectionConfig($dbPath)),
+                    'sqlite' => new SQLiteDriverConfig(new MemoryConnectionConfig()),
                 ],
             ]
         );

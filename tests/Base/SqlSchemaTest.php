@@ -25,7 +25,7 @@ abstract class SqlSchemaTest extends TestCase
 
     protected function setUp(): void
     {
-        // Skip
+        $this->createSchemaManager()->ensureNoTables();
     }
 
     protected function populateDatabase(): void
@@ -64,8 +64,6 @@ abstract class SqlSchemaTest extends TestCase
     public function testDropSchema(): void
     {
         $this->createSchemaManager()->ensureTables();
-        $this->getDatabase()->getDriver()->disconnect();
-
         $this->dropSchema();
         $this->checkNoTables();
     }
