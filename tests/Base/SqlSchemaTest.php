@@ -25,7 +25,7 @@ abstract class SqlSchemaTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->createSchemaManager()->ensureNoTables();
+        // Skip
     }
 
     protected function populateDatabase(): void
