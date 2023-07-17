@@ -21,7 +21,5 @@ CREATE TABLE "auth_assignment" (
   "itemName" text (128) NOT NULL,
   "userId" text (128) NOT NULL,
   "createdAt" integer NOT NULL,
-  PRIMARY KEY ("itemName", "userId"),
-  FOREIGN KEY ("itemName") REFERENCES "auth_item" ("name") ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY ("itemName", "userId")
 );
-CREATE INDEX IF NOT EXISTS "idx-auth_assignment-itemName" ON "auth_assignment" ("itemName");

@@ -34,24 +34,6 @@ trait SchemaTrait
         $this->assertFalse($createdAt->isNullable());
 
         $this->assertSame(['itemName', 'userId'], $table->getPrimaryKeys());
-
-        $this->assertCount(1, $table->getIndexes());
-        $this->assertIndex(self::ASSIGNMENTS_TABLE, 'idx-auth_assignment-itemName', ['itemName']);
-    }
-
-    protected function checkAssignmentsTableForeignKeys(
-        string $expectedItemNameForeignKeyName = 'fk-auth_assignment-itemName',
-    ): void {
-        $this->assertCount(1, $this->getDatabase()->table(self::ASSIGNMENTS_TABLE)->getForeignKeys());
-        $this->assertForeignKey(
-            table: self::ASSIGNMENTS_TABLE,
-            expectedColumns: ['itemName'],
-            expectedForeignTable: self::ITEMS_TABLE,
-            expectedForeignKeys: ['name'],
-            expectedName: $expectedItemNameForeignKeyName,
-            expectedUpdateRule: ForeignKeyInterface::CASCADE,
-            expectedDeleteRule: ForeignKeyInterface::CASCADE,
-        );
     }
 
     protected function checkItemsChildrenTable(): void

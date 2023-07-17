@@ -118,14 +118,6 @@ final class DbSchemaManager
         $schema->setPrimaryKeys(['itemName', 'userId']);
         $schema->integer('createdAt')->nullable(false);
 
-        $schema
-            ->foreignKey(['itemName'])
-            ->references($this->itemsTable, ['name'])
-            ->onUpdate(ForeignKeyInterface::CASCADE)
-            ->onDelete(ForeignKeyInterface::CASCADE)
-            ->setName("fk-$this->assignmentsTable-itemName");
-        $schema->renameIndex(['itemName'], "idx-$this->assignmentsTable-itemName");
-
         $schema->save();
     }
 
