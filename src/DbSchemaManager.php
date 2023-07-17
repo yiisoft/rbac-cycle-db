@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle;
 
 use Cycle\Database\DatabaseInterface;
-use Cycle\Database\ForeignKeyInterface;
 use Cycle\Database\Table;
 use InvalidArgumentException;
 
