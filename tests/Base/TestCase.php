@@ -39,8 +39,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         ?string $itemsTable = self::ITEMS_TABLE,
         ?string $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE,
         ?string $assignmentsTable = self::ASSIGNMENTS_TABLE,
-    ): DbSchemaManager
-    {
+    ): DbSchemaManager {
         return new DbSchemaManager(
             database: $this->getDatabase(),
             itemsTable: $itemsTable,
