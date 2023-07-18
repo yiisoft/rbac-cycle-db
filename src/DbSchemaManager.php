@@ -15,6 +15,22 @@ use InvalidArgumentException;
 final class DbSchemaManager
 {
     /**
+     * @var string|null A name of the table for storing RBAC items (roles and permissions).
+     * @psalm-var ?non-empty-string
+     */
+    private ?string $itemsTable;
+    /**
+     * @var string|null A name of the table for storing RBAC assignments.
+     * @psalm-var ?non-empty-string
+     */
+    private ?string $assignmentsTable;
+    /**
+     * @var string|null A name of the table for storing relations between RBAC items.
+     * @psalm-var ?non-empty-string
+     */
+    private ?string $itemsChildrenTable;
+
+    /**
      * @param DatabaseInterface $database Cycle database instance.
      * @param string|null $itemsTable A name of the table for storing RBAC items (roles and permissions).
      * @param string|null $itemsChildrenTable A name of the table for storing relations between RBAC items. When set to
@@ -25,11 +41,15 @@ final class DbSchemaManager
      */
     public function __construct(
         private DatabaseInterface $database,
-        private ?string $itemsTable = null,
-        private ?string $itemsChildrenTable = null,
-        private ?string $assignmentsTable = null,
+        ?string $itemsTable = null,
+        ?string $itemsChildrenTable = null,
+        ?string $assignmentsTable = null,
     ) {
-        $this->assertTables();
+        $this->initTables(
+            itemsTable: $itemsTable,
+            itemsChildrenTable: $itemsChildrenTable,
+            assignmentsTable: $assignmentsTable,
+        );
     }
 
     /**
@@ -224,24 +244,28 @@ final class DbSchemaManager
      *
      * @throws InvalidArgumentException When a table name is set to the empty string.
      */
-    private function assertTables(): void
+    private function initTables(?string $itemsTable, ?string $itemsChildrenTable, ?string $assignmentsTable): void
     {
-        if ($this->itemsTable === null && $this->assignmentsTable === null) {
+        if ($itemsTable === null && $assignmentsTable === null) {
             throw new InvalidArgumentException('At least items table or assignments table name must be set.');
         }
 
-        if ($this->itemsTable === '') {
+        if ($itemsTable === '') {
             throw new InvalidArgumentException('Items table name can\'t be empty.');
         }
 
-        if ($this->itemsChildrenTable === '') {
-            throw new InvalidArgumentException('Items children table name can\'t be empty.');
-        }
+        $this->itemsTable = $itemsTable;
 
-        if ($this->assignmentsTable === '') {
+        if ($assignmentsTable === '') {
             throw new InvalidArgumentException('Assignments table name can\'t be empty.');
         }
 
-        $this->itemsChildrenTable ??= $this->itemsTable . '_child';
+        $this->assignmentsTable = $assignmentsTable;
+
+        if ($itemsChildrenTable === '') {
+            throw new InvalidArgumentException('Items children table name can\'t be empty.');
+        }
+
+        $this->itemsChildrenTable = $itemsChildrenTable ?? $this->itemsTable . '_child';
     }
 }
