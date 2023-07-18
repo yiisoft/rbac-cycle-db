@@ -35,13 +35,17 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->createSchemaManager()->ensureNoTables();
     }
 
-    protected function createSchemaManager(string|null $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE): DbSchemaManager
+    protected function createSchemaManager(
+        ?string $itemsTable = self::ITEMS_TABLE,
+        ?string $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE,
+        ?string $assignmentsTable = self::ASSIGNMENTS_TABLE,
+    ): DbSchemaManager
     {
         return new DbSchemaManager(
-            itemsTable: self::ITEMS_TABLE,
-            assignmentsTable: self::ASSIGNMENTS_TABLE,
             database: $this->getDatabase(),
+            itemsTable: $itemsTable,
             itemsChildrenTable: $itemsChildrenTable,
+            assignmentsTable: $assignmentsTable,
         );
     }
 

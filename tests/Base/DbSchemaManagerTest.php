@@ -77,7 +77,7 @@ abstract class DbSchemaManagerTest extends TestCase
      */
     public function testCreateTablesSeparately(string|null $itemsChildrenTable): void
     {
-        $schemaManager = $this->createSchemaManager($itemsChildrenTable);
+        $schemaManager = $this->createSchemaManager(itemsChildrenTable: $itemsChildrenTable);
         $schemaManager->createItemsTable();
         $schemaManager->createItemsChildrenTable();
         $schemaManager->createAssignmentsTable();
@@ -92,6 +92,17 @@ abstract class DbSchemaManagerTest extends TestCase
         $schemaManager->ensureTables();
 
         $this->checkTables();
+    }
+
+    public function testCreateItemTables(): void
+    {
+        $schemaManager = $this->createSchemaManager(assignmentsTable: null);
+        $schemaManager->ensureTables();
+
+        $this->checkItemsTable();
+        $this->checkItemsChildrenTable();
+
+        $this->assertFalse($schemaManager->hasTable(self::ASSIGNMENTS_TABLE));
     }
 
     public function testHasTableWithEmptyString(): void
