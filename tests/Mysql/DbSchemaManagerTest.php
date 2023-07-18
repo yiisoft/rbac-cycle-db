@@ -6,5 +6,5 @@ namespace Yiisoft\Rbac\Cycle\Tests\Mysql;
 
 class DbSchemaManagerTest extends \Yiisoft\Rbac\Cycle\Tests\Base\DbSchemaManagerTest
 {
-    use MysqlTrait;
+    use DatabaseTrait;
 }

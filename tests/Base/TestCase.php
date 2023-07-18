@@ -26,18 +26,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        $this->createDatabaseTables();
+        $this->createSchemaManager()->ensureTables();
         $this->populateDatabase();
     }
 
     protected function tearDown(): void
     {
         $this->createSchemaManager()->ensureNoTables();
-    }
-
-    protected function createDatabaseTables(): void
-    {
-        $this->createSchemaManager()->ensureTables();
     }
 
     protected function createSchemaManager(string|null $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE): DbSchemaManager

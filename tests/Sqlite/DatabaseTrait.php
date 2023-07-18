@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Sqlite;
 
 use Cycle\Database\Config\DatabaseConfig;
-use Cycle\Database\Config\SQLite\FileConnectionConfig;
+use Cycle\Database\Config\SQLite\MemoryConnectionConfig;
 use Cycle\Database\Config\SQLiteDriverConfig;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
 use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
 
-trait SqliteTrait
+trait DatabaseTrait
 {
     protected function makeDatabase(): DatabaseInterface
     {
@@ -23,7 +23,7 @@ trait SqliteTrait
                     'default' => ['connection' => 'sqlite'],
                 ],
                 'connections' => [
-                    'sqlite' => new SQLiteDriverConfig(new FileConnectionConfig($dbPath)),
+                    'sqlite' => new SQLiteDriverConfig(new MemoryConnectionConfig()),
                 ],
             ]
         );

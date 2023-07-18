@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Rbac\Cycle\Tests\Mysql;
+namespace Yiisoft\Rbac\Cycle\Tests\Pgsql;
 
 use Cycle\Database\Config\DatabaseConfig;
-use Cycle\Database\Config\MySQL\DsnConnectionConfig;
-use Cycle\Database\Config\MySQLDriverConfig;
+use Cycle\Database\Config\Postgres\DsnConnectionConfig;
+use Cycle\Database\Config\PostgresDriverConfig;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
 use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
 
-trait MysqlTrait
+trait DatabaseTrait
 {
     protected function makeDatabase(): DatabaseInterface
     {
@@ -19,16 +19,16 @@ trait MysqlTrait
             [
                 'default' => 'default',
                 'databases' => [
-                    'default' => ['connection' => 'mysql'],
+                    'default' => ['connection' => 'pgsql'],
                 ],
                 'connections' => [
-                    'mysql' => new MySQLDriverConfig(new DsnConnectionConfig(
-                        'mysql:host=127.0.0.1;port=3306;dbname=yiitest',
+                    'pgsql' => new PostgresDriverConfig(new DsnConnectionConfig(
+                        'pgsql:host=127.0.0.1;dbname=yiitest;port=5432',
                         'root',
-                        '',
+                        'root',
                     )),
                 ],
-            ],
+            ]
         );
         $dbManager = new DatabaseManager($dbConfig);
         // Uncomment to dump schema changes
