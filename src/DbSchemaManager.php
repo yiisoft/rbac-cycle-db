@@ -86,7 +86,11 @@ final class DbSchemaManager
      */
     public function createItemsChildrenTable(): void
     {
-        if ($this->itemsTable === null || $this->hasTable($this->itemsChildrenTable)) {
+        if (
+            $this->itemsTable ===null ||
+            $this->itemsChildrenTable === null ||
+            $this->hasTable($this->itemsChildrenTable)
+        ) {
             return;
         }
 
@@ -190,7 +194,7 @@ final class DbSchemaManager
      */
     public function ensureNoTables(): void
     {
-        if ($this->itemsTable !== null && $this->hasTable($this->itemsChildrenTable)) {
+        if ($this->itemsChildrenTable !== null && $this->hasTable($this->itemsChildrenTable)) {
             $this->dropTable($this->itemsChildrenTable);
         }
 
@@ -266,6 +270,8 @@ final class DbSchemaManager
             throw new InvalidArgumentException('Items children table name can\'t be empty.');
         }
 
-        $this->itemsChildrenTable = $itemsChildrenTable ?? $this->itemsTable . '_child';
+        $this->itemsChildrenTable = $itemsTable !== null && $itemsChildrenTable === null
+            ? $itemsTable . '_child'
+            : $itemsChildrenTable;
     }
 }
