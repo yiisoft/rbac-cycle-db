@@ -6,6 +6,13 @@ namespace Yiisoft\Rbac\Cycle\Tests\Sqlite;
 
 trait SchemaTrait
 {
+    protected function checkAssignmentsTable(): void
+    {
+        parent::checkAssignmentsTable();
+
+        $this->checkAssignmentsTableForeignKeys('auth_assignment_itemName_fk');
+    }
+
     protected function checkItemsChildrenTable(): void
     {
         parent::checkItemsChildrenTable();
