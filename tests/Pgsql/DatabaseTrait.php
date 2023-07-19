@@ -37,13 +37,6 @@ trait DatabaseTrait
         return $dbManager->database();
     }
 
-    protected function checkAssignmentsTable(): void
-    {
-        parent::checkAssignmentsTable();
-
-        $this->checkAssignmentsTableForeignKeys();
-    }
-
     protected function checkItemsChildrenTable(): void
     {
         parent::checkItemsChildrenTable();
