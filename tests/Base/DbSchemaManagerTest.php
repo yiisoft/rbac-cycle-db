@@ -44,7 +44,7 @@ abstract class DbSchemaManagerTest extends TestCase
             [[], 'At least items table or assignments table name must be set.'],
             [
                 ['itemsTable' => null, 'itemsChildrenTable' => null, 'assignmentsTable' => null],
-                'At least items table or assignments table name must be set.'
+                'At least items table or assignments table name must be set.',
             ],
             [['itemsChildrenTable' => null], 'At least items table or assignments table name must be set.'],
             [['itemsTable' => '', 'assignmentsTable' => 'assignments'], 'Items table name can\'t be empty.'],
