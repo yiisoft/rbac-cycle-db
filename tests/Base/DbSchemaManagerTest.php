@@ -41,26 +41,35 @@ abstract class DbSchemaManagerTest extends TestCase
     public function dataInitWithEmptyTableNames(): array
     {
         return [
-            [['itemsTable' => '', 'assignmentsTable' => 'assignments'], 'Items'],
-            [['itemsTable' => 'items', 'assignmentsTable' => ''], 'Assignments'],
-            [['itemsTable' => '', 'assignmentsTable' => ''], 'Items'],
+            [[], 'At least items table or assignments table name must be set.'],
             [
-                ['itemsTable' => 'items', 'assignmentsTable' => 'assignments', 'itemsChildrenTable' => ''],
-                'Items children',
+                ['itemsTable' => null, 'itemsChildrenTable' => null, 'assignmentsTable' => null],
+                'At least items table or assignments table name must be set.'
             ],
-            [['itemsTable' => '', 'assignmentsTable' => '', 'itemsChildrenTable' => ''], 'Items'],
+            [['itemsChildrenTable' => null], 'At least items table or assignments table name must be set.'],
+            [['itemsTable' => '', 'assignmentsTable' => 'assignments'], 'Items table name can\'t be empty.'],
+            [['itemsTable' => 'items', 'assignmentsTable' => ''], 'Assignments table name can\'t be empty.'],
+            [['itemsTable' => '', 'assignmentsTable' => ''], 'Items table name can\'t be empty.'],
+            [
+                ['itemsTable' => 'items', 'itemsChildrenTable' => '', 'assignmentsTable' => 'assignments'],
+                'Items children table name can\'t be empty.',
+            ],
+            [
+                ['itemsTable' => '', 'itemsChildrenTable' => '', 'assignmentsTable' => ''],
+                'Items table name can\'t be empty.',
+            ],
         ];
     }
 
     /**
      * @dataProvider dataInitWithEmptyTableNames
      */
-    public function testInitWithEmptyTableNames(array $tableNameArguments, $expectedWrongTableName): void
+    public function testInitWithEmptyTableNames(array $tableNameArguments, string $expectedExceptionMessage): void
     {
         $arguments = ['database' => $this->getDatabase()];
         $arguments = array_merge($tableNameArguments, $arguments);
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("$expectedWrongTableName table name can't be empty.");
+        $this->expectExceptionMessage($expectedExceptionMessage);
         new DbSchemaManager(...$arguments);
     }
 
@@ -103,6 +112,17 @@ abstract class DbSchemaManagerTest extends TestCase
         $this->checkItemsChildrenTable();
 
         $this->assertFalse($schemaManager->hasTable(self::ASSIGNMENTS_TABLE));
+    }
+
+    public function testCreateAssignmentsTable(): void
+    {
+        $schemaManager = $this->createSchemaManager(itemsTable: null, itemsChildrenTable: null);
+        $schemaManager->ensureTables();
+
+        $this->checkAssignmentsTable();
+
+        $this->assertFalse($schemaManager->hasTable(self::ITEMS_TABLE));
+        $this->assertFalse($schemaManager->hasTable(self::ITEMS_CHILDREN_TABLE));
     }
 
     public function testHasTableWithEmptyString(): void
