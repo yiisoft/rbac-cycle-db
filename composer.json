@@ -19,10 +19,11 @@
         "chat": "https://t.me/yii3en",
         "source": "https://github.com/yiisoft/rbac-cycle-db"
     },
+    "minimum-stability": "dev",
     "require": {
         "php": "^8.0",
         "cycle/database": "^2.1",
-        "yiisoft/rbac": "^1.0.2"
+        "yiisoft/rbac": "dev-decouple-storages as 1.0.x-dev"
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
@@ -31,7 +32,8 @@
         "rector/rector": "^0.17.0",
         "roave/infection-static-analysis-plugin": "^1.25",
         "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.2"
+        "vimeo/psalm": "^4.30|^5.2",
+        "yiisoft/rbac-php": "^1.0"
     },
     "suggest": {
         "yiisoft/yii-db-migration": "For automating schema migration"

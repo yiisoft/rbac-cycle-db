@@ -122,14 +122,12 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         return $result !== false;
     }
 
-    /**
-     * @inheritdoc
-     *
-     * When calling {@see ItemsStorage::update()}, all related assignments will be updated automatically.
-     */
     public function renameItem(string $oldName, string $newName): void
     {
-        // Skip
+        $this
+            ->database
+            ->update($this->tableName, values: ['itemName' => $newName], where: ['itemName' => $oldName])
+            ->run();
     }
 
     public function remove(string $itemName, string $userId): void
