@@ -9,12 +9,14 @@ use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\Cycle\Manager;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\RuleFactoryInterface;
-use Yiisoft\Rbac\Tests\Common\ManagerTestTrait;
+use Yiisoft\Rbac\Tests\Common\ManagerTestConfigurationTrait;
+use Yiisoft\Rbac\Tests\Common\ManagerTestLogicTrait;
 use Yiisoft\Rbac\Tests\Support\SimpleRuleFactory;
 
 abstract class ManagerWithDbItemsTest extends TestCase
 {
-    use ManagerTestTrait {
+    use ManagerTestConfigurationTrait;
+    use ManagerTestLogicTrait {
         setUp as protected traitSetUp;
         tearDown as protected traitTearDown;
     }

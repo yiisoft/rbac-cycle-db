@@ -4,33 +4,28 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
+use RuntimeException;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
-use Yiisoft\Rbac\Cycle\AssignmentsStorage;
+use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\Cycle\Manager;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\RuleFactoryInterface;
 use Yiisoft\Rbac\Tests\Common\ManagerTestConfigurationTrait;
-use Yiisoft\Rbac\Tests\Common\ManagerTestLogicTrait;
+use Yiisoft\Rbac\Tests\Support\FakeAssignmentsStorage;
 use Yiisoft\Rbac\Tests\Support\SimpleRuleFactory;
 
-abstract class ManagerWithDbAssignmentsTest extends TestCase
+abstract class ManagerTransactionTest extends TestCase
 {
     use ManagerTestConfigurationTrait;
-    use ManagerTestLogicTrait {
-        setUp as protected traitSetUp;
-        tearDown as protected traitTearDown;
-    }
 
     protected function setUp(): void
     {
-        $this->createSchemaManager(itemsTable: null, itemsChildrenTable: null)->ensureTables();
-        $this->traitSetUp();
+        $this->createSchemaManager()->ensureTables();
     }
 
     protected function tearDown(): void
     {
         $this->createSchemaManager()->ensureNoTables();
-        $this->traitTearDown();
     }
 
     protected function populateDatabase(): void
@@ -53,8 +48,31 @@ abstract class ManagerWithDbAssignmentsTest extends TestCase
         );
     }
 
+    protected function createItemsStorage(): ItemsStorageInterface
+    {
+        return new ItemsStorage(self::ITEMS_TABLE, $this->getDatabase(), self::ITEMS_CHILDREN_TABLE);
+    }
+
     protected function createAssignmentsStorage(): AssignmentsStorageInterface
     {
-        return new AssignmentsStorage(self::ASSIGNMENTS_TABLE, $this->getDatabase());
+        return new class extends FakeAssignmentsStorage {
+            public function renameItem(string $oldName, string $newName): void
+            {
+                throw new RuntimeException('Failed to rename item.');
+            }
+        };
+    }
+
+    public function testUpdateRoleTransaction(): void
+    {
+        $manager = $this->createFilledManager();
+        $role = $this->itemsStorage->getRole('reader')->withName('new reader');
+
+        try {
+            $manager->updateRole('reader', $role);
+        } catch (RuntimeException) {
+            $this->assertNotNull($this->itemsStorage->getRole('reader'));
+            $this->assertNull($this->itemsStorage->getRole('new reader'));
+        }
     }
 }
