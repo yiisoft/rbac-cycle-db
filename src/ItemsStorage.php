@@ -28,6 +28,7 @@ use Yiisoft\Rbac\Role;
  *     createdAt: int|string,
  *     updatedAt: int|string
  * }
+ * @psalm-type ItemsIndexedByName = array<string, Permission|Role>
  */
 final class ItemsStorage implements ItemsStorageInterface
 {
@@ -227,6 +228,9 @@ final class ItemsStorage implements ItemsStorageInterface
         $this->clearItemsByType(Item::TYPE_PERMISSION);
     }
 
+    /**
+     * @psalm-return ItemsIndexedByName
+     */
     public function getParents(string $name): array
     {
         $rawItems = $this->getTreeTraversal()->getParentRows($name);
@@ -234,6 +238,9 @@ final class ItemsStorage implements ItemsStorageInterface
         return $this->getItemsIndexedByName($rawItems);
     }
 
+    /**
+     * @psalm-return ItemsIndexedByName
+     */
     public function getChildren(string $name): array
     {
         $rawItems = $this->getTreeTraversal()->getChildrenRows($name);
@@ -470,7 +477,7 @@ final class ItemsStorage implements ItemsStorageInterface
 
     /**
      * @psalm-param RawItem[] $rawItems
-     * @psalm-return array<string, Permission|Role>
+     * @psalm-return ItemsIndexedByName
      */
     private function getItemsIndexedByName(array $rawItems): array
     {
