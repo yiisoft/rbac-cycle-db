@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Yiisoft\Rbac\AssignmentsStorageInterface;
-use Yiisoft\Rbac\Cycle\ItemsStorage;
+use Yiisoft\Rbac\Cycle\AssignmentsStorage;
 use Yiisoft\Rbac\Cycle\Manager;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\RuleFactoryInterface;
 use Yiisoft\Rbac\Tests\Common\ManagerTestTrait;
 use Yiisoft\Rbac\Tests\Support\SimpleRuleFactory;
 
-abstract class ManagerWithDbItemsTest extends TestCase
+abstract class ManagerWithDbAssignmentsTest extends TestCase
 {
     use ManagerTestTrait {
         setUp as protected traitSetUp;
@@ -21,7 +21,7 @@ abstract class ManagerWithDbItemsTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->createSchemaManager(assignmentsTable: null)->ensureTables();
+        $this->createSchemaManager(itemsTable: null, itemsChildrenTable: null)->ensureTables();
         $this->traitSetUp();
     }
 
@@ -51,8 +51,8 @@ abstract class ManagerWithDbItemsTest extends TestCase
         );
     }
 
-    protected function createItemsStorage(): ItemsStorageInterface
+    protected function createAssignmentsStorage(): AssignmentsStorageInterface
     {
-        return new ItemsStorage(self::ITEMS_TABLE, $this->getDatabase(), self::ITEMS_CHILDREN_TABLE);
+        return new AssignmentsStorage(self::ASSIGNMENTS_TABLE, $this->getDatabase());
     }
 }
