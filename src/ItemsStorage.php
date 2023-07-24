@@ -468,6 +468,10 @@ final class ItemsStorage implements ItemsStorageInterface
         return $this->treeTraversal;
     }
 
+    /**
+     * @psalm-param RawItem[] $rawItems
+     * @psalm-return array<string, Permission|Role>
+     */
     private function getItemsIndexedByName(array $rawItems): array
     {
         $items = [];

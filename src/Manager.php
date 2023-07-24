@@ -8,11 +8,12 @@ use Cycle\Database\DatabaseInterface;
 use Throwable;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\ItemsStorageInterface;
+use Yiisoft\Rbac\Manager as BaseManager;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\RuleFactoryInterface;
 
-final class Manager extends \Yiisoft\Rbac\Manager
+final class Manager extends BaseManager
 {
     public function __construct(
         ItemsStorageInterface $itemsStorage,
@@ -24,7 +25,7 @@ final class Manager extends \Yiisoft\Rbac\Manager
         parent::__construct($itemsStorage, $assignmentsStorage, $ruleFactory, $enableDirectPermissions);
     }
 
-    public function updateRole(string $name, Role $role): self
+    public function updateRole(string $name, Role $role): BaseManager
     {
         $this->database->begin();
 
@@ -40,7 +41,7 @@ final class Manager extends \Yiisoft\Rbac\Manager
         }
     }
 
-    public function updatePermission(string $name, Permission $permission): \Yiisoft\Rbac\Manager
+    public function updatePermission(string $name, Permission $permission): BaseManager
     {
         $this->database->begin();
 
