@@ -15,7 +15,6 @@ trait DatabaseTrait
 {
     protected function makeDatabase(): DatabaseInterface
     {
-        $dbPath = __DIR__ . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'test.db';
         $dbConfig = new DatabaseConfig(
             [
                 'default' => 'default',
