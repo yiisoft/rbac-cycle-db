@@ -70,4 +70,17 @@ abstract class ManagerTransactionTest extends TestCase
             $this->assertNull($this->itemsStorage->getRole('new reader'));
         }
     }
+
+    public function testUpdatePermissionTransaction(): void
+    {
+        $manager = $this->createFilledManager();
+        $permission = $this->itemsStorage->getPermission('updatePost')->withName('newUpdatePost');
+
+        try {
+            $manager->updatePermission('updatePost', $permission);
+        } catch (RuntimeException) {
+            $this->assertNotNull($this->itemsStorage->getPermission('updatePost'));
+            $this->assertNull($this->itemsStorage->getPermission('newUpdatePost'));
+        }
+    }
 }
