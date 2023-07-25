@@ -108,9 +108,9 @@ The storages are not intended to be used directly. Instead, use them with `Manag
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Rbac\Cycle\Manager;
 use Yiisoft\Rbac\Db\AssignmentsStorage;
 use Yiisoft\Rbac\Db\ItemsStorage;
-use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\RuleFactoryInterface;
 
@@ -133,6 +133,13 @@ $manager = new Manager(
 );
 $manager->addPermission(new Permission('posts.create'));
 ```
+
+> Note that it's not necessary to use both DB storages. Combining different implementations is possible. A quite popular 
+> case is to manage items via [PHP files](https://github.com/yiisoft/rbac-php) while store assignments in database.
+
+> When at least 1 DB storage is connected, make sure to use `Manager` from this package, not from 
+> [Yii RBAC](https://github.com/yiisoft/rbac), because it additionally provides database transactions to guarantee data 
+> integrity.
 
 More examples can be found in [Yii RBAC](https://github.com/yiisoft/rbac) documentation.
 

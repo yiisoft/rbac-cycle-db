@@ -10,7 +10,7 @@ use Yiisoft\Rbac\Assignment;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 
 /**
- * **Warning:** Do not use directly! Use with `Manager` from {@link https://github.com/yiisoft/rbac} package.
+ * **Warning:** Do not use directly! Use with {@see Manager} instead.
  *
  * Storage for RBAC assignments in the form of database table. Operations are performed using Cycle ORM.
  *
