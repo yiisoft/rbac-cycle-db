@@ -6,16 +6,10 @@ namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\Cycle\AssignmentsStorage;
-use Yiisoft\Rbac\Cycle\Manager;
-use Yiisoft\Rbac\ItemsStorageInterface;
-use Yiisoft\Rbac\RuleFactoryInterface;
-use Yiisoft\Rbac\Tests\Common\ManagerTestConfigurationTrait;
 use Yiisoft\Rbac\Tests\Common\ManagerTestLogicTrait;
-use Yiisoft\Rbac\Tests\Support\SimpleRuleFactory;
 
-abstract class ManagerWithDbAssignmentsTest extends TestCase
+abstract class ManagerWithDbAssignmentsTest extends ManagerTest
 {
-    use ManagerTestConfigurationTrait;
     use ManagerTestLogicTrait {
         setUp as protected traitSetUp;
         tearDown as protected traitTearDown;
@@ -31,26 +25,6 @@ abstract class ManagerWithDbAssignmentsTest extends TestCase
     {
         parent::tearDown();
         $this->traitTearDown();
-    }
-
-    protected function populateDatabase(): void
-    {
-        // Skip
-    }
-
-    protected function createManager(
-        ?ItemsStorageInterface $itemsStorage = null,
-        ?AssignmentsStorageInterface $assignmentsStorage = null,
-        ?RuleFactoryInterface $ruleFactory = null,
-        bool $enableDirectPermissions = false
-    ): Manager {
-        return new Manager(
-            $itemsStorage ?? $this->createItemsStorage(),
-            $assignmentsStorage ?? $this->createAssignmentsStorage(),
-            $ruleFactory ?? new SimpleRuleFactory(),
-            $this->getDatabase(),
-            $enableDirectPermissions,
-        );
     }
 
     protected function createAssignmentsStorage(): AssignmentsStorageInterface
