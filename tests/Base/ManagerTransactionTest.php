@@ -55,7 +55,7 @@ abstract class ManagerTransactionTest extends TestCase
 
     protected function createAssignmentsStorage(): AssignmentsStorageInterface
     {
-        return new class extends FakeAssignmentsStorage {
+        return new class () extends FakeAssignmentsStorage {
             public function renameItem(string $oldName, string $newName): void
             {
                 throw new RuntimeException('Failed to rename item.');
