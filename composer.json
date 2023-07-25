@@ -34,8 +34,7 @@
         "roave/infection-static-analysis-plugin": "^1.25",
         "slope-it/clock-mock": "0.3.8",
         "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.2",
-        "yiisoft/rbac-php": "^1.0"
+        "vimeo/psalm": "^4.30|^5.2"
     },
     "suggest": {
         "yiisoft/yii-db-migration": "For automating schema migration"
