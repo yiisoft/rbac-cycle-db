@@ -31,8 +31,10 @@ trait DatabaseTrait
             ]
         );
         $dbManager = new DatabaseManager($dbConfig);
-        // Uncomment to dump schema changes
-        // $dbManager->setLogger(new Logger());
+
+        $logger = new Logger();
+        $dbManager->setLogger($logger);
+        $this->setLogger($logger);
 
         return $dbManager->database();
     }

@@ -10,7 +10,7 @@ use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Tests\Support\FakeAssignmentsStorage;
 
-abstract class ManagerTransactionTest extends ManagerTest
+abstract class ManagerTransactionErrorTest extends ManagerTest
 {
     protected function setUp(): void
     {
@@ -32,7 +32,7 @@ abstract class ManagerTransactionTest extends ManagerTest
         };
     }
 
-    public function testUpdateRoleTransaction(): void
+    public function testUpdateRoleTransactionError(): void
     {
         $manager = $this->createFilledManager();
         $role = $this->itemsStorage->getRole('reader')->withName('new reader');
@@ -45,7 +45,7 @@ abstract class ManagerTransactionTest extends ManagerTest
         }
     }
 
-    public function testUpdatePermissionTransaction(): void
+    public function testUpdatePermissionTransactionError(): void
     {
         $manager = $this->createFilledManager();
         $permission = $this->itemsStorage->getPermission('updatePost')->withName('newUpdatePost');

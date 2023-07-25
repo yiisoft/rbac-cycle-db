@@ -9,8 +9,22 @@ use Stringable;
 
 class Logger extends AbstractLogger
 {
+    /**
+     * @var string[]
+     */
+    private array $messages = [];
+
     public function log($level, string|Stringable $message, array $context = []): void
     {
-        var_dump($message);
+        if (getenv('CYCLE_LOG_QUERIES') !== false) {
+            var_dump($message);
+        }
+
+        $this->messages[] = $message;
+    }
+
+    public function getMessages(): array
+    {
+        return $this->messages;
     }
 }
