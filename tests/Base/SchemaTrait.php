@@ -34,6 +34,8 @@ trait SchemaTrait
         $this->assertFalse($createdAt->isNullable());
 
         $this->assertSame(['itemName', 'userId'], $table->getPrimaryKeys());
+        $this->assertCount(0, $table->getForeignKeys());
+        $this->assertCount(0, $table->getIndexes());
     }
 
     protected function checkItemsChildrenTable(): void
@@ -137,6 +139,7 @@ trait SchemaTrait
         $this->assertIndex(self::ITEMS_TABLE, 'idx-auth_item-type', ['type']);
 
         $this->assertSame(['name'], $table->getPrimaryKeys());
+        $this->assertCount(0, $table->getForeignKeys());
     }
 
     private function assertForeignKey(
