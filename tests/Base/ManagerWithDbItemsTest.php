@@ -29,7 +29,7 @@ abstract class ManagerWithDbItemsTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->createSchemaManager()->ensureNoTables();
+        parent::tearDown();
         $this->traitTearDown();
     }
 

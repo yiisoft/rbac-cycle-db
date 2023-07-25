@@ -33,6 +33,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function tearDown(): void
     {
         $this->createSchemaManager()->ensureNoTables();
+        $this->getDatabase()->getDriver()->disconnect();
     }
 
     protected function createSchemaManager(

@@ -23,11 +23,6 @@ abstract class ManagerTransactionTest extends TestCase
         $this->createSchemaManager()->ensureTables();
     }
 
-    protected function tearDown(): void
-    {
-        $this->createSchemaManager()->ensureNoTables();
-    }
-
     protected function populateDatabase(): void
     {
         // Skip
