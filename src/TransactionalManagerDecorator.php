@@ -12,7 +12,8 @@ use Yiisoft\Rbac\Role;
 
 class TransactionalManagerDecorator implements ManagerInterface
 {
-    public function __construct(private ManagerInterface $manager, private DatabaseInterface $database) {
+    public function __construct(private ManagerInterface $manager, private DatabaseInterface $database)
+    {
     }
 
     public function userHasPermission($userId, string $permissionName, array $parameters = []): bool
