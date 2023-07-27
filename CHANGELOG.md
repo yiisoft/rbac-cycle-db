@@ -4,6 +4,7 @@
 
 - New #23: Add `DbSchemaManager` and SQL dumps for working with schema (@arogachev)
 - Chg #23: Remove CLI dependencies (@arogachev)
+- Enh #60: Decouple storages (@arogachev)
 
 ## 2.0.0 April 20, 2023
 
