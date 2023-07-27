@@ -60,7 +60,7 @@ class TransactionalManagerDecorator implements ManagerInterface
         return $this;
     }
 
-    public function revoke(string $itemName, int|object|string$userId): ManagerInterface
+    public function revoke(string $itemName, int|object|string $userId): ManagerInterface
     {
         $this->manager->revoke($itemName, $userId);
 
