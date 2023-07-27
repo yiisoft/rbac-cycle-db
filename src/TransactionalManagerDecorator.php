@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle;
 
+use Closure;
 use Cycle\Database\DatabaseInterface;
 use Throwable;
 use Yiisoft\Rbac\ManagerInterface;
@@ -52,28 +53,28 @@ class TransactionalManagerDecorator implements ManagerInterface
         return $this->manager->hasChild($parentName, $childName);
     }
 
-    public function assign(string $itemName, $userId): ManagerInterface
+    public function assign(string $itemName, int|object|string $userId): ManagerInterface
     {
         $this->manager->assign($itemName, $userId);
 
         return $this;
     }
 
-    public function revoke(string $itemName, $userId): ManagerInterface
+    public function revoke(string $itemName, int|object|string$userId): ManagerInterface
     {
         $this->manager->revoke($itemName, $userId);
 
         return $this;
     }
 
-    public function revokeAll($userId): ManagerInterface
+    public function revokeAll(int|object|string $userId): ManagerInterface
     {
         $this->manager->revokeAll($userId);
 
         return $this;
     }
 
-    public function getRolesByUserId($userId): array
+    public function getRolesByUserId(int|object|string $userId): array
     {
         return $this->manager->getRolesByUserId($userId);
     }
@@ -88,7 +89,7 @@ class TransactionalManagerDecorator implements ManagerInterface
         return $this->manager->getPermissionsByRoleName($roleName);
     }
 
-    public function getPermissionsByUserId($userId): array
+    public function getPermissionsByUserId(int|object|string $userId): array
     {
         return $this->manager->getPermissionsByUserId($userId);
     }
@@ -158,7 +159,7 @@ class TransactionalManagerDecorator implements ManagerInterface
         }
     }
 
-    public function setDefaultRoleNames($roleNames): ManagerInterface
+    public function setDefaultRoleNames(Closure|array $roleNames): ManagerInterface
     {
         $this->manager->setDefaultRoleNames($roleNames);
 
