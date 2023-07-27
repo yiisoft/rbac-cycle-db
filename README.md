@@ -107,14 +107,15 @@ The storages are not intended to be used directly. Instead, use them with `Manag
 [Yii RBAC](https://github.com/yiisoft/rbac) package:
 
 ```php
-use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Rbac\Cycle\Manager;
-use Yiisoft\Rbac\Db\AssignmentsStorage;
-use Yiisoft\Rbac\Db\ItemsStorage;
+use Cycle\Database\DatabaseInterface;
+use Yiisoft\Rbac\Cycle\AssignmentsStorage;
+use Yiisoft\Rbac\Cycle\ItemsStorage;
+use Yiisoft\Rbac\Cycle\TransactionalManagerDecorator;
+use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\RuleFactoryInterface;
 
-/** @var ConnectionInterface $database */
+/** @var DatabaseInterface $database */
 $itemsStorage = new ItemsStorage(
     tableName: 'auth_item',
     database: $database,
@@ -125,21 +126,21 @@ $assignmentsStorage = new AssignmentsStorage(
     database: $database,
 );
 /** @var RuleFactoryInterface $rulesContainer */
-$manager = new Manager(
-    itemsStorage: $itemsStorage, 
-    assignmentsStorage: $assignmentsStorage,
-    // Requires https://github.com/yiisoft/rbac-rules-container or other compatible factory.
-    ruleFactory: $rulesContainer,
+$manager = new TransactionalManagerDecorator(
+    new Manager(
+        itemsStorage: $itemsStorage, 
+        assignmentsStorage: $assignmentsStorage,
+        // Requires https://github.com/yiisoft/rbac-rules-container or other compatible factory.
+        ruleFactory: $rulesContainer,
+    ),
 );
 $manager->addPermission(new Permission('posts.create'));
 ```
 
+> Note wrapping manager with decorator - it additionally provides database transactions to guarantee data integrity:
+
 > Note that it's not necessary to use both DB storages. Combining different implementations is possible. A quite popular 
 > case is to manage items via [PHP files](https://github.com/yiisoft/rbac-php) while store assignments in database.
-
-> When at least 1 DB storage is connected, make sure to use `Manager` from this package, not from 
-> [Yii RBAC](https://github.com/yiisoft/rbac), because it additionally provides database transactions to guarantee data 
-> integrity.
 
 More examples can be found in [Yii RBAC](https://github.com/yiisoft/rbac) documentation.
 
