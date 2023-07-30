@@ -6,6 +6,7 @@ namespace Yiisoft\Rbac\Cycle;
 
 use Closure;
 use Cycle\Database\DatabaseInterface;
+use Stringable;
 use Throwable;
 use Yiisoft\Rbac\ManagerInterface;
 use Yiisoft\Rbac\Permission;
@@ -53,28 +54,28 @@ class TransactionalManagerDecorator implements ManagerInterface
         return $this->manager->hasChild($parentName, $childName);
     }
 
-    public function assign(string $itemName, int|object|string $userId): ManagerInterface
+    public function assign(string $itemName, int|Stringable|string $userId): ManagerInterface
     {
         $this->manager->assign($itemName, $userId);
 
         return $this;
     }
 
-    public function revoke(string $itemName, int|object|string $userId): ManagerInterface
+    public function revoke(string $itemName, int|Stringable|string $userId): ManagerInterface
     {
         $this->manager->revoke($itemName, $userId);
 
         return $this;
     }
 
-    public function revokeAll(int|object|string $userId): ManagerInterface
+    public function revokeAll(int|Stringable|string $userId): ManagerInterface
     {
         $this->manager->revokeAll($userId);
 
         return $this;
     }
 
-    public function getRolesByUserId(int|object|string $userId): array
+    public function getRolesByUserId(int|Stringable|string $userId): array
     {
         return $this->manager->getRolesByUserId($userId);
     }
@@ -89,7 +90,7 @@ class TransactionalManagerDecorator implements ManagerInterface
         return $this->manager->getPermissionsByRoleName($roleName);
     }
 
-    public function getPermissionsByUserId(int|object|string $userId): array
+    public function getPermissionsByUserId(int|Stringable|string $userId): array
     {
         return $this->manager->getPermissionsByUserId($userId);
     }
