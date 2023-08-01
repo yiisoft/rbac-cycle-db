@@ -47,7 +47,20 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         return $this->getRows($name, areParents: false);
     }
 
-    protected function getRows(string $name, bool $areParents = true): array
+    /**
+     * Gets `WITH` expression used in DB query.
+     *
+     * @infection-ignore-all
+     * - ProtectedVisibility.
+     *
+     * @return string `WITH` expression.
+     */
+    protected function getWithExpression(): string
+    {
+        return 'WITH RECURSIVE';
+    }
+
+    private function getRows(string $name, bool $areParents = true): array
     {
         if ($areParents) {
             $cteSelectRelationName = 'parent';
@@ -62,12 +75,12 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         }
 
         $compiler = $this->database->getDriver()->getQueryCompiler();
-        $cteSelectItemSql = (string) $this
+        $cteSelectItemQuery = $this
             ->database
             ->select('name')
             ->from($this->tableName)
             ->where(['name' => $name]);
-        $cteSelectRelationSql = (string) $this
+        $cteSelectRelationQuery = $this
             ->database
             ->select($cteSelectRelationName)
             ->from([
@@ -78,7 +91,7 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
                 new Fragment('item_child_recursive.' . $compiler->quoteIdentifier($cteConditionRelationName)),
                 new Fragment("$cteName.$cteParameterName"),
             );
-        $outerSql = (string) $this
+        $outerQuery = $this
             ->database
             ->select('item.*')
             ->from(new Fragment($cteName))
@@ -86,29 +99,16 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
             ->on('item.name', new Fragment("$cteName.$cteParameterName"))
             ->where('item.name', '!=', $name);
         $sql = "{$this->getWithExpression()} $cteName($cteParameterName) AS (
-            $cteSelectItemSql
+            $cteSelectItemQuery
             UNION ALL
-            $cteSelectRelationSql
+            $cteSelectRelationQuery
         )
-        $outerSql";
+        $outerQuery";
 
         /** @psalm-var RawItem[] */
         return $this
             ->database
             ->query($sql)
             ->fetchAll();
-    }
-
-    /**
-     * Gets `WITH` expression used in DB query.
-     *
-     * @infection-ignore-all
-     * - ProtectedVisibility.
-     *
-     * @return string `WITH` expression.
-     */
-    protected function getWithExpression(): string
-    {
-        return 'WITH RECURSIVE';
     }
 }
