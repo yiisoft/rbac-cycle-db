@@ -12,7 +12,7 @@ use Yiisoft\Rbac\ManagerInterface;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 
-class TransactionalManagerDecorator implements ManagerInterface
+final class TransactionalManagerDecorator implements ManagerInterface
 {
     public function __construct(private ManagerInterface $manager, private DatabaseInterface $database)
     {

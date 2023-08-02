@@ -15,7 +15,7 @@ use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 
 /**
- * **Warning:** Do not use directly! Use with {@see Manager} instead.
+ * **Warning:** Do not use directly! Use with `Manager` from {@link https://github.com/yiisoft/rbac} package.
  *
  * Storage for RBAC items (roles and permissions) and their relations in the form of database tables. Operations are
  * performed using Cycle ORM.
