@@ -135,11 +135,11 @@ trait SchemaTrait
         $this->assertSame('int', $updatedAt->getType());
         $this->assertFalse($updatedAt->isNullable());
 
-        $this->assertCount(1, $table->getIndexes());
-        $this->assertIndex(self::ITEMS_TABLE, 'idx-auth_item-type', ['type']);
-
         $this->assertSame(['name'], $table->getPrimaryKeys());
         $this->assertCount(0, $table->getForeignKeys());
+
+        $this->assertCount(1, $table->getIndexes());
+        $this->assertIndex(self::ITEMS_TABLE, 'idx-auth_item-type', ['type']);
     }
 
     private function assertForeignKey(
