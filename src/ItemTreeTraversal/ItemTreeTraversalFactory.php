@@ -43,7 +43,7 @@ class ItemTreeTraversalFactory
             'SQLite' => new SqliteCteItemTreeTraversal(...$arguments),
             'MySQL' => self::getMysqlItemTreeTraversal($database, $tableName, $childrenTableName),
             'Postgres' => new PostgresCteItemTreeTraversal(...$arguments),
-            'SqlServer' => new SqlServerCteItemTreeTraversal(...$arguments),
+            'SQLServer' => new SqlServerCteItemTreeTraversal(...$arguments),
             default => throw new RuntimeException("$driverType database driver is not supported."),
         };
         // @codeCoverageIgnoreEnd
