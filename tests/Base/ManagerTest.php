@@ -10,12 +10,12 @@ use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Manager;
 use Yiisoft\Rbac\ManagerInterface;
 use Yiisoft\Rbac\RuleFactoryInterface;
-use Yiisoft\Rbac\Tests\Common\ManagerTestConfigurationTrait;
+use Yiisoft\Rbac\Tests\Common\ManagerConfigurationTestTrait;
 use Yiisoft\Rbac\Tests\Support\SimpleRuleFactory;
 
 abstract class ManagerTest extends TestCase
 {
-    use ManagerTestConfigurationTrait;
+    use ManagerConfigurationTestTrait;
 
     protected function populateDatabase(): void
     {

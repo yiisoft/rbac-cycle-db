@@ -8,11 +8,11 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\Cycle\AssignmentsStorage;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\ItemsStorageInterface;
-use Yiisoft\Rbac\Tests\Common\ManagerTestLogicTrait;
+use Yiisoft\Rbac\Tests\Common\ManagerLogicTestTrait;
 
 abstract class ManagerWithDbItemsAndAssignmentsTest extends ManagerTest
 {
-    use ManagerTestLogicTrait {
+    use ManagerLogicTestTrait {
         setUp as protected traitSetUp;
         tearDown as protected traitTearDown;
     }
@@ -37,5 +37,13 @@ abstract class ManagerWithDbItemsAndAssignmentsTest extends ManagerTest
     protected function createAssignmentsStorage(): AssignmentsStorageInterface
     {
         return new AssignmentsStorage(self::ASSIGNMENTS_TABLE, $this->getDatabase());
+    }
+
+    /**
+     * @link https://github.com/yiisoft/rbac/issues/165
+     */
+    public function testRemoveChild(): void
+    {
+        $this->markTestSkipped();
     }
 }
