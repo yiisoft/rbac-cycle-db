@@ -17,7 +17,11 @@ final class TransactionalManagerDecorator implements ManagerInterface
     {
     }
 
-    public function userHasPermission($userId, string $permissionName, array $parameters = []): bool
+    public function userHasPermission(
+        int|string|Stringable|null $userId,
+        string $permissionName,
+        array $parameters = [],
+    ): bool
     {
         return $this->manager->userHasPermission($userId, $permissionName, $parameters);
     }
