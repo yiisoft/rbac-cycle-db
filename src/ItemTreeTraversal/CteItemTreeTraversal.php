@@ -6,7 +6,7 @@ namespace Yiisoft\Rbac\Cycle\ItemTreeTraversal;
 
 use Cycle\Database\ColumnInterface;
 use Cycle\Database\DatabaseInterface;
-use Yiisoft\Rbac\Cycle\ItemsStorage;
+use Yiisoft\Rbac\ItemsStorageInterface;
 
 /**
  * A RBAC item tree traversal strategy based on CTE (common table expression). Uses `WITH` expression to form a
@@ -15,7 +15,7 @@ use Yiisoft\Rbac\Cycle\ItemsStorage;
  *
  * @internal
  *
- * @psalm-import-type RawItem from ItemsStorage
+ * @psalm-import-type RawItem from ItemsStorageInterface
  */
 abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
 {

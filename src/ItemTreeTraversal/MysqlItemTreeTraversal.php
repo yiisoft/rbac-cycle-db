@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\ItemTreeTraversal;
 
 use Cycle\Database\DatabaseInterface;
-use Yiisoft\Rbac\Cycle\ItemsStorage;
+use Yiisoft\Rbac\ItemsStorageInterface;
 
 /**
  * A RBAC item tree traversal strategy based on specific functionality for MySQL 5, without support for CTE (Common
@@ -13,7 +13,7 @@ use Yiisoft\Rbac\Cycle\ItemsStorage;
  *
  * @internal
  *
- * @psalm-import-type RawItem from ItemsStorage
+ * @psalm-import-type RawItem from ItemsStorageInterface
  */
 final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
 {
