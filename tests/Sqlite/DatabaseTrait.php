@@ -15,7 +15,6 @@ trait DatabaseTrait
 {
     protected function makeDatabase(): DatabaseInterface
     {
-        $dbPath = __DIR__ . DIRECTORY_SEPARATOR . 'runtime' . DIRECTORY_SEPARATOR . 'test.db';
         $dbConfig = new DatabaseConfig(
             [
                 'default' => 'default',
@@ -29,8 +28,10 @@ trait DatabaseTrait
         );
         $dbManager = new DatabaseManager($dbConfig);
         $dbManager->database()->execute('PRAGMA foreign_keys = ON;');
-        // Uncomment to dump schema changes
-        // $dbManager->setLogger(new Logger());
+
+        $logger = new Logger();
+        $dbManager->setLogger($logger);
+        $this->setLogger($logger);
 
         return $dbManager->database();
     }

@@ -21,7 +21,5 @@ CREATE TABLE "public"."auth_assignment" (
   "itemName" character varying (128) NOT NULL,
   "userId" character varying (128) NOT NULL,
   "createdAt" integer NOT NULL,
-  PRIMARY KEY ("itemName", "userId"),
-  CONSTRAINT "fk-auth_assignment-itemName" FOREIGN KEY ("itemName") REFERENCES "auth_item" ("name") ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY ("itemName", "userId")
 );
-CREATE INDEX "idx-auth_assignment-itemName" ON "public"."auth_assignment" ("itemName");

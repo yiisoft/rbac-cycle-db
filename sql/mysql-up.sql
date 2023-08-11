@@ -21,7 +21,5 @@ CREATE TABLE `auth_assignment` (
   `itemName` varchar (128) NOT NULL,
   `userId` varchar (128) NOT NULL,
   `createdAt` int(11) NOT NULL,
-  PRIMARY KEY (`itemName`, `userId`),
-  CONSTRAINT `fk-auth_assignment-itemName` FOREIGN KEY (`itemName`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`itemName`, `userId`)
 ) ENGINE InnoDB;
-CREATE INDEX `idx-auth_assignment-itemName` ON `auth_assignment` (`itemName`);

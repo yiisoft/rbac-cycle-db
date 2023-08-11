@@ -34,24 +34,8 @@ trait SchemaTrait
         $this->assertFalse($createdAt->isNullable());
 
         $this->assertSame(['itemName', 'userId'], $table->getPrimaryKeys());
-
-        $this->assertCount(1, $table->getIndexes());
-        $this->assertIndex(self::ASSIGNMENTS_TABLE, 'idx-auth_assignment-itemName', ['itemName']);
-    }
-
-    protected function checkAssignmentsTableForeignKeys(
-        string $expectedItemNameForeignKeyName = 'fk-auth_assignment-itemName',
-    ): void {
-        $this->assertCount(1, $this->getDatabase()->table(self::ASSIGNMENTS_TABLE)->getForeignKeys());
-        $this->assertForeignKey(
-            table: self::ASSIGNMENTS_TABLE,
-            expectedColumns: ['itemName'],
-            expectedForeignTable: self::ITEMS_TABLE,
-            expectedForeignKeys: ['name'],
-            expectedName: $expectedItemNameForeignKeyName,
-            expectedUpdateRule: ForeignKeyInterface::CASCADE,
-            expectedDeleteRule: ForeignKeyInterface::CASCADE,
-        );
+        $this->assertCount(0, $table->getForeignKeys());
+        $this->assertCount(0, $table->getIndexes());
     }
 
     protected function checkItemsChildrenTable(): void
@@ -151,10 +135,11 @@ trait SchemaTrait
         $this->assertSame('int', $updatedAt->getType());
         $this->assertFalse($updatedAt->isNullable());
 
+        $this->assertSame(['name'], $table->getPrimaryKeys());
+        $this->assertCount(0, $table->getForeignKeys());
+
         $this->assertCount(1, $table->getIndexes());
         $this->assertIndex(self::ITEMS_TABLE, 'idx-auth_item-type', ['type']);
-
-        $this->assertSame(['name'], $table->getPrimaryKeys());
     }
 
     private function assertForeignKey(

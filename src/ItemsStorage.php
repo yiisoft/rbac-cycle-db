@@ -20,6 +20,7 @@ use Yiisoft\Rbac\Role;
  * Storage for RBAC items (roles and permissions) and their relations in the form of database tables. Operations are
  * performed using Cycle ORM.
  *
+ * @psalm-import-type ItemsIndexedByName from ItemsStorageInterface
  * @psalm-type RawItem = array{
  *     type: Item::TYPE_*,
  *     name: string,
@@ -230,25 +231,15 @@ final class ItemsStorage implements ItemsStorageInterface
     public function getParents(string $name): array
     {
         $rawItems = $this->getTreeTraversal()->getParentRows($name);
-        $items = [];
 
-        foreach ($rawItems as $rawItem) {
-            $items[$rawItem['name']] = $this->createItem(...$rawItem);
-        }
-
-        return $items;
+        return $this->getItemsIndexedByName($rawItems);
     }
 
     public function getChildren(string $name): array
     {
         $rawItems = $this->getTreeTraversal()->getChildrenRows($name);
-        $items = [];
 
-        foreach ($rawItems as $rawItem) {
-            $items[$rawItem['name']] = $this->createItem(...$rawItem);
-        }
-
-        return $items;
+        return $this->getItemsIndexedByName($rawItems);
     }
 
     public function hasChildren(string $name): bool
@@ -307,18 +298,15 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     private function getItemsByType(string $type): array
     {
-        /** @psalm-var RawItem[] $rows */
-        $rows = $this
+        /** @psalm-var RawItem[] $rawItems */
+        $rawItems = $this
             ->database
             ->select()
             ->from($this->tableName)
             ->where(['type' => $type])
             ->fetchAll();
 
-        return array_map(
-            fn(array $row): Item => $this->createItem(...$row),
-            $rows,
-        );
+        return $this->getItemsIndexedByName($rawItems);
     }
 
     /**
@@ -479,5 +467,20 @@ final class ItemsStorage implements ItemsStorageInterface
         }
 
         return $this->treeTraversal;
+    }
+
+    /**
+     * @psalm-param RawItem[] $rawItems
+     * @psalm-return ItemsIndexedByName
+     */
+    private function getItemsIndexedByName(array $rawItems): array
+    {
+        $items = [];
+
+        foreach ($rawItems as $rawItem) {
+            $items[$rawItem['name']] = $this->createItem(...$rawItem);
+        }
+
+        return $items;
     }
 }
