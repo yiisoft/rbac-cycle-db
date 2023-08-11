@@ -4,11 +4,11 @@
 
 - New #23: Add `DbSchemaManager` and SQL dumps for working with schema (@arogachev)
 - Chg #23: Remove CLI dependencies (@arogachev)
-- Enh #60: Decouple storages (@arogachev)
 - Enh #60: Decouple storages: adjust database tables' schema (@arogachev)
 - Enh #60: Decouple storages: allow to manage tables just for 1 storage in `DbSchemaManager` (@arogachev)
 - Enh #60: Add `TransactionlManageDecorator` for `Manager` to guarantee data integrity (@arogachev)
 - Bug #60: Implement `AssignmentStorage::renameItem()`, fix bug when implicit renaming had no effect (@arogachev)
+- Chg #61: Simplify item tree traversal (@arogachev)
 
 ## 2.0.0 April 20, 2023
 
