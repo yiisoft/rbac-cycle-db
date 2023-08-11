@@ -221,9 +221,6 @@ final class ItemsStorage implements ItemsStorageInterface
         $this->clearItemsByType(Item::TYPE_PERMISSION);
     }
 
-    /**
-     * @psalm-return ItemsIndexedByName
-     */
     public function getParents(string $name): array
     {
         $rawItems = $this->getTreeTraversal()->getParentRows($name);
@@ -231,9 +228,6 @@ final class ItemsStorage implements ItemsStorageInterface
         return $this->getItemsIndexedByName($rawItems);
     }
 
-    /**
-     * @psalm-return ItemsIndexedByName
-     */
     public function getChildren(string $name): array
     {
         $rawItems = $this->getTreeTraversal()->getChildrenRows($name);
