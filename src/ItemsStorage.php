@@ -20,6 +20,7 @@ use Yiisoft\Rbac\Role;
  * Storage for RBAC items (roles and permissions) and their relations in the form of database tables. Operations are
  * performed using Cycle ORM.
  *
+ * @psalm-import-type ItemsIndexedByName from ItemsStorageInterface
  * @psalm-type RawItem = array{
  *     type: Item::TYPE_*,
  *     name: string,

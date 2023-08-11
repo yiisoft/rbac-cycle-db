@@ -137,7 +137,7 @@ $manager = new TransactionalManagerDecorator(
 $manager->addPermission(new Permission('posts.create'));
 ```
 
-> Note wrapping manager with decorator - it additionally provides database transactions to guarantee data integrity:
+> Note wrapping manager with decorator - it additionally provides database transactions to guarantee data integrity.
 
 > Note that it's not necessary to use both DB storages. Combining different implementations is possible. A quite popular 
 > case is to manage items via [PHP files](https://github.com/yiisoft/rbac-php) while store assignments in database.

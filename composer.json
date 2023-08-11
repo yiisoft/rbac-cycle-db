@@ -23,7 +23,7 @@
     "require": {
         "php": "^8.0",
         "cycle/database": "^2.1",
-        "yiisoft/rbac": "dev-decouple-storages as 1.0.x-dev"
+        "yiisoft/rbac": "dev-master"
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",

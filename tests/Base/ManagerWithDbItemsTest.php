@@ -6,11 +6,11 @@ namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\ItemsStorageInterface;
-use Yiisoft\Rbac\Tests\Common\ManagerTestLogicTrait;
+use Yiisoft\Rbac\Tests\Common\ManagerLogicTestTrait;
 
 abstract class ManagerWithDbItemsTest extends ManagerTest
 {
-    use ManagerTestLogicTrait {
+    use ManagerLogicTestTrait {
         setUp as protected traitSetUp;
         tearDown as protected traitTearDown;
     }
@@ -30,5 +30,13 @@ abstract class ManagerWithDbItemsTest extends ManagerTest
     protected function createItemsStorage(): ItemsStorageInterface
     {
         return new ItemsStorage(self::ITEMS_TABLE, $this->getDatabase(), self::ITEMS_CHILDREN_TABLE);
+    }
+
+    /**
+     * @link https://github.com/yiisoft/rbac/issues/165
+     */
+    public function testRemoveChild(): void
+    {
+        $this->markTestSkipped();
     }
 }

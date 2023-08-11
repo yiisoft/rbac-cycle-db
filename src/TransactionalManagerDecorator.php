@@ -7,19 +7,21 @@ namespace Yiisoft\Rbac\Cycle;
 use Closure;
 use Cycle\Database\DatabaseInterface;
 use Stringable;
-use Throwable;
 use Yiisoft\Rbac\ManagerInterface;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 
-class TransactionalManagerDecorator implements ManagerInterface
+final class TransactionalManagerDecorator implements ManagerInterface
 {
     public function __construct(private ManagerInterface $manager, private DatabaseInterface $database)
     {
     }
 
-    public function userHasPermission($userId, string $permissionName, array $parameters = []): bool
-    {
+    public function userHasPermission(
+        int|string|Stringable|null $userId,
+        string $permissionName,
+        array $parameters = [],
+    ): bool {
         return $this->manager->userHasPermission($userId, $permissionName, $parameters);
     }
 
@@ -116,18 +118,12 @@ class TransactionalManagerDecorator implements ManagerInterface
 
     public function updateRole(string $name, Role $role): ManagerInterface
     {
-        $this->database->begin();
+        $manager = $this->manager;
+        $this->database->transaction(static function () use ($manager, $name, $role): void {
+            $manager->updateRole($name, $role);
+        });
 
-        try {
-            $this->manager->updateRole($name, $role);
-            $this->database->commit();
-
-            return $this;
-        } catch (Throwable $e) {
-            $this->database->rollback();
-
-            throw $e;
-        }
+        return $this;
     }
 
     public function addPermission(Permission $permission): ManagerInterface
@@ -146,18 +142,12 @@ class TransactionalManagerDecorator implements ManagerInterface
 
     public function updatePermission(string $name, Permission $permission): ManagerInterface
     {
-        $this->database->begin();
+        $manager = $this->manager;
+        $this->database->transaction(static function () use ($manager, $name, $permission): void {
+            $manager->updatePermission($name, $permission);
+        });
 
-        try {
-            $this->manager->updatePermission($name, $permission);
-            $this->database->commit();
-
-            return $this;
-        } catch (Throwable $e) {
-            $this->database->rollback();
-
-            throw $e;
-        }
+        return $this;
     }
 
     public function setDefaultRoleNames(Closure|array $roleNames): ManagerInterface
