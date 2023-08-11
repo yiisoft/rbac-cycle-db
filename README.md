@@ -140,18 +140,7 @@ $manager->addPermission(new Permission('posts.create'));
 > Note wrapping manager with decorator - it additionally provides database transactions to guarantee data integrity.
 
 > Note that it's not necessary to use both DB storages. Combining different implementations is possible. A quite popular 
-> case is to manage items via [PHP files](https://github.com/yiisoft/rbac-php) while store assignments in database. When 
-> using just 1 DB storage, decorator is not required:
-
-```php
-use Yiisoft\Rbac\Manager;
-
-$manager = new Manager(
-    itemsStorage: $itemsStorage, 
-    assignmentsStorage: $assignmentsStorage,
-    ruleFactory: $rulesContainer,
-),
-```
+> case is to manage items via [PHP files](https://github.com/yiisoft/rbac-php) while store assignments in database.
 
 More examples can be found in [Yii RBAC](https://github.com/yiisoft/rbac) documentation.
 
