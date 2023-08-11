@@ -14,7 +14,11 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
  *
  * Storage for RBAC assignments in the form of database table. Operations are performed using Cycle ORM.
  *
- * @psalm-import-type RawAssignment from AssignmentsStorageInterface
+ * @psalm-type RawAssignment = array{
+ *     itemName: string,
+ *     userId: string,
+ *     createdAt: int|string,
+ * }
  */
 final class AssignmentsStorage implements AssignmentsStorageInterface
 {

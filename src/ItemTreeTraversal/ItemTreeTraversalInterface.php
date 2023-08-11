@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle\ItemTreeTraversal;
 
-use Yiisoft\Rbac\ItemsStorageInterface;
+use Yiisoft\Rbac\Cycle\ItemsStorage;
 
 /**
  * An interface for retrieving hierarchical RBAC items' data in a more efficient way depending on used RDBMS and their
@@ -12,7 +12,7 @@ use Yiisoft\Rbac\ItemsStorageInterface;
  *
  * @internal
  *
- * @psalm-import-type RawItem from ItemsStorageInterface
+ * @psalm-import-type RawItem from ItemsStorage
  */
 interface ItemTreeTraversalInterface
 {
