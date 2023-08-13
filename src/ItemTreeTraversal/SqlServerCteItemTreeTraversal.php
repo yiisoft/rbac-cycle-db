@@ -9,9 +9,9 @@ namespace Yiisoft\Rbac\Cycle\ItemTreeTraversal;
  *
  * @internal
  */
-final class SqlserverCteItemTreeTraversal extends CteItemTreeTraversal
+final class SqlServerCteItemTreeTraversal extends CteItemTreeTraversal
 {
-    public function getWithExpression(): string
+    protected function getWithExpression(): string
     {
         return 'WITH';
     }
