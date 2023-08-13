@@ -17,7 +17,7 @@ class ItemTreeTraversalFactory
     /**
      * Creates item tree traversal strategy depending on used RDBMS.
      *
-     * @param DatabaseInterface $database Yii Database connection instance.
+     * @param DatabaseInterface $database Cycle database instance.
      *
      * @param string $tableName A name of the table for storing RBAC items.
      * @psalm-param non-empty-string $tableName
