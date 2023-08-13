@@ -29,7 +29,6 @@ use Yiisoft\Rbac\Role;
  *     createdAt: int|string,
  *     updatedAt: int|string
  * }
- * @psalm-type ItemsIndexedByName = array<string, Permission|Role>
  */
 final class ItemsStorage implements ItemsStorageInterface
 {
