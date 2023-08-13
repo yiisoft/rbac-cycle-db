@@ -52,7 +52,7 @@ class ItemTreeTraversalFactory
     /**
      * Creates item tree traversal strategy for MySQL depending on its version.
      *
-     * @param DatabaseInterface $database Cucle database instance.
+     * @param DatabaseInterface $database Cycle database instance.
      *
      * @param string $tableName A name of the table for storing RBAC items.
      * @psalm-param non-empty-string $tableName
