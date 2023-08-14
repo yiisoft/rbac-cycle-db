@@ -71,20 +71,9 @@ abstract class DbSchemaManagerTest extends TestCase
         new DbSchemaManager(...$arguments);
     }
 
-    public function dataCreateTablesSeparately(): array
+    public function testCreateTablesSeparately(): void
     {
-        return [
-            [DbSchemaManager::ITEMS_CHILDREN_TABLE],
-            [null],
-        ];
-    }
-
-    /**
-     * @dataProvider dataCreateTablesSeparately
-     */
-    public function testCreateTablesSeparately(string|null $itemsChildrenTable): void
-    {
-        $schemaManager = $this->createSchemaManager(itemsChildrenTable: $itemsChildrenTable);
+        $schemaManager = $this->createSchemaManager();
         $schemaManager->createItemsTable();
         $schemaManager->createItemsChildrenTable();
         $schemaManager->createAssignmentsTable();
