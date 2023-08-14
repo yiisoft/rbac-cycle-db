@@ -67,8 +67,8 @@ trait SchemaTrait
     }
 
     protected function checkItemsChildrenTableForeignKeys(
-        string $expectedParentForeignKeyName = 'fk-auth_item_child-parent',
-        string $expectedChildForeignKeyName = 'fk-auth_item_child-child',
+        string $expectedParentForeignKeyName = 'fk-yii_rbac_cycle_db_auth_item_child-parent',
+        string $expectedChildForeignKeyName = 'fk-yii_rbac_cycle_db_auth_item_child-child',
     ): void {
         $this->assertCount(2, $this->getDatabase()->table(DbSchemaManager::ITEMS_CHILDREN_TABLE)->getForeignKeys());
         $this->assertForeignKey(
