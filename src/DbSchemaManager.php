@@ -14,6 +14,11 @@ use InvalidArgumentException;
  */
 final class DbSchemaManager
 {
+    public const TABLE_PREFIX = 'yii_rbac_cycle_db_';
+    public const ITEMS_TABLE = self::TABLE_PREFIX . 'auth_item';
+    public const ITEMS_CHILDREN_TABLE = self::TABLE_PREFIX . 'auth_item_child';
+    public const ASSIGNMENTS_TABLE = self::TABLE_PREFIX . 'auth_assignment';
+
     /**
      * @var string|null A name of the table for storing RBAC items (roles and permissions).
      * @psalm-var ?non-empty-string
@@ -41,9 +46,9 @@ final class DbSchemaManager
      */
     public function __construct(
         private DatabaseInterface $database,
-        ?string $itemsTable = null,
-        ?string $itemsChildrenTable = null,
-        ?string $assignmentsTable = null,
+        ?string $itemsTable = self::ITEMS_TABLE,
+        ?string $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE,
+        ?string $assignmentsTable = self::ASSIGNMENTS_TABLE,
     ) {
         $this->initTables(
             itemsTable: $itemsTable,

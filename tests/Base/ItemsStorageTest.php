@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\Injection\Fragment;
+use Yiisoft\Rbac\Cycle\DbSchemaManager;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
@@ -26,7 +27,7 @@ abstract class ItemsStorageTest extends TestCase
         $itemsChildrenExist = $this
             ->getDatabase()
             ->select([new Fragment('1 AS item_exists')])
-            ->from(self::ITEMS_CHILDREN_TABLE)
+            ->from(DbSchemaManager::ITEMS_CHILDREN_TABLE)
             ->limit(1)
             ->run()
             ->fetch();
@@ -43,7 +44,7 @@ abstract class ItemsStorageTest extends TestCase
         $itemsChildren = $this
             ->getDatabase()
             ->select()
-            ->from(self::ITEMS_CHILDREN_TABLE)
+            ->from(DbSchemaManager::ITEMS_CHILDREN_TABLE)
             ->count();
         $this->assertSame($this->initialItemsChildrenCount - $initialItemChildrenCount, $itemsChildren);
     }
@@ -55,7 +56,7 @@ abstract class ItemsStorageTest extends TestCase
         $itemsChildrenCount = $this
             ->getDatabase()
             ->select()
-            ->from(self::ITEMS_CHILDREN_TABLE)
+            ->from(DbSchemaManager::ITEMS_CHILDREN_TABLE)
             ->count();
         $this->assertSame($this->initialBothRolesChildrenCount, $itemsChildrenCount);
     }
@@ -67,7 +68,7 @@ abstract class ItemsStorageTest extends TestCase
         $itemsChildrenCount = $this
             ->getDatabase()
             ->select([new Fragment('1 AS item_exists')])
-            ->from(self::ITEMS_CHILDREN_TABLE)
+            ->from(DbSchemaManager::ITEMS_CHILDREN_TABLE)
             ->count();
         $this->assertSame($this->initialBothPermissionsChildrenCount, $itemsChildrenCount);
     }
@@ -78,13 +79,13 @@ abstract class ItemsStorageTest extends TestCase
 
         $this
             ->getDatabase()
-            ->insert(self::ITEMS_TABLE)
+            ->insert(DbSchemaManager::ITEMS_TABLE)
             ->columns(['name', 'type', 'createdAt', 'updatedAt'])
             ->values($fixtures['items'])
             ->run();
         $this
             ->getDatabase()
-            ->insert(self::ITEMS_CHILDREN_TABLE)
+            ->insert(DbSchemaManager::ITEMS_CHILDREN_TABLE)
             ->columns(['parent', 'child'])
             ->values($fixtures['itemsChildren'])
             ->run();
@@ -92,6 +93,6 @@ abstract class ItemsStorageTest extends TestCase
 
     private function getStorage(): ItemsStorageInterface
     {
-        return new ItemsStorage(self::ITEMS_TABLE, $this->getDatabase());
+        return new ItemsStorage($this->getDatabase());
     }
 }

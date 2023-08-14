@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\ForeignKeyInterface;
+use Yiisoft\Rbac\Cycle\DbSchemaManager;
 
 trait SchemaTrait
 {
     protected function checkAssignmentsTable(): void
     {
         $database = $this->getDatabase();
-        $this->assertTrue($database->hasTable(self::ASSIGNMENTS_TABLE));
+        $this->assertTrue($database->hasTable(DbSchemaManager::ASSIGNMENTS_TABLE));
 
-        $table = $database->table(self::ASSIGNMENTS_TABLE);
+        $table = $database->table(DbSchemaManager::ASSIGNMENTS_TABLE);
         $columns = $table->getColumns();
 
         $this->assertArrayHasKey('itemName', $columns);
@@ -41,9 +42,9 @@ trait SchemaTrait
     protected function checkItemsChildrenTable(): void
     {
         $database = $this->getDatabase();
-        $this->assertTrue($database->hasTable(self::ITEMS_CHILDREN_TABLE));
+        $this->assertTrue($database->hasTable(DbSchemaManager::ITEMS_CHILDREN_TABLE));
 
-        $table = $database->table(self::ITEMS_CHILDREN_TABLE);
+        $table = $database->table(DbSchemaManager::ITEMS_CHILDREN_TABLE);
         $columns = $table->getColumns();
 
         $this->assertArrayHasKey('parent', $columns);
@@ -60,27 +61,27 @@ trait SchemaTrait
 
         $this->assertSame(['parent', 'child'], $table->getPrimaryKeys());
 
-        $this->assertCount(2, $this->getDatabase()->table(self::ITEMS_CHILDREN_TABLE)->getIndexes());
-        $this->assertIndex(self::ITEMS_CHILDREN_TABLE, 'idx-auth_item_child-parent', ['parent']);
-        $this->assertIndex(self::ITEMS_CHILDREN_TABLE, 'idx-auth_item_child-child', ['child']);
+        $this->assertCount(2, $this->getDatabase()->table(DbSchemaManager::ITEMS_CHILDREN_TABLE)->getIndexes());
+        $this->assertIndex(DbSchemaManager::ITEMS_CHILDREN_TABLE, 'idx-yii_rbac_cycle_db_auth_item_child-parent', ['parent']);
+        $this->assertIndex(DbSchemaManager::ITEMS_CHILDREN_TABLE, 'idx-yii_rbac_cycle_db_auth_item_child-child', ['child']);
     }
 
     protected function checkItemsChildrenTableForeignKeys(
         string $expectedParentForeignKeyName = 'fk-auth_item_child-parent',
         string $expectedChildForeignKeyName = 'fk-auth_item_child-child',
     ): void {
-        $this->assertCount(2, $this->getDatabase()->table(self::ITEMS_CHILDREN_TABLE)->getForeignKeys());
+        $this->assertCount(2, $this->getDatabase()->table(DbSchemaManager::ITEMS_CHILDREN_TABLE)->getForeignKeys());
         $this->assertForeignKey(
-            table: self::ITEMS_CHILDREN_TABLE,
+            table: DbSchemaManager::ITEMS_CHILDREN_TABLE,
             expectedColumns: ['parent'],
-            expectedForeignTable: self::ITEMS_TABLE,
+            expectedForeignTable: DbSchemaManager::ITEMS_TABLE,
             expectedForeignKeys: ['name'],
             expectedName: $expectedParentForeignKeyName,
         );
         $this->assertForeignKey(
-            table: self::ITEMS_CHILDREN_TABLE,
+            table: DbSchemaManager::ITEMS_CHILDREN_TABLE,
             expectedColumns: ['child'],
-            expectedForeignTable: self::ITEMS_TABLE,
+            expectedForeignTable: DbSchemaManager::ITEMS_TABLE,
             expectedForeignKeys: ['name'],
             expectedName: $expectedChildForeignKeyName,
         );
@@ -96,9 +97,9 @@ trait SchemaTrait
     private function checkItemsTable(): void
     {
         $database = $this->getDatabase();
-        $this->assertTrue($database->hasTable(self::ITEMS_TABLE));
+        $this->assertTrue($database->hasTable(DbSchemaManager::ITEMS_TABLE));
 
-        $table = $database->table(self::ITEMS_TABLE);
+        $table = $database->table(DbSchemaManager::ITEMS_TABLE);
         $columns = $table->getColumns();
 
         $this->assertArrayHasKey('name', $columns);
@@ -139,7 +140,7 @@ trait SchemaTrait
         $this->assertCount(0, $table->getForeignKeys());
 
         $this->assertCount(1, $table->getIndexes());
-        $this->assertIndex(self::ITEMS_TABLE, 'idx-auth_item-type', ['type']);
+        $this->assertIndex(DbSchemaManager::ITEMS_TABLE, 'idx-yii_rbac_cycle_db_auth_item-type', ['type']);
     }
 
     private function assertForeignKey(
