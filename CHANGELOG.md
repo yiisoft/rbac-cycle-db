@@ -9,6 +9,9 @@
 - Enh #60: Add `TransactionlManageDecorator` for `Manager` to guarantee data integrity (@arogachev)
 - Bug #60: Implement `AssignmentStorage::renameItem()`, fix bug when implicit renaming had no effect (@arogachev)
 - Chg #61: Simplify item tree traversal (@arogachev)
+- Enh #66: Add default table names (@arogachev)
+- Chg #65: Use prefix for default table names (@arogachev)
+- Bug #67: Fix hardcoded items children table name in item tree traversal query for MySQL 5 (@arogachev)
 
 ## 2.0.0 April 20, 2023
 
