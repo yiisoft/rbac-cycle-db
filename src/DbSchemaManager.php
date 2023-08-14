@@ -15,9 +15,9 @@ use InvalidArgumentException;
 final class DbSchemaManager
 {
     public const TABLE_PREFIX = 'yii_rbac_cycle_db_';
-    public const ITEMS_TABLE = self::TABLE_PREFIX . 'auth_item';
-    public const ITEMS_CHILDREN_TABLE = self::TABLE_PREFIX . 'auth_item_child';
-    public const ASSIGNMENTS_TABLE = self::TABLE_PREFIX . 'auth_assignment';
+    public const ITEMS_TABLE = self::TABLE_PREFIX . 'item';
+    public const ITEMS_CHILDREN_TABLE = self::TABLE_PREFIX . 'item_child';
+    public const ASSIGNMENTS_TABLE = self::TABLE_PREFIX . 'assignment';
 
     /**
      * @var string|null A name of the table for storing RBAC items (roles and permissions).

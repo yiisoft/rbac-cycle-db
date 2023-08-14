@@ -132,17 +132,17 @@ abstract class DbSchemaManagerTest extends TestCase
 
     public function testGetItemsTable(): void
     {
-        $this->assertSame('yii_rbac_cycle_db_auth_item', $this->createSchemaManager()->getItemsTable());
+        $this->assertSame('yii_rbac_cycle_db_item', $this->createSchemaManager()->getItemsTable());
     }
 
     public function testGetItemsChildrenTable(): void
     {
-        $this->assertSame('yii_rbac_cycle_db_auth_item_child', $this->createSchemaManager()->getItemsChildrenTable());
+        $this->assertSame('yii_rbac_cycle_db_item_child', $this->createSchemaManager()->getItemsChildrenTable());
     }
 
     public function testGetAssignmentsTable(): void
     {
-        $this->assertSame('yii_rbac_cycle_db_auth_assignment', $this->createSchemaManager()->getAssignmentsTable());
+        $this->assertSame('yii_rbac_cycle_db_assignment', $this->createSchemaManager()->getAssignmentsTable());
     }
 
     public function testEnsureNoTables(): void

@@ -11,8 +11,8 @@ trait SchemaTrait
         parent::checkItemsChildrenTable();
 
         $this->checkItemsChildrenTableForeignKeys(
-            expectedParentForeignKeyName: 'yii_rbac_cycle_db_auth_item_child_parent_fk',
-            expectedChildForeignKeyName: 'yii_rbac_cycle_db_auth_item_child_child_fk',
+            expectedParentForeignKeyName: 'yii_rbac_cycle_db_item_child_parent_fk',
+            expectedChildForeignKeyName: 'yii_rbac_cycle_db_item_child_child_fk',
         );
     }
 }

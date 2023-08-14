@@ -62,13 +62,13 @@ trait SchemaTrait
         $this->assertSame(['parent', 'child'], $table->getPrimaryKeys());
 
         $this->assertCount(2, $this->getDatabase()->table(DbSchemaManager::ITEMS_CHILDREN_TABLE)->getIndexes());
-        $this->assertIndex(DbSchemaManager::ITEMS_CHILDREN_TABLE, 'idx-yii_rbac_cycle_db_auth_item_child-parent', ['parent']);
-        $this->assertIndex(DbSchemaManager::ITEMS_CHILDREN_TABLE, 'idx-yii_rbac_cycle_db_auth_item_child-child', ['child']);
+        $this->assertIndex(DbSchemaManager::ITEMS_CHILDREN_TABLE, 'idx-yii_rbac_cycle_db_item_child-parent', ['parent']);
+        $this->assertIndex(DbSchemaManager::ITEMS_CHILDREN_TABLE, 'idx-yii_rbac_cycle_db_item_child-child', ['child']);
     }
 
     protected function checkItemsChildrenTableForeignKeys(
-        string $expectedParentForeignKeyName = 'fk-yii_rbac_cycle_db_auth_item_child-parent',
-        string $expectedChildForeignKeyName = 'fk-yii_rbac_cycle_db_auth_item_child-child',
+        string $expectedParentForeignKeyName = 'fk-yii_rbac_cycle_db_item_child-parent',
+        string $expectedChildForeignKeyName = 'fk-yii_rbac_cycle_db_item_child-child',
     ): void {
         $this->assertCount(2, $this->getDatabase()->table(DbSchemaManager::ITEMS_CHILDREN_TABLE)->getForeignKeys());
         $this->assertForeignKey(
@@ -140,7 +140,7 @@ trait SchemaTrait
         $this->assertCount(0, $table->getForeignKeys());
 
         $this->assertCount(1, $table->getIndexes());
-        $this->assertIndex(DbSchemaManager::ITEMS_TABLE, 'idx-yii_rbac_cycle_db_auth_item-type', ['type']);
+        $this->assertIndex(DbSchemaManager::ITEMS_TABLE, 'idx-yii_rbac_cycle_db_item-type', ['type']);
     }
 
     private function assertForeignKey(
