@@ -78,11 +78,11 @@ The structure of plain SQL files:
 - `pgsql-up.sql` - apply the changes for PostgreSQL driver.
 - `pgsql-down.sql` - revert the changes for PostgreSQL driver.
 
-Plain SQL assumes using default names for all 3 tables (`yii_rbac_cycle_db_auth_` prefix is used):
+Plain SQL assumes using default names for all 3 tables (`yii_rbac_auth_` prefix is used):
 
-- `yii_rbac_cycle_db_auth_item`.
-- `yii_rbac_cycle_db_auth_assignment`.
-- `yii_rbac_cycle_db_auth_item_child`.
+- `yii_rbac_auth_item`.
+- `yii_rbac_auth_assignment`.
+- `yii_rbac_auth_item_child`.
 
 `DbSchemaManager` allows to customize table names:
 
