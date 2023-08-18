@@ -1,4 +1,4 @@
-CREATE TABLE [auth_item] (
+CREATE TABLE [yii_rbac_item] (
   [name] varchar (128) NOT NULL,
   [type] varchar (10) NOT NULL,
   [description] varchar (191) NULL,
@@ -7,17 +7,17 @@ CREATE TABLE [auth_item] (
   [updatedAt] int NOT NULL,
   PRIMARY KEY ([name])
 );
-CREATE INDEX [idx-auth_item-type] ON [auth_item] ([type]);
-CREATE TABLE [auth_item_child] (
+CREATE INDEX [idx-yii_rbac_item-type] ON [yii_rbac_item] ([type]);
+CREATE TABLE [yii_rbac_item_child] (
   [parent] varchar (128) NOT NULL,
   [child] varchar (128) NOT NULL,
   PRIMARY KEY ([parent], [child]),
-  CONSTRAINT [fk-auth_item_child-parent] FOREIGN KEY ([parent]) REFERENCES [auth_item] ([name]) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT [fk-auth_item_child-child] FOREIGN KEY ([child]) REFERENCES [auth_item] ([name]) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT [fk-yii_rbac_item_child-parent] FOREIGN KEY ([parent]) REFERENCES [yii_rbac_item] ([name]) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT [fk-yii_rbac_item_child-child] FOREIGN KEY ([child]) REFERENCES [yii_rbac_item] ([name]) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
-CREATE INDEX [idx-auth_item_child-parent] ON [auth_item_child] ([parent]);
-CREATE INDEX [idx-auth_item_child-child] ON [auth_item_child] ([child]);
-CREATE TABLE [auth_assignment] (
+CREATE INDEX [idx-yii_rbac_item_child-parent] ON [yii_rbac_item_child] ([parent]);
+CREATE INDEX [idx-yii_rbac_item_child-child] ON [yii_rbac_item_child] ([child]);
+CREATE TABLE [yii_rbac_assignment] (
   [itemName] varchar (128) NOT NULL,
   [userId] varchar (128) NOT NULL,
   [createdAt] int NOT NULL,

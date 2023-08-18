@@ -23,14 +23,14 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
 final class AssignmentsStorage implements AssignmentsStorageInterface
 {
     /**
+     * @param DatabaseInterface $database Cycle database instance.
+     *
      * @param string $tableName A name of the table for storing RBAC assignments.
      * @psalm-param non-empty-string $tableName
-     *
-     * @param DatabaseInterface $database Cycle database instance.
      */
     public function __construct(
-        private string $tableName,
         private DatabaseInterface $database,
+        private string $tableName = DbSchemaManager::ASSIGNMENTS_TABLE,
     ) {
     }
 

@@ -14,6 +14,11 @@ use InvalidArgumentException;
  */
 final class DbSchemaManager
 {
+    public const TABLE_PREFIX = 'yii_rbac_';
+    public const ITEMS_TABLE = self::TABLE_PREFIX . 'item';
+    public const ITEMS_CHILDREN_TABLE = self::TABLE_PREFIX . 'item_child';
+    public const ASSIGNMENTS_TABLE = self::TABLE_PREFIX . 'assignment';
+
     /**
      * @var string|null A name of the table for storing RBAC items (roles and permissions).
      * @psalm-var ?non-empty-string
@@ -41,9 +46,9 @@ final class DbSchemaManager
      */
     public function __construct(
         private DatabaseInterface $database,
-        ?string $itemsTable = null,
-        ?string $itemsChildrenTable = null,
-        ?string $assignmentsTable = null,
+        ?string $itemsTable = self::ITEMS_TABLE,
+        ?string $itemsChildrenTable = self::ITEMS_CHILDREN_TABLE,
+        ?string $assignmentsTable = self::ASSIGNMENTS_TABLE,
     ) {
         $this->initTables(
             itemsTable: $itemsTable,
@@ -270,8 +275,6 @@ final class DbSchemaManager
             throw new InvalidArgumentException('Items children table name can\'t be empty.');
         }
 
-        $this->itemsChildrenTable = $itemsTable !== null && $itemsChildrenTable === null
-            ? $itemsTable . '_child'
-            : $itemsChildrenTable;
+        $this->itemsChildrenTable = $itemsChildrenTable;
     }
 }
