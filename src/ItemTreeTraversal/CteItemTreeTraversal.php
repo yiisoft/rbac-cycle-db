@@ -111,8 +111,7 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         string $name,
         SelectQuery $baseOuterQuery,
         bool $areParents = true,
-    ): StatementInterface
-    {
+    ): StatementInterface {
         if ($areParents) {
             $cteSelectRelationName = 'parent';
             $cteConditionRelationName = 'child';
