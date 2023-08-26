@@ -257,6 +257,7 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         $rawItems = $this->getTreeTraversal()->getChildPermissionRows($name);
 
+        /** @psalm-var array<string, Permission> */
         return $this->getItemsIndexedByName($rawItems);
     }
 
@@ -264,6 +265,7 @@ final class ItemsStorage implements ItemsStorageInterface
     {
         $rawItems = $this->getTreeTraversal()->getChildRoleRows($name);
 
+        /** @psalm-var array<string, Role> */
         return $this->getItemsIndexedByName($rawItems);
     }
 

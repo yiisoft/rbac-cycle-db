@@ -149,7 +149,6 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         )
         $outerQuery";
 
-        /** @psalm-var RawItem[] */
         return $this->database->query($sql);
     }
 }

@@ -36,8 +36,14 @@ interface ItemTreeTraversalInterface
      */
     public function getChildrenRows(string $name): array;
 
+    /**
+     * @psalm-return RawItem[]
+     */
     public function getChildPermissionRows(string $name): array;
 
+    /**
+     * @psalm-return RawItem[]
+     */
     public function getChildRoleRows(string $name): array;
 
     public function hasChild(string $parentName, string $childName): bool;
