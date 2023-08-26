@@ -31,13 +31,13 @@ abstract class ItemsStorageTest extends TestCase
             ->limit(1)
             ->run()
             ->fetch();
-        $this->assertSame(false, $itemsChildrenExist);
+        $this->assertFalse($itemsChildrenExist);
     }
 
     public function testRemove(): void
     {
         $storage = $this->getStorage();
-        $initialItemChildrenCount = count($storage->getChildren('Parent 2'));
+        $initialItemChildrenCount = count($storage->getAllChildren('Parent 2'));
 
         $this->traitTestRemove();
 

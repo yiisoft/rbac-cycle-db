@@ -231,9 +231,38 @@ final class ItemsStorage implements ItemsStorageInterface
         return $this->getItemsIndexedByName($rawItems);
     }
 
-    public function getChildren(string $name): array
+    public function getDirectChildren(string $name): array
+    {
+        /** @psalm-var RawItem[] $rawItems */
+        $rawItems = $this
+            ->database
+            ->select($this->tableName . '.*')
+            ->from($this->tableName)
+            ->leftJoin($this->childrenTableName)
+            ->on($this->childrenTableName . '.child', $this->tableName . '.name')
+            ->where(['parent' => $name])
+            ->fetchAll();
+
+        return $this->getItemsIndexedByName($rawItems);
+    }
+
+    public function getAllChildren(string $name): array
     {
         $rawItems = $this->getTreeTraversal()->getChildrenRows($name);
+
+        return $this->getItemsIndexedByName($rawItems);
+    }
+
+    public function getAllChildPermissions(string $name): array
+    {
+        $rawItems = $this->getTreeTraversal()->getChildPermissionRows($name);
+
+        return $this->getItemsIndexedByName($rawItems);
+    }
+
+    public function getAllChildRoles(string $name): array
+    {
+        $rawItems = $this->getTreeTraversal()->getChildRoleRows($name);
 
         return $this->getItemsIndexedByName($rawItems);
     }
@@ -248,9 +277,29 @@ final class ItemsStorage implements ItemsStorageInterface
          */
         $result = $this
             ->database
-            ->select([new Fragment('1 AS item_exists')])
+            ->select([new Fragment('1 AS item_child_exists')])
             ->from($this->childrenTableName)
             ->where(['parent' => $name])
+            ->limit(1)
+            ->run()
+            ->fetch();
+
+        return $result !== false;
+    }
+
+    public function hasChild(string $parentName, string $childName): bool
+    {
+        return $this->getTreeTraversal()->hasChild($parentName, $childName);
+    }
+
+    public function hasDirectChild(string $parentName, string $childName): bool
+    {
+        /** @psalm-var array<0, 1>|false $result */
+        $result = $this
+            ->database
+            ->select([new Fragment('1 AS item_child_exists')])
+            ->from($this->childrenTableName)
+            ->where(['parent' => $parentName, 'child' => $childName])
             ->limit(1)
             ->run()
             ->fetch();

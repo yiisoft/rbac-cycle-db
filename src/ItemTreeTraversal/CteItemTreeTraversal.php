@@ -6,7 +6,10 @@ namespace Yiisoft\Rbac\Cycle\ItemTreeTraversal;
 
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\Injection\Fragment;
+use Cycle\Database\Query\SelectQuery;
+use Cycle\Database\StatementInterface;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
+use Yiisoft\Rbac\Item;
 
 /**
  * A RBAC item tree traversal strategy based on CTE (common table expression). Uses `WITH` expression to form a
@@ -37,14 +40,54 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
 
     public function getParentRows(string $name): array
     {
+        $baseOuterQuery = $this->database->select('item.*')->where('item.name', '!=', $name);
+
         /** @psalm-var RawItem[] */
-        return $this->getRows($name);
+        return $this->getRowsStatement($name, baseOuterQuery: $baseOuterQuery)->fetchAll();
     }
 
     public function getChildrenRows(string $name): array
     {
+        $baseOuterQuery = $this->database->select('item.*')->where('item.name', '!=', $name);
+
         /** @psalm-var RawItem[] */
-        return $this->getRows($name, areParents: false);
+        return $this->getRowsStatement($name, baseOuterQuery: $baseOuterQuery, areParents: false)->fetchAll();
+    }
+
+    public function getChildPermissionRows(string $name): array
+    {
+        $baseOuterQuery = $this
+            ->database
+            ->select('item.*')
+            ->where('item.name', '!=', $name)
+            ->andWhere(['item.type' => Item::TYPE_PERMISSION]);
+
+        /** @psalm-var RawItem[] */
+        return $this->getRowsStatement($name, baseOuterQuery: $baseOuterQuery, areParents: false)->fetchAll();
+    }
+
+    public function getChildRoleRows(string $name): array
+    {
+        $baseOuterQuery = $this
+            ->database
+            ->select('item.*')
+            ->where('item.name', '!=', $name)
+            ->andWhere(['item.type' => Item::TYPE_ROLE]);
+
+        /** @psalm-var RawItem[] */
+        return $this->getRowsStatement($name, baseOuterQuery: $baseOuterQuery, areParents: false)->fetchAll();
+    }
+
+    public function hasChild(string $parentName, string $childName): bool
+    {
+        $baseOuterQuery = $this
+            ->database
+            ->select([new Fragment('1 AS item_child_exists')])
+            ->andWhere(['item.name' => $childName]);
+        /** @psalm-var array<0, 1>|false $result */
+        $result = $this->getRowsStatement($parentName, baseOuterQuery: $baseOuterQuery, areParents: false)->fetch();
+
+        return $result !== false;
     }
 
     /**
@@ -60,7 +103,11 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         return 'WITH RECURSIVE';
     }
 
-    private function getRows(string $name, bool $areParents = true): array
+    private function getRowsStatement(
+        string $name,
+        SelectQuery $baseOuterQuery,
+        bool $areParents = true,
+    ): StatementInterface
     {
         if ($areParents) {
             $cteSelectRelationName = 'parent';
@@ -91,13 +138,10 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
                 new Fragment('item_child_recursive.' . $compiler->quoteIdentifier($cteConditionRelationName)),
                 new Fragment("$cteName.$cteParameterName"),
             );
-        $outerQuery = $this
-            ->database
-            ->select('item.*')
+        $outerQuery = $baseOuterQuery
             ->from(new Fragment($cteName))
             ->join('LEFT', $this->tableName . ' item')
-            ->on('item.name', new Fragment("$cteName.$cteParameterName"))
-            ->where('item.name', '!=', $name);
+            ->on('item.name', new Fragment("$cteName.$cteParameterName"));
         $sql = "{$this->getWithExpression()} $cteName($cteParameterName) AS (
             $cteSelectItemQuery
             UNION ALL
@@ -106,9 +150,6 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         $outerQuery";
 
         /** @psalm-var RawItem[] */
-        return $this
-            ->database
-            ->query($sql)
-            ->fetchAll();
+        return $this->database->query($sql);
     }
 }
