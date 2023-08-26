@@ -296,7 +296,12 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function hasDirectChild(string $parentName, string $childName): bool
     {
-        /** @psalm-var array<0, 1>|false $result */
+        /**
+         * @psalm-var array<0, 1>|false $result
+         * @infection-ignore-all
+         * - ArrayItemRemoval, select.
+         * - IncrementInteger, limit.
+         */
         $result = $this
             ->database
             ->select([new Fragment('1 AS item_child_exists')])

@@ -80,6 +80,10 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
 
     public function hasChild(string $parentName, string $childName): bool
     {
+        /**
+         * @infection-ignore-all
+         * - ArrayItemRemoval, select.
+         */
         $baseOuterQuery = $this
             ->database
             ->select([new Fragment('1 AS item_child_exists')])
