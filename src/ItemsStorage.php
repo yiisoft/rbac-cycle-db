@@ -267,6 +267,15 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getPermissionsByNames(array $names): array
     {
+        var_dump(
+            $this
+                ->database
+                ->select()
+                ->from($this->tableName)
+                ->where(['type' => Item::TYPE_PERMISSION])
+                ->andWhere('name', 'IN', $names)
+                ->sqlStatement(),
+        );
         /** @psalm-var RawPermission[] $rawItems */
         $rawItems = $this
             ->database
