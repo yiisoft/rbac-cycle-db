@@ -29,6 +29,22 @@ use Yiisoft\Rbac\Role;
  *     createdAt: int|string,
  *     updatedAt: int|string
  * }
+ * @psalm-type RawRole = array{
+ *     type: Item::TYPE_ROLE,
+ *     name: string,
+ *     description: string|null,
+ *     ruleName: string|null,
+ *     createdAt: int|string,
+ *     updatedAt: int|string
+ *  }
+ * @psalm-type RawPermission = array{
+ *     type: Item::TYPE_PERMISSION,
+ *     name: string,
+ *     description: string|null,
+ *     ruleName: string|null,
+ *     createdAt: int|string,
+ *     updatedAt: int|string
+ * }
  */
 final class ItemsStorage implements ItemsStorageInterface
 {
@@ -118,6 +134,26 @@ final class ItemsStorage implements ItemsStorageInterface
         return $result !== false;
     }
 
+    public function roleExists(string $name): bool
+    {
+        /**
+         * @psalm-var array<0, 1>|false $result
+         * @infection-ignore-all
+         * - ArrayItemRemoval, select.
+         * - IncrementInteger, limit.
+         */
+        $result = $this
+            ->database
+            ->select([new Fragment('1 AS role_exists')])
+            ->from($this->tableName)
+            ->where(['name' => $name, 'type' => Item::TYPE_ROLE])
+            ->limit(1)
+            ->run()
+            ->fetch();
+
+        return $result !== false;
+    }
+
     public function add(Item $item): void
     {
         $time = time();
@@ -199,6 +235,21 @@ final class ItemsStorage implements ItemsStorageInterface
         return $this->getItemsByType(Item::TYPE_ROLE);
     }
 
+    public function getRolesByNames(array $names): array
+    {
+        /** @psalm-var RawRole[] $rawItems */
+        $rawItems = $this
+            ->database
+            ->select()
+            ->from($this->tableName)
+            ->where(['type' => Item::TYPE_ROLE])
+            ->andWhere('name', 'IN', $names)
+            ->fetchAll();
+
+        /** @psalm-var array<string, Role> */
+        return $this->getItemsIndexedByName($rawItems);
+    }
+
     public function getRole(string $name): ?Role
     {
         return $this->getItemByTypeAndName(Item::TYPE_ROLE, $name);
@@ -212,6 +263,21 @@ final class ItemsStorage implements ItemsStorageInterface
     public function getPermissions(): array
     {
         return $this->getItemsByType(Item::TYPE_PERMISSION);
+    }
+
+    public function getPermissionsByNames(array $names): array
+    {
+        /** @psalm-var RawPermission[] $rawItems */
+        $rawItems = $this
+            ->database
+            ->select()
+            ->from($this->tableName)
+            ->where(['type' => Item::TYPE_PERMISSION])
+            ->andWhere('name', 'IN', $names)
+            ->fetchAll();
+
+        /** @psalm-var array<string, Permission> */
+        return $this->getItemsIndexedByName($rawItems);
     }
 
     public function getPermission(string $name): ?Permission
@@ -346,7 +412,7 @@ final class ItemsStorage implements ItemsStorageInterface
      * @psalm-param Item::TYPE_* $type
      *
      * @return array A list of roles / permissions.
-     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission[] : Role[])
+     * @psalm-return ($type is Item::TYPE_PERMISSION ? array<string, Permission> : array<string, Role>)
      */
     private function getItemsByType(string $type): array
     {
