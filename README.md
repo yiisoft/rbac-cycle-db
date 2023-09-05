@@ -162,4 +162,3 @@ The code is statically analyzed with [Psalm](https://psalm.dev). To run static a
 ```php
 ./vendor/bin/psalm
 ```
-
