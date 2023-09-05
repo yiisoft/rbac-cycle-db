@@ -77,6 +77,10 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 
     public function getByItemNames(array $itemNames): array
     {
+        if (empty($itemNames)) {
+            return [];
+        }
+
         /** @psalm-var RawAssignment[] $rawAssignments */
         $rawAssignments = $this->database
             ->select()
@@ -131,6 +135,10 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 
     public function userHasItem(string $userId, array $itemNames): bool
     {
+        if (empty($itemNames)) {
+            return false;
+        }
+
         /**
          * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all

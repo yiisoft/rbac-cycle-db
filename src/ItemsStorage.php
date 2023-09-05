@@ -237,6 +237,10 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getRolesByNames(array $names): array
     {
+        if (empty($names)) {
+            return [];
+        }
+
         /** @psalm-var RawRole[] $rawItems */
         $rawItems = $this
             ->database
@@ -267,15 +271,10 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getPermissionsByNames(array $names): array
     {
-        var_dump(
-            $this
-                ->database
-                ->select()
-                ->from($this->tableName)
-                ->where(['type' => Item::TYPE_PERMISSION])
-                ->andWhere('name', 'IN', $names)
-                ->sqlStatement(),
-        );
+        if (empty($names)) {
+            return [];
+        }
+
         /** @psalm-var RawPermission[] $rawItems */
         $rawItems = $this
             ->database
