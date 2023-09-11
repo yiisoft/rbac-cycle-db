@@ -25,25 +25,19 @@ use Yiisoft\Rbac\Role;
  *     type: Item::TYPE_*,
  *     name: string,
  *     description: string|null,
- *     ruleName: string|null,
- *     createdAt: int|string,
- *     updatedAt: int|string
+ *     ruleName: string|null
  * }
  * @psalm-type RawRole = array{
  *     type: Item::TYPE_ROLE,
  *     name: string,
  *     description: string|null,
- *     ruleName: string|null,
- *     createdAt: int|string,
- *     updatedAt: int|string
+ *     ruleName: string|null
  *  }
  * @psalm-type RawPermission = array{
  *     type: Item::TYPE_PERMISSION,
  *     name: string,
  *     description: string|null,
- *     ruleName: string|null,
- *     createdAt: int|string,
- *     updatedAt: int|string
+ *     ruleName: string|null
  * }
  */
 final class ItemsStorage implements ItemsStorageInterface
@@ -156,16 +150,6 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function add(Item $item): void
     {
-        $time = time();
-
-        if (!$item->hasCreatedAt()) {
-            $item = $item->withCreatedAt($time);
-        }
-
-        if (!$item->hasUpdatedAt()) {
-            $item = $item->withUpdatedAt($time);
-        }
-
         $this
             ->database
             ->insert($this->tableName)
@@ -470,8 +454,6 @@ final class ItemsStorage implements ItemsStorageInterface
      * @psalm-param Item::TYPE_* $type
      *
      * @param string $name Unique name.
-     * @param int|string $createdAt UNIX timestamp for creation time.
-     * @param int|string $updatedAt UNIX timestamp for updating time.
      * @param string|null $description Optional description.
      * @param string|null $ruleName Optional associated rule name.
      *
@@ -481,17 +463,13 @@ final class ItemsStorage implements ItemsStorageInterface
     private function createItem(
         string $type,
         string $name,
-        int|string $createdAt,
-        int|string $updatedAt,
         string|null $description = null,
         string|null $ruleName = null,
     ): Permission|Role {
         return $this
             ->createItemByTypeAndName($type, $name)
             ->withDescription($description ?? '')
-            ->withRuleName($ruleName ?? null)
-            ->withCreatedAt((int) $createdAt)
-            ->withUpdatedAt((int) $updatedAt);
+            ->withRuleName($ruleName ?? null);
     }
 
     /**

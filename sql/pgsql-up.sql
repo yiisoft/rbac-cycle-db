@@ -3,8 +3,6 @@ CREATE TABLE "public"."yii_rbac_item" (
   "type" character varying (10) NOT NULL,
   "description" character varying (191) NULL,
   "ruleName" character varying (64) NULL,
-  "createdAt" integer NOT NULL,
-  "updatedAt" integer NOT NULL,
   PRIMARY KEY ("name")
 );
 CREATE INDEX "idx-yii_rbac_item-type" ON "public"."yii_rbac_item" ("type");
@@ -20,6 +18,5 @@ CREATE INDEX "idx-yii_rbac_item_child-child" ON "public"."yii_rbac_item_child" (
 CREATE TABLE "public"."yii_rbac_assignment" (
   "itemName" character varying (128) NOT NULL,
   "userId" character varying (128) NOT NULL,
-  "createdAt" integer NOT NULL,
   PRIMARY KEY ("itemName", "userId")
 );

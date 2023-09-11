@@ -3,8 +3,6 @@ CREATE TABLE "yii_rbac_item" (
   "type" text (10) NOT NULL,
   "description" text (191) NULL,
   "ruleName" text (64) NULL,
-  "createdAt" integer NOT NULL,
-  "updatedAt" integer NOT NULL,
   PRIMARY KEY ("name")
 );
 CREATE INDEX IF NOT EXISTS "idx-yii_rbac_item-type" ON "yii_rbac_item" ("type");
@@ -20,6 +18,5 @@ CREATE INDEX IF NOT EXISTS "idx-yii_rbac_item_child-child" ON "yii_rbac_item_chi
 CREATE TABLE "yii_rbac_assignment" (
   "itemName" text (128) NOT NULL,
   "userId" text (128) NOT NULL,
-  "createdAt" integer NOT NULL,
   PRIMARY KEY ("itemName", "userId")
 );

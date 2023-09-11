@@ -17,7 +17,6 @@ use Yiisoft\Rbac\AssignmentsStorageInterface;
  * @psalm-type RawAssignment = array{
  *     itemName: string,
  *     userId: string,
- *     createdAt: int|string,
  * }
  */
 final class AssignmentsStorage implements AssignmentsStorageInterface
@@ -45,11 +44,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 
         $assignments = [];
         foreach ($rows as $row) {
-            $assignments[$row['userId']][$row['itemName']] = new Assignment(
-                $row['userId'],
-                $row['itemName'],
-                (int) $row['createdAt'],
-            );
+            $assignments[$row['userId']][$row['itemName']] = new Assignment($row['userId'], $row['itemName']);
         }
 
         return $assignments;
@@ -65,11 +60,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->fetchAll();
         $assignments = [];
         foreach ($rawAssignments as $rawAssignment) {
-            $assignments[$rawAssignment['itemName']] = new Assignment(
-                $userId,
-                $rawAssignment['itemName'],
-                (int) $rawAssignment['createdAt'],
-            );
+            $assignments[$rawAssignment['itemName']] = new Assignment($userId, $rawAssignment['itemName']);
         }
 
         return $assignments;
@@ -89,11 +80,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->fetchAll();
         $assignments = [];
         foreach ($rawAssignments as $rawAssignment) {
-            $assignments[] = new Assignment(
-                $rawAssignment['userId'],
-                $rawAssignment['itemName'],
-                (int) $rawAssignment['createdAt'],
-            );
+            $assignments[] = new Assignment($rawAssignment['userId'], $rawAssignment['itemName']);
         }
 
         return $assignments;
@@ -110,7 +97,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->run()
             ->fetch();
 
-        return $row === false ? null : new Assignment($row['userId'], $row['itemName'], (int) $row['createdAt']);
+        return $row === false ? null : new Assignment($row['userId'], $row['itemName']);
     }
 
     public function exists(string $itemName, string $userId): bool
@@ -166,7 +153,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->values([
                 'itemName' => $itemName,
                 'userId' => $userId,
-                'createdAt' => time(),
             ])
             ->run();
     }

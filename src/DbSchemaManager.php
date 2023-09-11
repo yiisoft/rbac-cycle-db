@@ -76,8 +76,6 @@ final class DbSchemaManager
         $schema->string('type', 10)->nullable(false);
         $schema->string('description', 191);
         $schema->string('ruleName', 64);
-        $schema->integer('createdAt')->nullable(false);
-        $schema->integer('updatedAt')->nullable(false);
         $schema->index(['type'])->setName("idx-$this->itemsTable-type");
         $schema->setPrimaryKeys(['name']);
 
@@ -140,7 +138,6 @@ final class DbSchemaManager
         $schema->string('itemName', 128)->nullable(false);
         $schema->string('userId', 128)->nullable(false);
         $schema->setPrimaryKeys(['itemName', 'userId']);
-        $schema->integer('createdAt')->nullable(false);
 
         $schema->save();
     }

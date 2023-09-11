@@ -80,7 +80,7 @@ abstract class ItemsStorageTest extends TestCase
         $this
             ->getDatabase()
             ->insert(DbSchemaManager::ITEMS_TABLE)
-            ->columns(['name', 'type', 'createdAt', 'updatedAt'])
+            ->columns(['name', 'type'])
             ->values($fixtures['items'])
             ->run();
         $this

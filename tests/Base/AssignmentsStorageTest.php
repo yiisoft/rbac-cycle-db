@@ -19,12 +19,12 @@ abstract class AssignmentsStorageTest extends TestCase
 
         $this->getDatabase()
             ->insert(DbSchemaManager::ITEMS_TABLE)
-            ->columns(['name', 'type', 'createdAt', 'updatedAt'])
+            ->columns(['name', 'type'])
             ->values($fixtures['items'])
             ->run();
         $this->getDatabase()
             ->insert(DbSchemaManager::ASSIGNMENTS_TABLE)
-            ->columns(['itemName', 'userId', 'createdAt'])
+            ->columns(['itemName', 'userId'])
             ->values($fixtures['assignments'])
             ->run();
     }

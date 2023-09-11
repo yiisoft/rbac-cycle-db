@@ -29,11 +29,6 @@ trait SchemaTrait
         $this->assertSame(128, $userId->getSize());
         $this->assertFalse($userId->isNullable());
 
-        $this->assertArrayHasKey('createdAt', $columns);
-        $createdAt = $columns['createdAt'];
-        $this->assertSame('int', $createdAt->getType());
-        $this->assertFalse($createdAt->isNullable());
-
         $this->assertSame(['itemName', 'userId'], $table->getPrimaryKeys());
         $this->assertCount(0, $table->getForeignKeys());
         $this->assertCount(0, $table->getIndexes());
@@ -125,16 +120,6 @@ trait SchemaTrait
         $this->assertSame('string', $ruleName->getType());
         $this->assertSame(64, $ruleName->getSize());
         $this->assertTrue($ruleName->isNullable());
-
-        $this->assertArrayHasKey('createdAt', $columns);
-        $createdAt = $columns['createdAt'];
-        $this->assertSame('int', $createdAt->getType());
-        $this->assertFalse($createdAt->isNullable());
-
-        $this->assertArrayHasKey('updatedAt', $columns);
-        $updatedAt = $columns['updatedAt'];
-        $this->assertSame('int', $updatedAt->getType());
-        $this->assertFalse($updatedAt->isNullable());
 
         $this->assertSame(['name'], $table->getPrimaryKeys());
         $this->assertCount(0, $table->getForeignKeys());
