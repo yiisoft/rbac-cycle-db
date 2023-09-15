@@ -38,10 +38,8 @@ jobs:
 
         php:
           - 8.0
-          - 8.1
 
         mssql:
-          - server:2017-latest
           - server:2019-latest
 
         exclude:
