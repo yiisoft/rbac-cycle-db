@@ -116,8 +116,8 @@ use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\RuleFactoryInterface;
 
 /** @var DatabaseInterface $database */
-$itemsStorage = new ItemsStorage(database: $database);
-$assignmentsStorage = new AssignmentsStorage(database: $database);
+$itemsStorage = new ItemsStorage($database);
+$assignmentsStorage = new AssignmentsStorage($database);
 /** @var RuleFactoryInterface $rulesContainer */
 $manager = new TransactionalManagerDecorator(
     new Manager(
