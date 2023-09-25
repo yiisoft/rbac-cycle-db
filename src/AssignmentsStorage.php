@@ -158,7 +158,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         return $result !== false;
     }
 
-    public function add(string $itemName, string $userId): void
+    public function add(string $itemName, string $userId = null): void
     {
         $this
             ->database
