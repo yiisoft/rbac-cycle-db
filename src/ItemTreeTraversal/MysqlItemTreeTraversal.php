@@ -67,7 +67,7 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
     {
         $baseOuterQuery = $this
             ->database
-            ->select([new Fragment('item.*')])
+            ->select(['item.*'])
             ->distinct()
             ->where(['item.type' => Item::TYPE_PERMISSION]);
 
@@ -79,7 +79,7 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
     {
         $baseOuterQuery = $this
             ->database
-            ->select([new Fragment('item.*')])
+            ->select(['item.*'])
             ->distinct()
             ->where(['item.type' => Item::TYPE_ROLE]);
 
@@ -106,12 +106,10 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
         (SELECT @pv := :name) init
         WHERE find_in_set(parent, @pv) AND length(@pv := concat(@pv, ',', child))";
         $outerQuery = $baseOuterQuery
-            ->from(new Fragment("($fromSql) s"))
-            ->join('LEFT', $this->tableName . ' AS item')
-            ->on(new Fragment('item.name'), new Fragment('s.child'));
-        /** @psalm-var non-empty-string $outerQuerySql */
-        $outerQuerySql = (string) $outerQuery;
+            ->from(new Fragment("($fromSql) s", [':name' => $name]))
+            ->leftJoin($this->tableName, 'item')
+            ->on('item.name', 's.child');
 
-        return $this->database->query($outerQuerySql, [':name' => $name]);
+        return $outerQuery->run();
     }
 }
