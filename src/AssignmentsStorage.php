@@ -104,7 +104,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         /** @psalm-var RawAssignment|false $row */
         $row = $this
             ->database
-            ->select('createdAt')
+            ->select(['createdAt'])
             ->from($this->tableName)
             ->where(['itemName' => $itemName, 'userId' => $userId])
             ->run()
