@@ -100,7 +100,7 @@ final class ItemsStorage implements ItemsStorageInterface
         );
     }
 
-    public function get(string $name): ?Item
+    public function get(string $name): Permission|Role|null
     {
         /** @psalm-var RawItem|null $row */
         $row = $this
@@ -154,7 +154,7 @@ final class ItemsStorage implements ItemsStorageInterface
         return $result !== false;
     }
 
-    public function add(Item $item): void
+    public function add(Permission|Role $item): void
     {
         $time = time();
 
@@ -173,7 +173,7 @@ final class ItemsStorage implements ItemsStorageInterface
             ->run();
     }
 
-    public function update(string $name, Item $item): void
+    public function update(string $name, Permission|Role $item): void
     {
         $itemsStorage = $this;
         $this

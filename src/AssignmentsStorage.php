@@ -158,14 +158,14 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         return $result !== false;
     }
 
-    public function add(string $itemName, string $userId): void
+    public function add(Assignment $assignment): void
     {
         $this
             ->database
             ->insert($this->tableName)
             ->values([
-                'itemName' => $itemName,
-                'userId' => $userId,
+                'itemName' => $assignment->getItemName(),
+                'userId' => $assignment->getUserId(),
                 'createdAt' => time(),
             ])
             ->run();
