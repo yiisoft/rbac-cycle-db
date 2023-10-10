@@ -112,6 +112,8 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
         /** @psalm-var non-empty-string $outerQuerySql */
         $outerQuerySql = (string) $outerQuery;
 
+        var_dump((string) $this->database->query($outerQuerySql, [':name' => $name]));
+
         return $this->database->query($outerQuerySql, [':name' => $name]);
     }
 }
