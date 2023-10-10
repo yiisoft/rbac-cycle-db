@@ -59,7 +59,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
     {
         /** @psalm-var RawAssignment[] $rawAssignments */
         $rawAssignments = $this->database
-            ->select()
+            ->select(['itemName', 'createdAt'])
             ->from($this->tableName)
             ->where(['userId' => $userId])
             ->fetchAll();
@@ -104,13 +104,13 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         /** @psalm-var RawAssignment|false $row */
         $row = $this
             ->database
-            ->select()
+            ->select(['createdAt'])
             ->from($this->tableName)
             ->where(['itemName' => $itemName, 'userId' => $userId])
             ->run()
             ->fetch();
 
-        return $row === false ? null : new Assignment($row['userId'], $row['itemName'], (int) $row['createdAt']);
+        return $row === false ? null : new Assignment($userId, $itemName, (int) $row['createdAt']);
     }
 
     public function exists(string $itemName, string $userId): bool
@@ -166,7 +166,7 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->values([
                 'itemName' => $assignment->getItemName(),
                 'userId' => $assignment->getUserId(),
-                'createdAt' => time(),
+                'createdAt' => $assignment->getCreatedAt(),
             ])
             ->run();
     }
