@@ -13,10 +13,24 @@ use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 abstract class ItemsStorageTest extends TestCase
 {
     use ItemsStorageTestTrait {
+        setUp as protected traitSetUp;
+        tearDown as protected traitTearDown;
         testClear as protected traitTestClear;
         testRemove as protected traitTestRemove;
         testClearPermissions as protected traitTestClearPermissions;
         testClearRoles as protected traitTestClearRoles;
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->traitSetUp();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->traitTearDown();
+        parent::tearDown();
     }
 
     public function testClear(): void
@@ -36,7 +50,7 @@ abstract class ItemsStorageTest extends TestCase
 
     public function testRemove(): void
     {
-        $storage = $this->getStorage();
+        $storage = $this->getItemsStorage();
         $initialItemChildrenCount = count($storage->getAllChildren('Parent 2'));
 
         $this->traitTestRemove();
@@ -73,7 +87,7 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertSame($this->initialBothPermissionsChildrenCount, $itemsChildrenCount);
     }
 
-    protected function populateDatabase(): void
+    protected function populateItemsStorage(): void
     {
         $fixtures = $this->getFixtures();
 
@@ -91,7 +105,12 @@ abstract class ItemsStorageTest extends TestCase
             ->run();
     }
 
-    private function getStorage(): ItemsStorageInterface
+    protected function populateDatabase(): void
+    {
+        // Skip
+    }
+
+    protected function getItemsStorage(): ItemsStorageInterface
     {
         return new ItemsStorage($this->getDatabase());
     }
