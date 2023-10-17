@@ -124,7 +124,6 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
             $cteParameterName = 'parent_name';
         }
 
-        $compiler = $this->database->getDriver()->getQueryCompiler();
         $cteSelectItemQuery = $this
             ->database
             ->select('name')
@@ -133,18 +132,13 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         $cteSelectRelationQuery = $this
             ->database
             ->select($cteSelectRelationName)
-            ->from([
-                new Fragment($compiler->quoteIdentifier($this->childrenTableName) . ' item_child_recursive'),
-                new Fragment($cteName),
-            ])
-            ->where(
-                new Fragment('item_child_recursive.' . $compiler->quoteIdentifier($cteConditionRelationName)),
-                new Fragment("$cteName.$cteParameterName"),
-            );
+            ->from("$this->childrenTableName AS item_child_recursive")
+            ->innerJoin($cteName)
+            ->on("item_child_recursive.$cteConditionRelationName", "$cteName.$cteParameterName");
         $outerQuery = $baseOuterQuery
-            ->from(new Fragment($cteName))
-            ->join('LEFT', $this->tableName . ' item')
-            ->on('item.name', new Fragment("$cteName.$cteParameterName"));
+            ->from($cteName)
+            ->leftJoin($this->tableName, 'item')
+            ->on('item.name', "$cteName.$cteParameterName");
         $sql = "{$this->getWithExpression()} $cteName($cteParameterName) AS (
             $cteSelectItemQuery
             UNION ALL
