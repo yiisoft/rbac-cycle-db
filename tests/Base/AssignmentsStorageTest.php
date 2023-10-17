@@ -7,29 +7,58 @@ namespace Yiisoft\Rbac\Cycle\Tests\Base;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\Cycle\AssignmentsStorage;
 use Yiisoft\Rbac\Cycle\DbSchemaManager;
+use Yiisoft\Rbac\Cycle\ItemsStorage;
+use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Tests\Common\AssignmentsStorageTestTrait;
 
 abstract class AssignmentsStorageTest extends TestCase
 {
-    use AssignmentsStorageTestTrait;
+    use AssignmentsStorageTestTrait {
+        setUp as protected traitSetUp;
+        tearDown as protected traitTearDown;
+    }
 
-    protected function populateDatabase(): void
+    protected function setUp(): void
     {
-        $fixtures = $this->getFixtures();
+        parent::setUp();
+        $this->traitSetUp();
+    }
 
+    protected function tearDown(): void
+    {
+        $this->traitTearDown();
+        parent::tearDown();
+    }
+
+    protected function populateItemsStorage(): void
+    {
         $this->getDatabase()
             ->insert(DbSchemaManager::ITEMS_TABLE)
             ->columns(['name', 'type', 'createdAt', 'updatedAt'])
-            ->values($fixtures['items'])
-            ->run();
-        $this->getDatabase()
-            ->insert(DbSchemaManager::ASSIGNMENTS_TABLE)
-            ->columns(['itemName', 'userId', 'createdAt'])
-            ->values($fixtures['assignments'])
+            ->values($this->getFixtures()['items'])
             ->run();
     }
 
-    private function getStorage(): AssignmentsStorageInterface
+    protected function populateAssignmentsStorage(): void
+    {
+        $this->getDatabase()
+            ->insert(DbSchemaManager::ASSIGNMENTS_TABLE)
+            ->columns(['itemName', 'userId', 'createdAt'])
+            ->values($this->getFixtures()['assignments'])
+            ->run();
+    }
+
+    protected function populateDatabase(): void
+    {
+        // Skip
+    }
+
+    protected function createItemsStorage(): ItemsStorageInterface
+    {
+        return new ItemsStorage($this->getDatabase());
+    }
+
+    protected function createAssignmentsStorage(): AssignmentsStorageInterface
     {
         return new AssignmentsStorage($this->getDatabase());
     }

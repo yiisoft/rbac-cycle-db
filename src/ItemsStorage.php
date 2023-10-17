@@ -29,6 +29,22 @@ use Yiisoft\Rbac\Role;
  *     createdAt: int|string,
  *     updatedAt: int|string
  * }
+ * @psalm-type RawRole = array{
+ *     type: Item::TYPE_ROLE,
+ *     name: string,
+ *     description: string|null,
+ *     ruleName: string|null,
+ *     createdAt: int|string,
+ *     updatedAt: int|string
+ *  }
+ * @psalm-type RawPermission = array{
+ *     type: Item::TYPE_PERMISSION,
+ *     name: string,
+ *     description: string|null,
+ *     ruleName: string|null,
+ *     createdAt: int|string,
+ *     updatedAt: int|string
+ * }
  */
 final class ItemsStorage implements ItemsStorageInterface
 {
@@ -84,7 +100,7 @@ final class ItemsStorage implements ItemsStorageInterface
         );
     }
 
-    public function get(string $name): ?Item
+    public function get(string $name): Permission|Role|null
     {
         /** @psalm-var RawItem|null $row */
         $row = $this
@@ -118,7 +134,27 @@ final class ItemsStorage implements ItemsStorageInterface
         return $result !== false;
     }
 
-    public function add(Item $item): void
+    public function roleExists(string $name): bool
+    {
+        /**
+         * @psalm-var array<0, 1>|false $result
+         * @infection-ignore-all
+         * - ArrayItemRemoval, select.
+         * - IncrementInteger, limit.
+         */
+        $result = $this
+            ->database
+            ->select([new Fragment('1 AS role_exists')])
+            ->from($this->tableName)
+            ->where(['name' => $name, 'type' => Item::TYPE_ROLE])
+            ->limit(1)
+            ->run()
+            ->fetch();
+
+        return $result !== false;
+    }
+
+    public function add(Permission|Role $item): void
     {
         $time = time();
 
@@ -137,7 +173,7 @@ final class ItemsStorage implements ItemsStorageInterface
             ->run();
     }
 
-    public function update(string $name, Item $item): void
+    public function update(string $name, Permission|Role $item): void
     {
         $itemsStorage = $this;
         $this
@@ -199,6 +235,25 @@ final class ItemsStorage implements ItemsStorageInterface
         return $this->getItemsByType(Item::TYPE_ROLE);
     }
 
+    public function getRolesByNames(array $names): array
+    {
+        if (empty($names)) {
+            return [];
+        }
+
+        /** @psalm-var RawRole[] $rawItems */
+        $rawItems = $this
+            ->database
+            ->select()
+            ->from($this->tableName)
+            ->where(['type' => Item::TYPE_ROLE])
+            ->andWhere('name', 'IN', $names)
+            ->fetchAll();
+
+        /** @psalm-var array<string, Role> */
+        return $this->getItemsIndexedByName($rawItems);
+    }
+
     public function getRole(string $name): ?Role
     {
         return $this->getItemByTypeAndName(Item::TYPE_ROLE, $name);
@@ -212,6 +267,25 @@ final class ItemsStorage implements ItemsStorageInterface
     public function getPermissions(): array
     {
         return $this->getItemsByType(Item::TYPE_PERMISSION);
+    }
+
+    public function getPermissionsByNames(array $names): array
+    {
+        if (empty($names)) {
+            return [];
+        }
+
+        /** @psalm-var RawPermission[] $rawItems */
+        $rawItems = $this
+            ->database
+            ->select()
+            ->from($this->tableName)
+            ->where(['type' => Item::TYPE_PERMISSION])
+            ->andWhere('name', 'IN', $names)
+            ->fetchAll();
+
+        /** @psalm-var array<string, Permission> */
+        return $this->getItemsIndexedByName($rawItems);
     }
 
     public function getPermission(string $name): ?Permission
@@ -231,10 +305,41 @@ final class ItemsStorage implements ItemsStorageInterface
         return $this->getItemsIndexedByName($rawItems);
     }
 
-    public function getChildren(string $name): array
+    public function getDirectChildren(string $name): array
+    {
+        /** @psalm-var RawItem[] $rawItems */
+        $rawItems = $this
+            ->database
+            ->select($this->tableName . '.*')
+            ->from($this->tableName)
+            ->leftJoin($this->childrenTableName)
+            ->on($this->childrenTableName . '.child', $this->tableName . '.name')
+            ->where(['parent' => $name])
+            ->fetchAll();
+
+        return $this->getItemsIndexedByName($rawItems);
+    }
+
+    public function getAllChildren(string $name): array
     {
         $rawItems = $this->getTreeTraversal()->getChildrenRows($name);
 
+        return $this->getItemsIndexedByName($rawItems);
+    }
+
+    public function getAllChildPermissions(string $name): array
+    {
+        $rawItems = $this->getTreeTraversal()->getChildPermissionRows($name);
+
+        /** @psalm-var array<string, Permission> */
+        return $this->getItemsIndexedByName($rawItems);
+    }
+
+    public function getAllChildRoles(string $name): array
+    {
+        $rawItems = $this->getTreeTraversal()->getChildRoleRows($name);
+
+        /** @psalm-var array<string, Role> */
         return $this->getItemsIndexedByName($rawItems);
     }
 
@@ -248,9 +353,34 @@ final class ItemsStorage implements ItemsStorageInterface
          */
         $result = $this
             ->database
-            ->select([new Fragment('1 AS item_exists')])
+            ->select([new Fragment('1 AS item_child_exists')])
             ->from($this->childrenTableName)
             ->where(['parent' => $name])
+            ->limit(1)
+            ->run()
+            ->fetch();
+
+        return $result !== false;
+    }
+
+    public function hasChild(string $parentName, string $childName): bool
+    {
+        return $this->getTreeTraversal()->hasChild($parentName, $childName);
+    }
+
+    public function hasDirectChild(string $parentName, string $childName): bool
+    {
+        /**
+         * @psalm-var array<0, 1>|false $result
+         * @infection-ignore-all
+         * - ArrayItemRemoval, select.
+         * - IncrementInteger, limit.
+         */
+        $result = $this
+            ->database
+            ->select([new Fragment('1 AS item_child_exists')])
+            ->from($this->childrenTableName)
+            ->where(['parent' => $parentName, 'child' => $childName])
             ->limit(1)
             ->run()
             ->fetch();
@@ -290,7 +420,7 @@ final class ItemsStorage implements ItemsStorageInterface
      * @psalm-param Item::TYPE_* $type
      *
      * @return array A list of roles / permissions.
-     * @psalm-return ($type is Item::TYPE_PERMISSION ? Permission[] : Role[])
+     * @psalm-return ($type is Item::TYPE_PERMISSION ? array<string, Permission> : array<string, Role>)
      */
     private function getItemsByType(string $type): array
     {

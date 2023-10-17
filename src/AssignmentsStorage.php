@@ -57,20 +57,46 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 
     public function getByUserId(string $userId): array
     {
-        /** @psalm-var RawAssignment[] $rows */
-        $rows = $this->database
-            ->select()
+        /** @psalm-var RawAssignment[] $rawAssignments */
+        $rawAssignments = $this->database
+            ->select(['itemName', 'createdAt'])
             ->from($this->tableName)
             ->where(['userId' => $userId])
             ->fetchAll();
+        $assignments = [];
+        foreach ($rawAssignments as $rawAssignment) {
+            $assignments[$rawAssignment['itemName']] = new Assignment(
+                $userId,
+                $rawAssignment['itemName'],
+                (int) $rawAssignment['createdAt'],
+            );
+        }
 
-        return array_combine(
-            array_column($rows, 'itemName'),
-            array_map(
-                static fn(array $row): Assignment => new Assignment($userId, $row['itemName'], (int) $row['createdAt']),
-                $rows,
-            )
-        );
+        return $assignments;
+    }
+
+    public function getByItemNames(array $itemNames): array
+    {
+        if (empty($itemNames)) {
+            return [];
+        }
+
+        /** @psalm-var RawAssignment[] $rawAssignments */
+        $rawAssignments = $this->database
+            ->select()
+            ->from($this->tableName)
+            ->where('itemName', 'IN', $itemNames)
+            ->fetchAll();
+        $assignments = [];
+        foreach ($rawAssignments as $rawAssignment) {
+            $assignments[] = new Assignment(
+                $rawAssignment['userId'],
+                $rawAssignment['itemName'],
+                (int) $rawAssignment['createdAt'],
+            );
+        }
+
+        return $assignments;
     }
 
     public function get(string $itemName, string $userId): ?Assignment
@@ -78,27 +104,70 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         /** @psalm-var RawAssignment|false $row */
         $row = $this
             ->database
-            ->select()
+            ->select(['createdAt'])
             ->from($this->tableName)
             ->where(['itemName' => $itemName, 'userId' => $userId])
             ->run()
             ->fetch();
 
-        return $row === false ? null : new Assignment($row['userId'], $row['itemName'], (int) $row['createdAt']);
+        return $row === false ? null : new Assignment($userId, $itemName, (int) $row['createdAt']);
     }
 
-    public function add(string $itemName, string $userId): void
+    public function exists(string $itemName, string $userId): bool
+    {
+        /**
+         * @psalm-var array<0, 1>|false $result
+         * @infection-ignore-all
+         * - ArrayItemRemoval, select.
+         * - IncrementInteger, limit.
+         */
+        $result = $this
+            ->database
+            ->select([new Fragment('1 AS item_exists')])
+            ->from($this->tableName)
+            ->where(['itemName' => $itemName, 'userId' => $userId])
+            ->limit(1)
+            ->run()
+            ->fetch();
+
+        return $result !== false;
+    }
+
+    public function userHasItem(string $userId, array $itemNames): bool
+    {
+        if (empty($itemNames)) {
+            return false;
+        }
+
+        /**
+         * @psalm-var array<0, 1>|false $result
+         * @infection-ignore-all
+         * - ArrayItemRemoval, select.
+         * - IncrementInteger, limit.
+         */
+        $result = $this
+            ->database
+            ->select([new Fragment('1 AS assignment_exists')])
+            ->from($this->tableName)
+            ->where(['userId' => $userId])
+            ->andWhere('itemName', 'IN', $itemNames)
+            ->limit(1)
+            ->run()
+            ->fetch();
+
+        return $result !== false;
+    }
+
+    public function add(Assignment $assignment): void
     {
         $this
             ->database
             ->insert($this->tableName)
-            ->values(
-                [
-                    'itemName' => $itemName,
-                    'userId' => $userId,
-                    'createdAt' => time(),
-                ],
-            )
+            ->values([
+                'itemName' => $assignment->getItemName(),
+                'userId' => $assignment->getUserId(),
+                'createdAt' => $assignment->getCreatedAt(),
+            ])
             ->run();
     }
 
