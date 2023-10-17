@@ -103,15 +103,13 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
     {
         $fromSql = "SELECT DISTINCT child
         FROM (SELECT * FROM $this->childrenTableName ORDER by parent) item_child_sorted,
-        (SELECT @pv := :name) init
+        (SELECT @pv := ?) init
         WHERE find_in_set(parent, @pv) AND length(@pv := concat(@pv, ',', child))";
         $outerQuery = $baseOuterQuery
-            ->from(new Fragment("($fromSql) s", $name))
+            ->from(new Fragment("($fromSql) s", [$name]))
             ->leftJoin($this->tableName, 'item')
             ->on('item.name', 's.child');
-        /** @psalm-var non-empty-string $outerQuerySql */
-        $outerQuerySql = (string) $outerQuery;
 
-        return $this->database->query($outerQuerySql, [':name' => $name]);
+        return $outerQuery->run();
     }
 }
