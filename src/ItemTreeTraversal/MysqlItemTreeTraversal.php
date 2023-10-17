@@ -109,7 +109,9 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
             ->from(new Fragment("($fromSql) s", [$name]))
             ->leftJoin($this->tableName, 'item')
             ->on('item.name', 's.child');
+        /** @psalm-var non-empty-string $outerQuerySql */
+        $outerQuerySql = (string) $outerQuery;
 
-        return $outerQuery->run();
+        return $this->database->query($outerQuerySql, [':name' => $name]);
     }
 }
