@@ -321,7 +321,7 @@ final class ItemsStorage implements ItemsStorageInterface
     public function getAccessTree(string $name): array
     {
         $tree = [];
-        foreach($this->getTreeTraversal()->getAccessTree($name) as $data) {
+        foreach ($this->getTreeTraversal()->getAccessTree($name) as $data) {
             $childrenNames = $data['children'] !== '' ? explode(',', $data['children']) : [];
             unset($data['children']);
 
