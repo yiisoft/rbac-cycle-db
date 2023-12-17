@@ -158,6 +158,20 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
         return $result !== false;
     }
 
+    public function filterUserItemNames(string $userId, array $itemNames): array
+    {
+        /** @var array{itemName: string} $rows */
+        $rows = $this
+            ->database
+            ->select('itemName')
+            ->from($this->tableName)
+            ->where(['userId' => $userId])
+            ->andWhere('itemName', 'IN', $itemNames)
+            ->fetchAll();
+
+        return array_column($rows, 'itemName');
+    }
+
     public function add(Assignment $assignment): void
     {
         $this

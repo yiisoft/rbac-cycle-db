@@ -26,35 +26,37 @@ interface ItemTreeTraversalInterface
      */
     public function getParentRows(string $name): array;
 
+    public function getAccessTree(string $name): array;
+
     /**
      * Get all children rows for an item by the given name.
      *
-     * @param string $name Item name.
+     * @param string|array $names Item name / names.
      *
      * @return array Flat list of all children.
      * @psalm-return RawItem[]
      */
-    public function getChildrenRows(string $name): array;
+    public function getChildrenRows(string|array $names): array;
 
     /**
      * Get all child permission rows for an item by the given name.
      *
-     * @param string $name Item name.
+     * @param string|array $names Item name / names.
      *
      * @return array Flat list of all child permissions.
      * @psalm-return RawItem[]
      */
-    public function getChildPermissionRows(string $name): array;
+    public function getChildPermissionRows(string|array $names): array;
 
     /**
      * Get all child role rows for an item by the given name.
      *
-     * @param string $name Item name.
+     * @param string|array $names Item name / names.
      *
      * @return array Flat list of all child roles.
      * @psalm-return RawItem[]
      */
-    public function getChildRoleRows(string $name): array;
+    public function getChildRoleRows(string|array $names): array;
 
     /**
      * Whether a selected parent has specific child.

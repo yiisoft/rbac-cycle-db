@@ -100,6 +100,19 @@ final class ItemsStorage implements ItemsStorageInterface
         );
     }
 
+    public function getByNames(array $names): array
+    {
+        /** @psalm-var RawItem[] $rawItems */
+        $rawItems = $this
+            ->database
+            ->select()
+            ->from($this->tableName)
+            ->andWhere('name', 'IN', $names)
+            ->fetchAll();
+
+        return $this->getItemsIndexedByName($rawItems);
+    }
+
     public function get(string $name): Permission|Role|null
     {
         /** @psalm-var RawItem|null $row */
@@ -305,6 +318,29 @@ final class ItemsStorage implements ItemsStorageInterface
         return $this->getItemsIndexedByName($rawItems);
     }
 
+    public function getAccessTree(string $name): array
+    {
+        $tree = [];
+        foreach($this->getTreeTraversal()->getAccessTree($name) as $data) {
+            $childrenNames = $data['children'] !== '' ? explode(',', $data['children']) : [];
+            unset($data['children']);
+
+            $tree[$data['name']] = ['item' => $this->createItem(...$data), 'childrenNames' => $childrenNames];
+        }
+
+        foreach ($tree as $index => $data) {
+            $children = [];
+            foreach ($data['childrenNames'] as $childrenName) {
+                $children[$childrenName] = $tree[$childrenName]['item'];
+            }
+
+            unset($tree[$index]['childrenNames']);
+            $tree[$index]['children'] = $children;
+        }
+
+        return $tree;
+    }
+
     public function getDirectChildren(string $name): array
     {
         /** @psalm-var RawItem[] $rawItems */
@@ -320,24 +356,24 @@ final class ItemsStorage implements ItemsStorageInterface
         return $this->getItemsIndexedByName($rawItems);
     }
 
-    public function getAllChildren(string $name): array
+    public function getAllChildren(string|array $names): array
     {
-        $rawItems = $this->getTreeTraversal()->getChildrenRows($name);
+        $rawItems = $this->getTreeTraversal()->getChildrenRows($names);
 
         return $this->getItemsIndexedByName($rawItems);
     }
 
-    public function getAllChildPermissions(string $name): array
+    public function getAllChildPermissions(string|array $names): array
     {
-        $rawItems = $this->getTreeTraversal()->getChildPermissionRows($name);
+        $rawItems = $this->getTreeTraversal()->getChildPermissionRows($names);
 
         /** @psalm-var array<string, Permission> */
         return $this->getItemsIndexedByName($rawItems);
     }
 
-    public function getAllChildRoles(string $name): array
+    public function getAllChildRoles(string|array $names): array
     {
-        $rawItems = $this->getTreeTraversal()->getChildRoleRows($name);
+        $rawItems = $this->getTreeTraversal()->getChildRoleRows($names);
 
         /** @psalm-var array<string, Role> */
         return $this->getItemsIndexedByName($rawItems);
