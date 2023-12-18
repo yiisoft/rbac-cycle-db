@@ -37,7 +37,7 @@ jobs:
           - ubuntu-latest
 
         php:
-          - 8.0
+          - 8.1
 
         mssql:
           - server:2019-latest
