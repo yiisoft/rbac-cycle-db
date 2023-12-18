@@ -5,12 +5,23 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\ItemTreeTraversal;
 
 use Yiisoft\Rbac\Cycle\ItemsStorage;
+use Yiisoft\Rbac\Item;
 
 /**
  * An interface for retrieving hierarchical RBAC items' data in a more efficient way depending on used RDBMS and their
  * versions.
  *
  * @internal
+ *
+ * @psalm-type AccessTree = list<array{
+ *     type: Item::TYPE_*,
+ *     name: string,
+ *     description: string|null,
+ *     ruleName: string|null,
+ *     createdAt: int|string,
+ *     updatedAt: int|string,
+ *     children: string
+ * }>
  *
  * @psalm-import-type RawItem from ItemsStorage
  */
@@ -26,12 +37,15 @@ interface ItemTreeTraversalInterface
      */
     public function getParentRows(string $name): array;
 
+    /**
+     * @psalm-return AccessTree
+     */
     public function getAccessTree(string $name): array;
 
     /**
      * Get all children rows for an item by the given name.
      *
-     * @param array|string $names Item name / names.
+     * @param string|array $names Item name / names.
      *
      * @return array Flat list of all children.
      * @psalm-return RawItem[]
@@ -41,7 +55,7 @@ interface ItemTreeTraversalInterface
     /**
      * Get all child permission rows for an item by the given name.
      *
-     * @param array|string $names Item name / names.
+     * @param string|array $names Item name / names.
      *
      * @return array Flat list of all child permissions.
      * @psalm-return RawItem[]

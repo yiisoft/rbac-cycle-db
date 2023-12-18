@@ -55,15 +55,15 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
             ->fetchAll();
     }
 
-    public function getChildrenRows(string $name): array
+    public function getChildrenRows(string|array $names): array
     {
         $baseOuterQuery = $this->database->select([new Fragment('item.*')])->distinct();
 
         /** @psalm-var RawItem[] */
-        return $this->getChildrenRowsStatement($name, baseOuterQuery: $baseOuterQuery)->fetchAll();
+        return $this->getChildrenRowsStatement($names, baseOuterQuery: $baseOuterQuery)->fetchAll();
     }
 
-    public function getChildPermissionRows(string $name): array
+    public function getChildPermissionRows(string|array $names): array
     {
         $baseOuterQuery = $this
             ->database
@@ -72,10 +72,10 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
             ->where(['item.type' => Item::TYPE_PERMISSION]);
 
         /** @psalm-var RawItem[] */
-        return $this->getChildrenRowsStatement($name, baseOuterQuery: $baseOuterQuery)->fetchAll();
+        return $this->getChildrenRowsStatement($names, baseOuterQuery: $baseOuterQuery)->fetchAll();
     }
 
-    public function getChildRoleRows(string $name): array
+    public function getChildRoleRows(string|array $names): array
     {
         $baseOuterQuery = $this
             ->database
@@ -84,7 +84,7 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
             ->where(['item.type' => Item::TYPE_ROLE]);
 
         /** @psalm-var RawItem[] */
-        return $this->getChildrenRowsStatement($name, baseOuterQuery: $baseOuterQuery)->fetchAll();
+        return $this->getChildrenRowsStatement($names, baseOuterQuery: $baseOuterQuery)->fetchAll();
     }
 
     public function hasChild(string $parentName, string $childName): bool
@@ -99,19 +99,19 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
         return $result !== false;
     }
 
-    private function getChildrenRowsStatement(string $name, SelectQuery $baseOuterQuery): StatementInterface
+    private function getChildrenRowsStatement(string|array $names, SelectQuery $baseOuterQuery): StatementInterface
     {
         $fromSql = "SELECT DISTINCT child
         FROM (SELECT * FROM $this->childrenTableName ORDER by parent) item_child_sorted,
         (SELECT @pv := ?) init
         WHERE find_in_set(parent, @pv) AND length(@pv := concat(@pv, ',', child))";
         $outerQuery = $baseOuterQuery
-            ->from(new Fragment("($fromSql) s", [$name]))
+            ->from(new Fragment("($fromSql) s", [$names]))
             ->leftJoin($this->tableName, 'item')
             ->on('item.name', 's.child');
         /** @psalm-var non-empty-string $outerQuerySql */
         $outerQuerySql = (string) $outerQuery;
 
-        return $this->database->query($outerQuerySql, [':name' => $name]);
+        return $this->database->query($outerQuerySql, [':name' => $names]);
     }
 }

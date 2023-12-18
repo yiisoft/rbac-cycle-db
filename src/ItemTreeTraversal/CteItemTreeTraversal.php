@@ -19,6 +19,7 @@ use Yiisoft\Rbac\Item;
  * @internal
  *
  * @psalm-import-type RawItem from ItemsStorage
+ * @psalm-import-type AccessTree from ItemTreeTraversalInterface
  */
 abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
 {
@@ -48,15 +49,15 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
 
     public function getAccessTree(string $name): array
     {
-        $baseOuterQuery = $this->database->select('item.*', 'parent_of.children');
+        $baseOuterQuery = $this->database->select(['item.*', 'parent_of.children']);
         $cteSelectItemQuery = $this
             ->database
-            ->select('name', new Fragment("''"))
+            ->select(['name', new Fragment("''")])
             ->from($this->tableName)
             ->where(['name' => $name]);
         $cteSelectRelationQuery = $this
             ->database
-            ->select('parent', new Fragment("trim((children || ',' || \"item_child_recursive\".\"child\"), ',')"))
+            ->select(['parent', new Fragment("trim((children || ',' || \"item_child_recursive\".\"child\"), ',')")])
             ->from("$this->childrenTableName AS item_child_recursive")
             ->innerJoin('parent_of')
             ->on('item_child_recursive.child', 'parent_of.child_name');
@@ -71,6 +72,7 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         )
         $outerQuery";
 
+        /** @psalm-var AccessTree */
         return $this->database->query($sql)->fetchAll();
     }
 

@@ -94,10 +94,7 @@ final class ItemsStorage implements ItemsStorageInterface
             ->from($this->tableName)
             ->fetchAll();
 
-        return array_map(
-            fn(array $row): Item => $this->createItem(...$row),
-            $rows,
-        );
+        return $this->getItemsIndexedByName($rows);
     }
 
     public function getByNames(array $names): array
