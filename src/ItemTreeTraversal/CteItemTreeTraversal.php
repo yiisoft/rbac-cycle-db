@@ -59,7 +59,7 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
             ->select('parent', new Fragment("trim((children || ',' || \"item_child_recursive\".\"child\"), ',')"))
             ->from("$this->childrenTableName AS item_child_recursive")
             ->innerJoin('parent_of')
-            ->on("item_child_recursive.child", 'parent_of.child_name');
+            ->on('item_child_recursive.child', 'parent_of.child_name');
         $outerQuery = $baseOuterQuery
             ->from('parent_of')
             ->leftJoin($this->tableName, 'item')
