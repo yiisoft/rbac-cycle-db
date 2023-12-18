@@ -102,6 +102,10 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getByNames(array $names): array
     {
+        if (empty($names)) {
+            return [];
+        }
+
         /** @psalm-var RawItem[] $rawItems */
         $rawItems = $this
             ->database
