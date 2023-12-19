@@ -57,7 +57,7 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
             ->where(['name' => $name]);
         $cteSelectRelationQuery = $this
             ->database
-            ->select(['parent', new Fragment("trim(CONCAT(children, ',', item_child_recursive.child), ',')")])
+            ->select(['parent', new Fragment("TRIM(LEADING ',' FROM CONCAT(children, ',', item_child_recursive.child))")])
             ->from("$this->childrenTableName AS item_child_recursive")
             ->innerJoin('parent_of')
             ->on('item_child_recursive.child', 'parent_of.child_name');
