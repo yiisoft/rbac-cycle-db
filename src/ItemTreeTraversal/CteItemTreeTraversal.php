@@ -57,7 +57,7 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
             ->where(['name' => $name]);
         $cteSelectRelationQuery = $this
             ->database
-            ->select(['parent', new Fragment("TRIM(LEADING ',' FROM CONCAT(children, ',', item_child_recursive.child))")])
+            ->select(['parent', new Fragment($this->getTrimConcatChildrenExpression())])
             ->from("$this->childrenTableName AS item_child_recursive")
             ->innerJoin('parent_of')
             ->on('item_child_recursive.child', 'parent_of.child_name');
@@ -127,6 +127,11 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
     protected function getWithExpression(): string
     {
         return 'WITH RECURSIVE';
+    }
+
+    protected function getTrimConcatChildrenExpression(): string
+    {
+        return "TRIM(',' FROM CONCAT(children, ',', item_child_recursive.child))";
     }
 
     private function getRowsStatement(
