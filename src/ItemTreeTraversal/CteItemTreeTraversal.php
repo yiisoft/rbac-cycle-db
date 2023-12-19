@@ -52,7 +52,7 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         $baseOuterQuery = $this->database->select(['item.*', 'parent_of.children']);
         $cteSelectItemQuery = $this
             ->database
-            ->select(['name', new Fragment("''")])
+            ->select(['name', new Fragment($this->getEmptyChildrenExpression())])
             ->from($this->tableName)
             ->where(['name' => $name]);
         $cteSelectRelationQuery = $this
@@ -127,6 +127,11 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
     protected function getWithExpression(): string
     {
         return 'WITH RECURSIVE';
+    }
+
+    protected function getEmptyChildrenExpression(): string
+    {
+        return "''";
     }
 
     protected function getTrimConcatChildrenExpression(): string

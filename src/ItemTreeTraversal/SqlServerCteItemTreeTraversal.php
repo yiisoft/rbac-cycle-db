@@ -15,4 +15,9 @@ final class SqlServerCteItemTreeTraversal extends CteItemTreeTraversal
     {
         return 'WITH';
     }
+
+    protected function getEmptyChildrenExpression(): string
+    {
+        return "CAST('' AS NVARCHAR(MAX))";
+    }
 }
