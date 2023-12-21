@@ -18,6 +18,7 @@ use Yiisoft\Rbac\Item;
  * @internal
  *
  * @psalm-import-type RawItem from ItemsStorage
+ * @psalm-import-type AccessTree from ItemTreeTraversalInterface
  */
 final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
 {
@@ -66,6 +67,7 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
         ) access_tree_base
         LEFT JOIN $this->tableName AS item ON item.name = access_tree_base.child_name";
 
+        /** @psalm-var AccessTree */
         return $this
             ->database
             ->query($sql, [':name' => $name])
@@ -106,6 +108,9 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
         return $result !== false;
     }
 
+    /**
+     * @param string|string[] $names
+     */
     private function getChildrenRowsStatement(string|array $names, SelectQuery $baseOuterQuery): StatementInterface
     {
         $names = (array) $names;

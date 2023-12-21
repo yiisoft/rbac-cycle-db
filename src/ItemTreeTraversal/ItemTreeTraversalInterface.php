@@ -13,7 +13,7 @@ use Yiisoft\Rbac\Item;
  *
  * @internal
  *
- * @psalm-type AccessTree = list<array{
+ * @psalm-type AccessTree = non-empty-list<array{
  *     type: Item::TYPE_*,
  *     name: string,
  *     description: string|null,
@@ -45,7 +45,7 @@ interface ItemTreeTraversalInterface
     /**
      * Get all children rows for an item by the given name.
      *
-     * @param array|string $names Item name / names.
+     * @param string|string[] $names Item name / names.
      *
      * @return array Flat list of all children.
      * @psalm-return RawItem[]
@@ -55,7 +55,7 @@ interface ItemTreeTraversalInterface
     /**
      * Get all child permission rows for an item by the given name.
      *
-     * @param array|string $names Item name / names.
+     * @param string|string[] $names Item name / names.
      *
      * @return array Flat list of all child permissions.
      * @psalm-return RawItem[]
@@ -65,7 +65,7 @@ interface ItemTreeTraversalInterface
     /**
      * Get all child role rows for an item by the given name.
      *
-     * @param array|string $names Item name / names.
+     * @param string|string[] $names Item name / names.
      *
      * @return array Flat list of all child roles.
      * @psalm-return RawItem[]

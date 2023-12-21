@@ -129,11 +129,17 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         return 'WITH RECURSIVE';
     }
 
+    /**
+     * @psalm-return non-empty-string
+     */
     protected function getEmptyChildrenExpression(): string
     {
         return "''";
     }
 
+    /**
+     * @psalm-return non-empty-string
+     */
     protected function getTrimConcatChildrenExpression(): string
     {
         return "TRIM(',' FROM CONCAT(children, ',', item_child_recursive.child))";
