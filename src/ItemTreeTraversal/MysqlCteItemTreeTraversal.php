@@ -14,6 +14,6 @@ final class MysqlCteItemTreeTraversal extends CteItemTreeTraversal
 {
     protected function getEmptyChildrenExpression(): string
     {
-        return "CAST('' AS LONGTEXT)";
+        return "CAST('' AS CHAR(21844))";
     }
 }
