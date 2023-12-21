@@ -359,6 +359,10 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getAllChildren(string|array $names): array
     {
+        if (is_array($names) && empty($names)) {
+            return [];
+        }
+
         $rawItems = $this->getTreeTraversal()->getChildrenRows($names);
 
         return $this->getItemsIndexedByName($rawItems);
@@ -366,6 +370,10 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getAllChildPermissions(string|array $names): array
     {
+        if (is_array($names) && empty($names)) {
+            return [];
+        }
+
         $rawItems = $this->getTreeTraversal()->getChildPermissionRows($names);
 
         /** @psalm-var array<string, Permission> */
@@ -374,6 +382,10 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function getAllChildRoles(string|array $names): array
     {
+        if (is_array($names) && empty($names)) {
+            return [];
+        }
+
         $rawItems = $this->getTreeTraversal()->getChildRoleRows($names);
 
         /** @psalm-var array<string, Role> */

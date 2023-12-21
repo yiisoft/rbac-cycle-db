@@ -145,6 +145,9 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         return "TRIM(',' FROM CONCAT(children, ',', item_child_recursive.child))";
     }
 
+    /**
+     * @psalm-param string|non-empty-array<array-key, string> $names
+     */
     private function getRowsStatement(
         string|array $names,
         SelectQuery $baseOuterQuery,
@@ -192,6 +195,9 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         return $this->database->query($sql);
     }
 
+    /**
+     * @psalm-param string|non-empty-array<array-key, string> $names
+     */
     private function getChildrenBaseOuterQuery(string|array $names): SelectQuery
     {
         $baseOuterQuery = $this->database->select('item.*')->distinct();

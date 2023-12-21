@@ -46,6 +46,7 @@ interface ItemTreeTraversalInterface
      * Get all children rows for an item by the given name.
      *
      * @param string|string[] $names Item name / names.
+     * @psalm-param string|non-empty-array<array-key, string> $names
      *
      * @return array Flat list of all children.
      * @psalm-return RawItem[]
@@ -56,6 +57,7 @@ interface ItemTreeTraversalInterface
      * Get all child permission rows for an item by the given name.
      *
      * @param string|string[] $names Item name / names.
+     * @psalm-param string|non-empty-array<array-key, string> $names
      *
      * @return array Flat list of all child permissions.
      * @psalm-return RawItem[]
@@ -66,6 +68,7 @@ interface ItemTreeTraversalInterface
      * Get all child role rows for an item by the given name.
      *
      * @param string|string[] $names Item name / names.
+     * @psalm-param string|non-empty-array<array-key, string> $names
      *
      * @return array Flat list of all child roles.
      * @psalm-return RawItem[]
