@@ -12,4 +12,8 @@ namespace Yiisoft\Rbac\Cycle\ItemTreeTraversal;
  */
 final class MysqlCteItemTreeTraversal extends CteItemTreeTraversal
 {
+    protected function getEmptyChildrenExpression(): string
+    {
+        return "CAST('' AS LONGTEXT)";
+    }
 }
