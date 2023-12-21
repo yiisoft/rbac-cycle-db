@@ -112,13 +112,17 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
         $fromSql = "SELECT DISTINCT child
         FROM (SELECT * FROM $this->childrenTableName ORDER by parent) item_child_sorted,\n";
         $where = '';
+        $excludedNamesStr = '';
         $parameters = [];
         $lastNameIndex = array_key_last($names);
 
         foreach ($names as $index => $name) {
             $fromSql .= "(SELECT @pv$index := :name$index) init$index";
+            $excludedNamesStr .= "@pv$index";
+
             if ($index !== $lastNameIndex) {
                 $fromSql .= ',';
+                $excludedNamesStr .= ', ';
             }
 
             $fromSql .= "\n";
@@ -132,6 +136,7 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
             $parameters[":name$index"] = $name;
         }
 
+        $where = "($where) AND child NOT IN ($excludedNamesStr)";
         $fromSql .= "WHERE $where";
         $outerQuery = $baseOuterQuery
             ->from(new Fragment("($fromSql) s"))
