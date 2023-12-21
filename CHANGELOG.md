@@ -13,6 +13,7 @@
 - Chg #65: Use prefix for default table names (@arogachev)
 - Bug #67: Fix hardcoded items children table name in item tree traversal query for MySQL 5 (@arogachev)
 - Enh #71: Improve perfomaтce (@arogachev)
+- Chg #78: Raise PHP version to 8.1 (@arogachev)
 
 ## 2.0.0 April 20, 2023
 

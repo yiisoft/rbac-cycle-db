@@ -101,7 +101,11 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
 
     public function get(string $itemName, string $userId): ?Assignment
     {
-        /** @psalm-var RawAssignment|false $row */
+        /**
+         * @psalm-var RawAssignment|false $row
+         * @infection-ignore-all
+         *  - ArrayItemRemoval, select.
+         */
         $row = $this
             ->database
             ->select(['createdAt'])
@@ -156,6 +160,20 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->fetch();
 
         return $result !== false;
+    }
+
+    public function filterUserItemNames(string $userId, array $itemNames): array
+    {
+        /** @var array{itemName: string} $rows */
+        $rows = $this
+            ->database
+            ->select('itemName')
+            ->from($this->tableName)
+            ->where(['userId' => $userId])
+            ->andWhere('itemName', 'IN', $itemNames)
+            ->fetchAll();
+
+        return array_column($rows, 'itemName');
     }
 
     public function add(Assignment $assignment): void
