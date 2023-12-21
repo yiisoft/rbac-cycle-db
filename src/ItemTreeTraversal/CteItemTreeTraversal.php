@@ -130,6 +130,9 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
     }
 
     /**
+     * @infection-ignore-all
+     *  - ProtectedVisibility.
+     *
      * @psalm-return non-empty-string
      */
     protected function getEmptyChildrenExpression(): string
