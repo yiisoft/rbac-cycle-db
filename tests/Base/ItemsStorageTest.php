@@ -6,7 +6,9 @@ namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\Injection\Fragment;
 use Yiisoft\Rbac\Cycle\DbSchemaManager;
+use Yiisoft\Rbac\Cycle\exception\SeparatorCollisionException;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
+use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
@@ -87,6 +89,13 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertSame($this->initialBothPermissionsChildrenCount, $itemsChildrenCount);
     }
 
+    public function testGetAccessTreeSeparatorCollision(): void
+    {
+        $this->expectException(SeparatorCollisionException::class);
+        $this->expectExceptionMessage('Separator collision has been detected.');
+        $this->getItemsStorage()->getAccessTree('posts.view');
+    }
+
     protected function populateItemsStorage(): void
     {
         $fixtures = $this->getFixtures();
@@ -112,6 +121,10 @@ abstract class ItemsStorageTest extends TestCase
 
     protected function getItemsStorage(): ItemsStorageInterface
     {
-        return new ItemsStorage($this->getDatabase());
+        return match ($this->name()) {
+            'testGetAccessTreeSeparatorCollision' => new ItemsStorage($this->getDatabase(), namesSeparator: '.'),
+            'testGetAccessTreeWithCustomSeparator' => new ItemsStorage($this->getDatabase(), namesSeparator: '|'),
+            default => new ItemsStorage($this->getDatabase()),
+        };
     }
 }

@@ -31,11 +31,15 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
      *
      * @param string $childrenTableName A name of the table for storing relations between RBAC items.
      * @psalm-param non-empty-string $childrenTableName
+     *
+     * @param string $namesSeparator Separator used for joining item names.
+     * @psalm-param non-empty-string $namesSeparator
      */
     public function __construct(
         protected DatabaseInterface $database,
         protected string $tableName,
         protected string $childrenTableName,
+        protected string $namesSeparator,
     ) {
     }
 
@@ -145,7 +149,8 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
      */
     protected function getTrimConcatChildrenExpression(): string
     {
-        return "TRIM(',' FROM CONCAT(children, ',', item_child_recursive.child))";
+        return "TRIM('$this->namesSeparator' FROM CONCAT(children, '$this->namesSeparator', " .
+            'item_child_recursive.child))';
     }
 
     /**

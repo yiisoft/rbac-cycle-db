@@ -25,6 +25,9 @@ class ItemTreeTraversalFactory
      * @param string $childrenTableName A name of the table for storing relations between RBAC items.
      * @psalm-param non-empty-string $childrenTableName
      *
+     * @param string $namesSeparator Separator used for joining item names.
+     * @psalm-param non-empty-string $namesSeparator
+     *
      * @throws RuntimeException When a database was configured with unknown driver, either because it is not supported
      * by Cycle out of the box or newly added by Cycle and not supported / tested yet in this package.
      * @return ItemTreeTraversalInterface Item tree traversal strategy.
@@ -33,8 +36,9 @@ class ItemTreeTraversalFactory
         DatabaseInterface $database,
         string $tableName,
         string $childrenTableName,
+        string $namesSeparator,
     ): ItemTreeTraversalInterface {
-        $arguments = [$database, $tableName, $childrenTableName];
+        $arguments = [$database, $tableName, $childrenTableName, $namesSeparator];
         $driverType = $database->getDriver()->getType();
 
         // default - ignored due to a complexity of testing and preventing splitting of database argument.
