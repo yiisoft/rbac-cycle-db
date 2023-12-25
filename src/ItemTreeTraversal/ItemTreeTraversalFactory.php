@@ -74,8 +74,7 @@ class ItemTreeTraversalFactory
         string $tableName,
         string $childrenTableName,
         string $namesSeparator,
-    ): MysqlCteItemTreeTraversal|MysqlItemTreeTraversal
-    {
+    ): MysqlCteItemTreeTraversal|MysqlItemTreeTraversal {
         /** @psalm-var array{version: string} $row */
         $row = $database->query('SELECT VERSION() AS version')->fetch();
         $version = $row['version'];
