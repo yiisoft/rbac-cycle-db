@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Rbac\Cycle\exception;
+namespace Yiisoft\Rbac\Cycle\Exception;
 
 use RuntimeException;
 use Throwable;

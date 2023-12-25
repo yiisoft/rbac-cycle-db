@@ -8,7 +8,7 @@ use Cycle\Database\Database;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\Injection\Fragment;
 use InvalidArgumentException;
-use Yiisoft\Rbac\Cycle\exception\SeparatorCollisionException;
+use Yiisoft\Rbac\Cycle\Exception\SeparatorCollisionException;
 use Yiisoft\Rbac\Cycle\ItemTreeTraversal\ItemTreeTraversalFactory;
 use Yiisoft\Rbac\Cycle\ItemTreeTraversal\ItemTreeTraversalInterface;
 use Yiisoft\Rbac\Item;
