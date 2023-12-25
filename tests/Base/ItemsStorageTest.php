@@ -8,7 +8,6 @@ use Cycle\Database\Injection\Fragment;
 use Yiisoft\Rbac\Cycle\DbSchemaManager;
 use Yiisoft\Rbac\Cycle\exception\SeparatorCollisionException;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
-use Yiisoft\Rbac\Item;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
