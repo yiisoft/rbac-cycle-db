@@ -78,10 +78,7 @@ final class ItemsStorage implements ItemsStorageInterface
         private string $childrenTableName = DbSchemaManager::ITEMS_CHILDREN_TABLE,
         string $namesSeparator = ',',
     ) {
-        if (strlen(trim($namesSeparator)) !== 1) {
-            throw new InvalidArgumentException('Names separator must be exactly 1 character long.');
-        }
-
+        $this->assertNamesSeparator($namesSeparator);
         $this->namesSeparator = $namesSeparator;
     }
 
@@ -679,5 +676,15 @@ final class ItemsStorage implements ItemsStorageInterface
         }
 
         return $items;
+    }
+
+    /**
+     * @psalm-assert non-empty-string $namesSeparator
+     */
+    private function assertNamesSeparator(string $namesSeparator): void
+    {
+        if (strlen(trim($namesSeparator)) !== 1) {
+            throw new InvalidArgumentException('Names separator must be exactly 1 character long.');
+        }
     }
 }
