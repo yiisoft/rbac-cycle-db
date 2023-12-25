@@ -45,7 +45,7 @@ class ItemTreeTraversalFactory
         // @codeCoverageIgnoreStart
         return match ($driverType) {
             'SQLite' => new SqliteCteItemTreeTraversal(...$arguments),
-            'MySQL' => self::getMysqlItemTreeTraversal($database, $tableName, $childrenTableName),
+            'MySQL' => self::getMysqlItemTreeTraversal($database, $tableName, $childrenTableName, $namesSeparator),
             'Postgres' => new PostgresCteItemTreeTraversal(...$arguments),
             'SQLServer' => new SqlServerCteItemTreeTraversal(...$arguments),
             default => throw new RuntimeException("$driverType database driver is not supported."),
@@ -64,14 +64,22 @@ class ItemTreeTraversalFactory
      * @param string $childrenTableName A name of the table for storing relations between RBAC items.
      * @psalm-param non-empty-string $childrenTableName
      *
+     * @param string $namesSeparator Separator used for joining item names.
+     * @psalm-param non-empty-string $namesSeparator
+     *
      * @return MysqlCteItemTreeTraversal|MysqlItemTreeTraversal Item tree traversal strategy.
      */
-    private static function getMysqlItemTreeTraversal($database, $tableName, $childrenTableName): MysqlCteItemTreeTraversal|MysqlItemTreeTraversal
+    private static function getMysqlItemTreeTraversal(
+        DatabaseInterface $database,
+        string $tableName,
+        string $childrenTableName,
+        string $namesSeparator,
+    ): MysqlCteItemTreeTraversal|MysqlItemTreeTraversal
     {
         /** @psalm-var array{version: string} $row */
         $row = $database->query('SELECT VERSION() AS version')->fetch();
         $version = $row['version'];
-        $arguments = [$database, $tableName, $childrenTableName];
+        $arguments = [$database, $tableName, $childrenTableName, $namesSeparator];
 
         return str_starts_with($version, '5')
             ? new MysqlItemTreeTraversal(...$arguments)

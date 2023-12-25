@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Common\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Rbac\Cycle\exception\SeparatorCollisionException;
+use Yiisoft\Rbac\Cycle\Exception\SeparatorCollisionException;
 
 final class SeparatorCollisionExceptionTest extends TestCase
 {
