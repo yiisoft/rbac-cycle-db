@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\Injection\Fragment;
+use DateTime;
+use SlopeIt\ClockMock\ClockMock;
 use Yiisoft\Rbac\Cycle\DbSchemaManager;
 use Yiisoft\Rbac\Cycle\Exception\SeparatorCollisionException;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\ItemsStorageInterface;
+use Yiisoft\Rbac\Permission;
+use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
 abstract class ItemsStorageTest extends TestCase
@@ -24,6 +28,10 @@ abstract class ItemsStorageTest extends TestCase
 
     protected function setUp(): void
     {
+        if ($this->name() === 'testGetAccessTreeWithCustomSeparator') {
+            ClockMock::freeze(new DateTime('2023-12-24 17:51:18'));
+        }
+
         parent::setUp();
         $this->traitSetUp();
     }
@@ -32,6 +40,10 @@ abstract class ItemsStorageTest extends TestCase
     {
         $this->traitTearDown();
         parent::tearDown();
+
+        if ($this->name() === 'testGetAccessTreeWithCustomSeparator') {
+            ClockMock::reset();
+        }
     }
 
     public function testClear(): void
@@ -93,6 +105,35 @@ abstract class ItemsStorageTest extends TestCase
         $this->expectException(SeparatorCollisionException::class);
         $this->expectExceptionMessage('Separator collision has been detected.');
         $this->getItemsStorage()->getAccessTree('posts.view');
+    }
+
+    public function testGetAccessTreeWithCustomSeparator(): void
+    {
+        $createdAt = (new DateTime('2023-12-24 17:51:18'))->getTimestamp();
+        $postsViewPermission = (new Permission('posts.view'))->withCreatedAt($createdAt)->withUpdatedAt($createdAt);
+        $postsViewerRole = (new Role('posts.viewer'))->withCreatedAt($createdAt)->withUpdatedAt($createdAt);
+        $postsRedactorRole = (new Role('posts.redactor'))->withCreatedAt($createdAt)->withUpdatedAt($createdAt);
+        $postsAdminRole = (new Role('posts.admin'))->withCreatedAt($createdAt)->withUpdatedAt($createdAt);
+
+        $this->assertEquals(
+            [
+                'posts.view' => ['item' => $postsViewPermission, 'children' => []],
+                'posts.viewer' => ['item' => $postsViewerRole, 'children' => ['posts.view' => $postsViewPermission]],
+                'posts.redactor' => [
+                    'item' => $postsRedactorRole,
+                    'children' => ['posts.view' => $postsViewPermission, 'posts.viewer' => $postsViewerRole],
+                ],
+                'posts.admin' => [
+                    'item' => $postsAdminRole,
+                    'children' => [
+                        'posts.view' => $postsViewPermission,
+                        'posts.viewer' => $postsViewerRole,
+                        'posts.redactor' => $postsRedactorRole,
+                    ],
+                ],
+            ],
+            $this->getItemsStorage()->getAccessTree('posts.view')
+        );
     }
 
     protected function populateItemsStorage(): void
