@@ -683,7 +683,7 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     private function assertNamesSeparator(string $namesSeparator): void
     {
-        if (strlen($namesSeparator) !== 1 || $namesSeparator !== trim($namesSeparator)) {
+        if (strlen($namesSeparator) !== 1) {
             throw new InvalidArgumentException('Names separator must be exactly 1 character long.');
         }
     }
