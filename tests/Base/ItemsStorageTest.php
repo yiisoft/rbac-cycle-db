@@ -6,6 +6,7 @@ namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\Injection\Fragment;
 use DateTime;
+use InvalidArgumentException;
 use SlopeIt\ClockMock\ClockMock;
 use Yiisoft\Rbac\Cycle\DbSchemaManager;
 use Yiisoft\Rbac\Cycle\Exception\SeparatorCollisionException;
@@ -134,6 +135,31 @@ abstract class ItemsStorageTest extends TestCase
             ],
             $this->getItemsStorage()->getAccessTree('posts.view')
         );
+    }
+
+    public static function dataInvalidConfiguration(): array
+    {
+        $exceptionMessage = 'Names separator must be exactly 1 character long.';
+
+        return [
+            [['namesSeparator' => ',,'], $exceptionMessage],
+            [['namesSeparator' => ''], $exceptionMessage],
+            [['namesSeparator' => ' ,'], $exceptionMessage],
+            [['namesSeparator' => ', '], $exceptionMessage],
+            [['namesSeparator' => ' , '], $exceptionMessage],
+        ];
+    }
+
+    /**
+     * @dataProvider dataInvalidConfiguration
+     */
+    public function testInvalidConfiguration(array $arguments, string $exceptionMessage): void
+    {
+        $arguments = array_merge(['database' => $this->getDatabase()], $arguments);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($exceptionMessage);
+        new ItemsStorage(...$arguments);
     }
 
     protected function populateItemsStorage(): void
