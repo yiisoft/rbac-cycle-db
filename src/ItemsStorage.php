@@ -7,6 +7,8 @@ namespace Yiisoft\Rbac\Cycle;
 use Cycle\Database\Database;
 use Cycle\Database\DatabaseInterface;
 use Cycle\Database\Injection\Fragment;
+use InvalidArgumentException;
+use Yiisoft\Rbac\Cycle\Exception\SeparatorCollisionException;
 use Yiisoft\Rbac\Cycle\ItemTreeTraversal\ItemTreeTraversalFactory;
 use Yiisoft\Rbac\Cycle\ItemTreeTraversal\ItemTreeTraversalInterface;
 use Yiisoft\Rbac\Item;
@@ -49,6 +51,11 @@ use Yiisoft\Rbac\Role;
 final class ItemsStorage implements ItemsStorageInterface
 {
     /**
+     * @var string Separator used for joining and splitting item names.
+     * @psalm-var non-empty-string
+     */
+    private string $namesSeparator = ',';
+    /**
      * @var ItemTreeTraversalInterface|null Lazily created RBAC item tree traversal strategy.
      */
     private ?ItemTreeTraversalInterface $treeTraversal = null;
@@ -62,12 +69,17 @@ final class ItemsStorage implements ItemsStorageInterface
      * @param string $childrenTableName A name of the table for storing relations between RBAC items. When set to
      * `null`, it will be automatically generated using {@see $tableName}.
      * @psalm-param non-empty-string $childrenTableName
+     *
+     * @param string $namesSeparator Separator used for joining and splitting item names.
      */
     public function __construct(
         private DatabaseInterface $database,
         private string $tableName = DbSchemaManager::ITEMS_TABLE,
         private string $childrenTableName = DbSchemaManager::ITEMS_CHILDREN_TABLE,
+        string $namesSeparator = ',',
     ) {
+        $this->assertNamesSeparator($namesSeparator);
+        $this->namesSeparator = $namesSeparator;
     }
 
     public function clear(): void
@@ -325,7 +337,9 @@ final class ItemsStorage implements ItemsStorageInterface
         $childrenNamesMap = [];
 
         foreach ($this->getTreeTraversal()->getAccessTree($name) as $data) {
-            $childrenNamesMap[$data['name']] = $data['children'] !== '' ? explode(',', $data['children']) : [];
+            $childrenNamesMap[$data['name']] = $data['children'] !== ''
+                ? explode($this->namesSeparator, $data['children'])
+                : [];
             unset($data['children']);
             $tree[$data['name']] = ['item' => $this->createItem(...$data)];
         }
@@ -333,6 +347,10 @@ final class ItemsStorage implements ItemsStorageInterface
         foreach ($tree as $index => $_item) {
             $children = [];
             foreach ($childrenNamesMap[$index] as $childrenName) {
+                if (!isset($tree[$childrenName])) {
+                    throw new SeparatorCollisionException();
+                }
+
                 $children[$childrenName] = $tree[$childrenName]['item'];
             }
 
@@ -638,6 +656,7 @@ final class ItemsStorage implements ItemsStorageInterface
                 $this->database,
                 $this->tableName,
                 $this->childrenTableName,
+                $this->namesSeparator,
             );
         }
 
@@ -657,5 +676,15 @@ final class ItemsStorage implements ItemsStorageInterface
         }
 
         return $items;
+    }
+
+    /**
+     * @psalm-assert non-empty-string $namesSeparator
+     */
+    private function assertNamesSeparator(string $namesSeparator): void
+    {
+        if (strlen($namesSeparator) !== 1) {
+            throw new InvalidArgumentException('Names separator must be exactly 1 character long.');
+        }
     }
 }
