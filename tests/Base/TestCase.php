@@ -93,7 +93,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             'safe' => true,
         ]);
         $migrator = new Migrator($config, $this->makeDatabaseManager(), new FileRepository($config));
-        $this->getDatabase()->getDriver()->disconnect();
         $migrator->configure();
 
         return $migrator;
@@ -104,7 +103,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $migrator = $this->getMigrator();
         $capsule = new Capsule($this->getDatabase());
 
-        while (($migration = $migrator->run($capsule)) !== null) {
+        while ($migrator->run($capsule) !== null) {
         }
     }
 
@@ -113,7 +112,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $migrator = $this->getMigrator();
         $capsule = new Capsule($this->getDatabase());
 
-        while (($migration = $migrator->rollback($capsule)) !== null) {
+        while ($migrator->rollback($capsule) !== null) {
         }
     }
 

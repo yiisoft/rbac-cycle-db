@@ -31,6 +31,7 @@ trait DatabaseTrait
             ],
         );
         $dbManager = new DatabaseManager($dbConfig);
+        $dbManager->database()->execute('SET GLOBAL max_connections = 5000;');
 
         $logger = new Logger();
         $dbManager->setLogger($logger);
