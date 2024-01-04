@@ -93,6 +93,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             'safe' => true,
         ]);
         $migrator = new Migrator($config, $this->makeDatabaseManager(), new FileRepository($config));
+        $this->getDatabase()->getDriver()->disconnect();
         $migrator->configure();
 
         return $migrator;
