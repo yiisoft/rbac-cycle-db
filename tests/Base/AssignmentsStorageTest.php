@@ -6,7 +6,6 @@ namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\Cycle\AssignmentsStorage;
-use Yiisoft\Rbac\Cycle\DbSchemaManager;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Tests\Common\AssignmentsStorageTestTrait;
