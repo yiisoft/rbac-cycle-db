@@ -5,12 +5,23 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\DatabaseInterface;
+use Cycle\Database\DatabaseProviderInterface;
+use Cycle\Migrations\Capsule;
+use Cycle\Migrations\Config\MigrationConfig;
+use Cycle\Migrations\FileRepository;
+use Cycle\Migrations\Migrator;
 use RuntimeException;
-use Yiisoft\Rbac\Cycle\DbSchemaManager;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
+    protected static string $itemsTable = 'yii_rbac_item';
+    protected static string $itemsChildrenTable = 'yii_rbac_item_child';
+    protected static string $assignmentsTable = 'yii_rbac_assignment';
+    protected static array $migrationsSubfolders = ['items', 'assignments'];
+
+    private ?DatabaseProviderInterface $databaseManager = null;
     private ?DatabaseInterface $database = null;
+    private ?Migrator $migrator = null;
     private ?Logger $logger = null;
 
     public function getLogger(): Logger
@@ -27,41 +38,85 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->logger = $logger;
     }
 
+    protected function getDatabaseManager(): DatabaseProviderInterface
+    {
+        if ($this->databaseManager === null) {
+            $this->databaseManager = $this->makeDatabaseManager();
+        }
+
+        return $this->databaseManager;
+    }
+
     protected function getDatabase(): DatabaseInterface
     {
         if ($this->database === null) {
-            $this->database = $this->makeDatabase();
+            $this->database = $this->getDatabaseManager()->database();
         }
 
         return $this->database;
     }
 
+    protected function getMigrator(): Migrator
+    {
+        if ($this->migrator === null) {
+            $this->migrator = $this->makeMigrator();
+        }
+
+        return $this->migrator;
+    }
+
     protected function setUp(): void
     {
-        $this->createSchemaManager()->ensureTables();
+        $this->runMigrations();
         $this->populateDatabase();
     }
 
     protected function tearDown(): void
     {
-        $this->createSchemaManager()->ensureNoTables();
+        $this->rollbackMigrations();
         $this->getDatabase()->getDriver()->disconnect();
     }
 
-    protected function createSchemaManager(
-        ?string $itemsTable = DbSchemaManager::ITEMS_TABLE,
-        ?string $itemsChildrenTable = DbSchemaManager::ITEMS_CHILDREN_TABLE,
-        ?string $assignmentsTable = DbSchemaManager::ASSIGNMENTS_TABLE,
-    ): DbSchemaManager {
-        return new DbSchemaManager(
-            database: $this->getDatabase(),
-            itemsTable: $itemsTable,
-            itemsChildrenTable: $itemsChildrenTable,
-            assignmentsTable: $assignmentsTable,
-        );
+    protected function makeMigrator(): Migrator
+    {
+        $directories = [];
+        foreach (self::$migrationsSubfolders as $subfolder) {
+            $directories[] = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'migrations', $subfolder]);
+        }
+
+        $config = new MigrationConfig([
+            'directory' => $directories[0],
+            // "vendorDirectories" are specified because "directory" option doesn't support multiple directories. In the
+            // end, it makes no difference.
+            'vendorDirectories' => $directories[1] ?: [],
+            'table' => 'cycle_migration',
+            'safe' => true,
+        ]);
+        $migrator = new Migrator($config, $this->makeDatabaseManager(), new FileRepository($config));
+        $migrator->configure();
+
+        return $migrator;
     }
 
-    abstract protected function makeDatabase(): DatabaseInterface;
+    protected function runMigrations(): void
+    {
+        $migrator = $this->getMigrator();
+        $capsule = new Capsule($this->getDatabase());
+
+        while (($migration = $migrator->run($capsule)) !== null) {
+        }
+    }
+
+    protected function rollbackMigrations(): void
+    {
+        $migrator = $this->getMigrator();
+        $capsule = new Capsule($this->getDatabase());
+
+        while (($migration = $migrator->rollback($capsule)) !== null) {
+        }
+    }
+
+    abstract protected function makeDatabaseManager(): DatabaseProviderInterface;
 
     abstract protected function populateDatabase(): void;
 }

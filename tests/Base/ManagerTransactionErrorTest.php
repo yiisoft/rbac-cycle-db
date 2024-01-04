@@ -14,7 +14,7 @@ abstract class ManagerTransactionErrorTest extends ManagerTest
 {
     protected function setUp(): void
     {
-        $this->createSchemaManager()->ensureTables();
+        $this->runMigrations();
     }
 
     protected function createItemsStorage(): ItemsStorageInterface

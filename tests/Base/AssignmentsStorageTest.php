@@ -33,7 +33,7 @@ abstract class AssignmentsStorageTest extends TestCase
     protected function populateItemsStorage(): void
     {
         $this->getDatabase()
-            ->insert(DbSchemaManager::ITEMS_TABLE)
+            ->insert(self::$itemsTable)
             ->columns(['name', 'type', 'createdAt', 'updatedAt'])
             ->values($this->getFixtures()['items'])
             ->run();
@@ -42,7 +42,7 @@ abstract class AssignmentsStorageTest extends TestCase
     protected function populateAssignmentsStorage(): void
     {
         $this->getDatabase()
-            ->insert(DbSchemaManager::ASSIGNMENTS_TABLE)
+            ->insert(self::$assignmentsTable)
             ->columns(['itemName', 'userId', 'createdAt'])
             ->values($this->getFixtures()['assignments'])
             ->run();

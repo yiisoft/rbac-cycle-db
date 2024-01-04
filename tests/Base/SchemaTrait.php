@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\ForeignKeyInterface;
-use Yiisoft\Rbac\Cycle\DbSchemaManager;
 
 trait SchemaTrait
 {
     protected function checkAssignmentsTable(): void
     {
         $database = $this->getDatabase();
-        $this->assertTrue($database->hasTable(DbSchemaManager::ASSIGNMENTS_TABLE));
+        $this->assertTrue($database->hasTable(self::$assignmentsTable));
 
-        $table = $database->table(DbSchemaManager::ASSIGNMENTS_TABLE);
+        $table = $database->table(self::$assignmentsTable);
         $columns = $table->getColumns();
 
         $this->assertArrayHasKey('itemName', $columns);
@@ -42,9 +41,9 @@ trait SchemaTrait
     protected function checkItemsChildrenTable(): void
     {
         $database = $this->getDatabase();
-        $this->assertTrue($database->hasTable(DbSchemaManager::ITEMS_CHILDREN_TABLE));
+        $this->assertTrue($database->hasTable(self::$itemsChildrenTable));
 
-        $table = $database->table(DbSchemaManager::ITEMS_CHILDREN_TABLE);
+        $table = $database->table(self::$itemsChildrenTable);
         $columns = $table->getColumns();
 
         $this->assertArrayHasKey('parent', $columns);
@@ -61,27 +60,27 @@ trait SchemaTrait
 
         $this->assertSame(['parent', 'child'], $table->getPrimaryKeys());
 
-        $this->assertCount(2, $this->getDatabase()->table(DbSchemaManager::ITEMS_CHILDREN_TABLE)->getIndexes());
-        $this->assertIndex(DbSchemaManager::ITEMS_CHILDREN_TABLE, 'idx-yii_rbac_item_child-parent', ['parent']);
-        $this->assertIndex(DbSchemaManager::ITEMS_CHILDREN_TABLE, 'idx-yii_rbac_item_child-child', ['child']);
+        $this->assertCount(2, $this->getDatabase()->table(self::$itemsChildrenTable)->getIndexes());
+        $this->assertIndex(self::$itemsChildrenTable, 'idx-yii_rbac_item_child-parent', ['parent']);
+        $this->assertIndex(self::$itemsChildrenTable, 'idx-yii_rbac_item_child-child', ['child']);
     }
 
     protected function checkItemsChildrenTableForeignKeys(
         string $expectedParentForeignKeyName = 'fk-yii_rbac_item_child-parent',
         string $expectedChildForeignKeyName = 'fk-yii_rbac_item_child-child',
     ): void {
-        $this->assertCount(2, $this->getDatabase()->table(DbSchemaManager::ITEMS_CHILDREN_TABLE)->getForeignKeys());
+        $this->assertCount(2, $this->getDatabase()->table(self::$itemsChildrenTable)->getForeignKeys());
         $this->assertForeignKey(
-            table: DbSchemaManager::ITEMS_CHILDREN_TABLE,
+            table: self::$itemsChildrenTable,
             expectedColumns: ['parent'],
-            expectedForeignTable: DbSchemaManager::ITEMS_TABLE,
+            expectedForeignTable: self::$itemsTable,
             expectedForeignKeys: ['name'],
             expectedName: $expectedParentForeignKeyName,
         );
         $this->assertForeignKey(
-            table: DbSchemaManager::ITEMS_CHILDREN_TABLE,
+            table: self::$itemsChildrenTable,
             expectedColumns: ['child'],
-            expectedForeignTable: DbSchemaManager::ITEMS_TABLE,
+            expectedForeignTable: self::$itemsTable,
             expectedForeignKeys: ['name'],
             expectedName: $expectedChildForeignKeyName,
         );
@@ -97,9 +96,9 @@ trait SchemaTrait
     private function checkItemsTable(): void
     {
         $database = $this->getDatabase();
-        $this->assertTrue($database->hasTable(DbSchemaManager::ITEMS_TABLE));
+        $this->assertTrue($database->hasTable(self::$itemsTable));
 
-        $table = $database->table(DbSchemaManager::ITEMS_TABLE);
+        $table = $database->table(self::$itemsTable);
         $columns = $table->getColumns();
 
         $this->assertArrayHasKey('name', $columns);
@@ -140,7 +139,7 @@ trait SchemaTrait
         $this->assertCount(0, $table->getForeignKeys());
 
         $this->assertCount(1, $table->getIndexes());
-        $this->assertIndex(DbSchemaManager::ITEMS_TABLE, 'idx-yii_rbac_item-type', ['type']);
+        $this->assertIndex(self::$itemsTable, 'idx-yii_rbac_item-type', ['type']);
     }
 
     private function assertForeignKey(
@@ -176,10 +175,8 @@ trait SchemaTrait
 
     private function checkNoTables(): void
     {
-        $schemaManager = $this->createSchemaManager();
-
-        $this->assertFalse($schemaManager->hasTable($schemaManager->getItemsTable()));
-        $this->assertFalse($schemaManager->hasTable($schemaManager->getAssignmentsTable()));
-        $this->assertFalse($schemaManager->hasTable($schemaManager->getItemsChildrenTable()));
+        $this->assertFalse($this->getDatabase()->hasTable(self::$itemsTable));
+        $this->assertFalse($this->getDatabase()->hasTable(self::$assignmentsTable));
+        $this->assertFalse($this->getDatabase()->hasTable(self::$itemsChildrenTable));
     }
 }
