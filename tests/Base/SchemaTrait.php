@@ -8,6 +8,29 @@ use Cycle\Database\ForeignKeyInterface;
 
 trait SchemaTrait
 {
+    protected function setUp(): void
+    {
+        // Skip
+    }
+
+    protected function populateDatabase(): void
+    {
+        // Skip
+    }
+
+    public function testCreateSchema(): void
+    {
+        $this->runMigrations();
+        $this->checkTables();
+    }
+
+    public function testDropSchema(): void
+    {
+        $this->runMigrations();
+        $this->rollbackMigrations();
+        $this->checkNoTables();
+    }
+
     protected function checkAssignmentsTable(): void
     {
         $database = $this->getDatabase();
@@ -86,7 +109,7 @@ trait SchemaTrait
         );
     }
 
-    private function checkTables(): void
+    protected function checkTables(): void
     {
         $this->checkItemsTable();
         $this->checkAssignmentsTable();

@@ -80,7 +80,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function makeMigrator(): Migrator
     {
         $directories = [];
-        foreach (self::$migrationsSubfolders as $subfolder) {
+        foreach (static::$migrationsSubfolders as $subfolder) {
             $directories[] = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'migrations', $subfolder]);
         }
 
@@ -88,7 +88,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             'directory' => $directories[0],
             // "vendorDirectories" are specified because "directory" option doesn't support multiple directories. In the
             // end, it makes no difference.
-            'vendorDirectories' => $directories[1] ?: [],
+            'vendorDirectories' => $directories[1] ?? [],
             'table' => 'cycle_migration',
             'safe' => true,
         ]);
