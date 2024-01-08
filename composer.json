@@ -32,7 +32,7 @@
         "ext-uopz": "*",
         "maglnet/composer-require-checker": "^4.3",
         "phpunit/phpunit": "^10.5.2",
-        "rector/rector": "^0.18.13",
+        "rector/rector": "dev-main#f775017f74655cad90d71bdc8fd5f82ba07a53a0",
         "roave/infection-static-analysis-plugin": "^1.25",
         "slope-it/clock-mock": "0.4.0",
         "spatie/phpunit-watcher": "^1.23",
