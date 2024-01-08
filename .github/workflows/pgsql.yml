@@ -63,7 +63,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Show PostgreSQL config file
-        run: docker exec postgres psql -c 'SHOW config_file;'
+        run: docker exec postgres psql -c -d yiitest 'SHOW config_file;'
 
       - name: Increase max_connections and shared_buffers
         run: |
@@ -72,11 +72,11 @@ jobs:
             sed -i -e 's/shared_buffers = 128MB/shared_buffers = 2GB/' /var/lib/postgresql/data/postgresql.conf
           EOF
 
-      - run: docker restart --time 0 my_postgres_container
+      - run: docker restart --time 0 postgres
 
       - run: sleep 5
 
-      - run: docker exec postgres psql -c 'SHOW max_connections;'
+      - run: docker exec postgres psql -c -d yiitest 'SHOW max_connections;'
 
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
