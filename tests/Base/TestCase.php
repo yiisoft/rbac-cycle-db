@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\DatabaseInterface;
+use Cycle\Database\DatabaseManager;
 use Cycle\Database\DatabaseProviderInterface;
 use Cycle\Migrations\Capsule;
 use Cycle\Migrations\Config\MigrationConfig;
 use Cycle\Migrations\FileRepository;
 use Cycle\Migrations\Migrator;
-use RuntimeException;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -19,41 +19,21 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected static string $assignmentsTable = 'yii_rbac_assignment';
     protected static array $migrationsSubfolders = ['items', 'assignments'];
 
-    private ?DatabaseProviderInterface $databaseManager = null;
-    private ?DatabaseInterface $database = null;
-    private ?Migrator $migrator = null;
-    private ?Logger $logger = null;
+    protected static ?DatabaseManager $databaseManager = null;
+    protected ?Migrator $migrator = null;
 
-    public function getLogger(): Logger
+    protected function getDatabaseManager(): DatabaseManager
     {
-        if ($this->logger === null) {
-            throw new RuntimeException('Logger was not set.');
+        if (self::$databaseManager === null) {
+            self::$databaseManager = $this->makeDatabaseManager();
         }
 
-        return $this->logger;
-    }
-
-    public function setLogger(Logger $logger): void
-    {
-        $this->logger = $logger;
-    }
-
-    protected function getDatabaseManager(): DatabaseProviderInterface
-    {
-        if ($this->databaseManager === null) {
-            $this->databaseManager = $this->makeDatabaseManager();
-        }
-
-        return $this->databaseManager;
+        return self::$databaseManager;
     }
 
     protected function getDatabase(): DatabaseInterface
     {
-        if ($this->database === null) {
-            $this->database = $this->getDatabaseManager()->database();
-        }
-
-        return $this->database;
+        return $this->getDatabaseManager()->database();
     }
 
     protected function getMigrator(): Migrator
@@ -65,19 +45,22 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return $this->migrator;
     }
 
+    public static function setUpBeforeClass(): void
+    {
+        (new static(static::class))->runMigrations();
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        (new static(static::class))->rollbackMigrations();
+    }
+
     protected function setUp(): void
     {
-        $this->runMigrations();
         $this->populateDatabase();
     }
 
-    protected function tearDown(): void
-    {
-        $this->rollbackMigrations();
-        $this->getDatabase()->getDriver()->disconnect();
-    }
-
-    protected function makeMigrator(): Migrator
+    private function makeMigrator(): Migrator
     {
         $directories = [];
         foreach (static::$migrationsSubfolders as $subfolder) {
@@ -92,7 +75,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             'table' => 'cycle_migration',
             'safe' => true,
         ]);
-        $migrator = new Migrator($config, $this->makeDatabaseManager(), new FileRepository($config));
+        $migrator = new Migrator($config, $this->getDatabaseManager(), new FileRepository($config));
         $migrator->configure();
 
         return $migrator;

@@ -9,7 +9,6 @@ use Cycle\Database\Config\MySQL\DsnConnectionConfig;
 use Cycle\Database\Config\MySQLDriverConfig;
 use Cycle\Database\DatabaseManager;
 use Cycle\Database\DatabaseProviderInterface;
-use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
 
 trait DatabaseTrait
 {
@@ -32,10 +31,6 @@ trait DatabaseTrait
         );
         $dbManager = new DatabaseManager($dbConfig);
         $dbManager->database()->execute('SET GLOBAL max_connections = 5000;');
-
-        $logger = new Logger();
-        $dbManager->setLogger($logger);
-        $this->setLogger($logger);
 
         return $dbManager;
     }

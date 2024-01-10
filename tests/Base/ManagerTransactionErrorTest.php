@@ -12,11 +12,6 @@ use Yiisoft\Rbac\Tests\Support\FakeAssignmentsStorage;
 
 abstract class ManagerTransactionErrorTest extends ManagerTest
 {
-    protected function setUp(): void
-    {
-        $this->runMigrations();
-    }
-
     protected function createItemsStorage(): ItemsStorageInterface
     {
         return new ItemsStorage($this->getDatabase());

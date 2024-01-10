@@ -26,7 +26,6 @@ abstract class AssignmentsStorageTest extends TestCase
     protected function tearDown(): void
     {
         $this->traitTearDown();
-        parent::tearDown();
     }
 
     protected function populateItemsStorage(): void

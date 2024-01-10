@@ -8,6 +8,16 @@ use Cycle\Database\ForeignKeyInterface;
 
 trait SchemaTrait
 {
+    public static function setUpBeforeClass(): void
+    {
+        // Skip
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        // Skip
+    }
+
     protected function setUp(): void
     {
         // Skip
@@ -18,15 +28,12 @@ trait SchemaTrait
         // Skip
     }
 
-    public function testCreateSchema(): void
+    public function testSchema(): void
     {
+        $this->checkNoTables();
         $this->runMigrations();
         $this->checkTables();
-    }
 
-    public function testDropSchema(): void
-    {
-        $this->runMigrations();
         $this->rollbackMigrations();
         $this->checkNoTables();
     }

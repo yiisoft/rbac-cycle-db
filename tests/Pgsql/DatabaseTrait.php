@@ -9,7 +9,6 @@ use Cycle\Database\Config\Postgres\DsnConnectionConfig;
 use Cycle\Database\Config\PostgresDriverConfig;
 use Cycle\Database\DatabaseManager;
 use Cycle\Database\DatabaseProviderInterface;
-use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
 
 trait DatabaseTrait
 {
@@ -30,13 +29,8 @@ trait DatabaseTrait
                 ],
             ]
         );
-        $dbManager = new DatabaseManager($dbConfig);
 
-        $logger = new Logger();
-        $dbManager->setLogger($logger);
-        $this->setLogger($logger);
-
-        return $dbManager;
+        return new DatabaseManager($dbConfig);
     }
 
     protected function checkItemsChildrenTable(): void

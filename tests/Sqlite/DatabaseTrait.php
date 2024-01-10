@@ -9,7 +9,6 @@ use Cycle\Database\Config\SQLite\MemoryConnectionConfig;
 use Cycle\Database\Config\SQLiteDriverConfig;
 use Cycle\Database\DatabaseManager;
 use Cycle\Database\DatabaseProviderInterface;
-use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
 
 trait DatabaseTrait
 {
@@ -28,10 +27,6 @@ trait DatabaseTrait
         );
         $dbManager = new DatabaseManager($dbConfig);
         $dbManager->database()->execute('PRAGMA foreign_keys = ON;');
-
-        $logger = new Logger();
-        $dbManager->setLogger($logger);
-        $this->setLogger($logger);
 
         return $dbManager;
     }

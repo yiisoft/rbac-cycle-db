@@ -26,6 +26,8 @@ abstract class ItemsStorageTest extends TestCase
         testClearRoles as protected traitTestClearRoles;
     }
 
+    protected static array $migrationsSubfolders = ['items'];
+
     protected function setUp(): void
     {
         if ($this->name() === 'testGetAccessTreeWithCustomSeparator') {
@@ -39,7 +41,6 @@ abstract class ItemsStorageTest extends TestCase
     protected function tearDown(): void
     {
         $this->traitTearDown();
-        parent::tearDown();
 
         if ($this->name() === 'testGetAccessTreeWithCustomSeparator') {
             ClockMock::reset();
