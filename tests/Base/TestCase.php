@@ -47,12 +47,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     public static function setUpBeforeClass(): void
     {
-        (new static(static::class))->runMigrations();
+        (new static(''))->runMigrations();
     }
 
     public static function tearDownAfterClass(): void
     {
-        (new static(static::class))->rollbackMigrations();
+        (new static(''))->rollbackMigrations();
     }
 
     protected function setUp(): void
