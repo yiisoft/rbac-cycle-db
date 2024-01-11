@@ -53,7 +53,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public static function tearDownAfterClass(): void
     {
         (new static(static::class))->rollbackMigrations();
-        (new static(static::class))->getDatabase()->getDriver()->disconnect();
     }
 
     protected function setUp(): void

@@ -41,6 +41,7 @@ jobs:
 
         mssql:
           - server:2019-latest
+          - server:2022-latest
 
     services:
       mssql:

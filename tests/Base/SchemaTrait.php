@@ -15,7 +15,7 @@ trait SchemaTrait
 
     public static function tearDownAfterClass(): void
     {
-        (new static(static::class))->getDatabase()->getDriver()->disconnect();
+        // Skip
     }
 
     protected function setUp(): void
