@@ -46,24 +46,24 @@ trait SchemaTrait
         $table = $database->table(self::$assignmentsTable);
         $columns = $table->getColumns();
 
-        $this->assertArrayHasKey('itemName', $columns);
-        $itemName = $columns['itemName'];
+        $this->assertArrayHasKey('item_name', $columns);
+        $itemName = $columns['item_name'];
         $this->assertSame('string', $itemName->getType());
         $this->assertSame(128, $itemName->getSize());
         $this->assertFalse($itemName->isNullable());
 
-        $this->assertArrayHasKey('userId', $columns);
-        $userId = $columns['userId'];
+        $this->assertArrayHasKey('user_id', $columns);
+        $userId = $columns['user_id'];
         $this->assertSame('string', $userId->getType());
         $this->assertSame(128, $userId->getSize());
         $this->assertFalse($userId->isNullable());
 
-        $this->assertArrayHasKey('createdAt', $columns);
-        $createdAt = $columns['createdAt'];
+        $this->assertArrayHasKey('created_at', $columns);
+        $createdAt = $columns['created_at'];
         $this->assertSame('int', $createdAt->getType());
         $this->assertFalse($createdAt->isNullable());
 
-        $this->assertSame(['itemName', 'userId'], $table->getPrimaryKeys());
+        $this->assertSame(['item_name', 'user_id'], $table->getPrimaryKeys());
         $this->assertCount(0, $table->getForeignKeys());
         $this->assertCount(0, $table->getIndexes());
     }
@@ -149,19 +149,19 @@ trait SchemaTrait
         $this->assertSame(191, $description->getSize());
         $this->assertTrue($description->isNullable());
 
-        $this->assertArrayHasKey('ruleName', $columns);
-        $ruleName = $columns['ruleName'];
+        $this->assertArrayHasKey('rule_name', $columns);
+        $ruleName = $columns['rule_name'];
         $this->assertSame('string', $ruleName->getType());
         $this->assertSame(64, $ruleName->getSize());
         $this->assertTrue($ruleName->isNullable());
 
-        $this->assertArrayHasKey('createdAt', $columns);
-        $createdAt = $columns['createdAt'];
+        $this->assertArrayHasKey('created_at', $columns);
+        $createdAt = $columns['created_at'];
         $this->assertSame('int', $createdAt->getType());
         $this->assertFalse($createdAt->isNullable());
 
-        $this->assertArrayHasKey('updatedAt', $columns);
-        $updatedAt = $columns['updatedAt'];
+        $this->assertArrayHasKey('updated_at', $columns);
+        $updatedAt = $columns['updated_at'];
         $this->assertSame('int', $updatedAt->getType());
         $this->assertFalse($updatedAt->isNullable());
 

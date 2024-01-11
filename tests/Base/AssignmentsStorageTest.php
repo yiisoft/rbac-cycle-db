@@ -33,7 +33,7 @@ abstract class AssignmentsStorageTest extends TestCase
     {
         $this->getDatabase()
             ->insert(self::$itemsTable)
-            ->columns(['name', 'type', 'createdAt', 'updatedAt'])
+            ->columns(['name', 'type', 'created_at', 'updated_at'])
             ->values($this->getFixtures()['items'])
             ->run();
     }
@@ -42,7 +42,7 @@ abstract class AssignmentsStorageTest extends TestCase
     {
         $this->getDatabase()
             ->insert(self::$assignmentsTable)
-            ->columns(['itemName', 'userId', 'createdAt'])
+            ->columns(['item_name', 'user_id', 'created_at'])
             ->values($this->getFixtures()['assignments'])
             ->run();
     }
