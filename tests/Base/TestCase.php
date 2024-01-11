@@ -11,7 +11,6 @@ use Cycle\Migrations\Capsule;
 use Cycle\Migrations\Config\MigrationConfig;
 use Cycle\Migrations\FileRepository;
 use Cycle\Migrations\Migrator;
-use phpDocumentor\Reflection\Types\Static_;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
