@@ -178,16 +178,6 @@ final class ItemsStorage implements ItemsStorageInterface
 
     public function add(Permission|Role $item): void
     {
-        $time = time();
-
-        if (!$item->hasCreatedAt()) {
-            $item = $item->withCreatedAt($time);
-        }
-
-        if (!$item->hasUpdatedAt()) {
-            $item = $item->withUpdatedAt($time);
-        }
-
         $this
             ->database
             ->insert($this->tableName)
