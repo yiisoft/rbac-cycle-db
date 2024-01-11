@@ -16,6 +16,7 @@
 - Chg #78: Raise PHP version to 8.1 (@arogachev)
 - Chg #79: Add customizable separator for joining and splitting item names (@arogachev)
 - Enh #82: Use migrations (@arogachev)
+- Enh #72: Remove duplicate code in `ItemsStorage::add()` (@arogachev)
 
 ## 2.0.0 April 20, 2023
 
