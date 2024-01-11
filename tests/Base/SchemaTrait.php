@@ -49,13 +49,13 @@ trait SchemaTrait
         $this->assertArrayHasKey('item_name', $columns);
         $itemName = $columns['item_name'];
         $this->assertSame('string', $itemName->getType());
-        $this->assertSame(128, $itemName->getSize());
+        $this->assertSame(126, $itemName->getSize());
         $this->assertFalse($itemName->isNullable());
 
         $this->assertArrayHasKey('user_id', $columns);
         $userId = $columns['user_id'];
         $this->assertSame('string', $userId->getType());
-        $this->assertSame(128, $userId->getSize());
+        $this->assertSame(126, $userId->getSize());
         $this->assertFalse($userId->isNullable());
 
         $this->assertArrayHasKey('created_at', $columns);
@@ -79,13 +79,13 @@ trait SchemaTrait
         $this->assertArrayHasKey('parent', $columns);
         $parent = $columns['parent'];
         $this->assertSame('string', $parent->getType());
-        $this->assertSame(128, $parent->getSize());
+        $this->assertSame(126, $parent->getSize());
         $this->assertFalse($parent->isNullable());
 
         $this->assertArrayHasKey('child', $columns);
         $child = $columns['child'];
         $this->assertSame('string', $child->getType());
-        $this->assertSame(128, $child->getSize());
+        $this->assertSame(126, $child->getSize());
         $this->assertFalse($child->isNullable());
 
         $this->assertSame(['parent', 'child'], $table->getPrimaryKeys());
@@ -134,7 +134,7 @@ trait SchemaTrait
         $this->assertArrayHasKey('name', $columns);
         $name = $columns['name'];
         $this->assertSame('string', $name->getType());
-        $this->assertSame(128, $name->getSize());
+        $this->assertSame(126, $name->getSize());
         $this->assertFalse($name->isNullable());
 
         $this->assertArrayHasKey('type', $columns);

@@ -26,8 +26,8 @@ final class CreateAssignmentsTable extends Migration
         $table = $this->database()->table(self::ASSIGNMENTS_TABLE);
         $schema = $table->getSchema();
 
-        $schema->string('item_name', 128)->nullable(false);
-        $schema->string('user_id', 128)->nullable(false);
+        $schema->string('item_name', 126)->nullable(false);
+        $schema->string('user_id', 126)->nullable(false);
         $schema->setPrimaryKeys(['item_name', 'user_id']);
         $schema->integer('created_at')->nullable(false);
 

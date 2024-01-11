@@ -29,7 +29,7 @@ final class CreateItemsTables extends Migration
         $table = $this->database()->table(self::ITEMS_TABLE);
         $schema = $table->getSchema();
 
-        $schema->string('name', 128)->nullable(false);
+        $schema->string('name', 126)->nullable(false);
         $schema->string('type', 10)->nullable(false);
         $schema->string('description', 191);
         $schema->string('rule_name', 64);
@@ -47,8 +47,8 @@ final class CreateItemsTables extends Migration
         $table = $this->database()->table(self::ITEMS_CHILDREN_TABLE);
         $schema = $table->getSchema();
 
-        $schema->string('parent', 128)->nullable(false);
-        $schema->string('child', 128)->nullable(false);
+        $schema->string('parent', 126)->nullable(false);
+        $schema->string('child', 126)->nullable(false);
         $schema->setPrimaryKeys(['parent', 'child']);
 
         $schema
