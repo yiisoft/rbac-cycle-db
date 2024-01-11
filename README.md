@@ -57,49 +57,99 @@ $dbConfig = new DatabaseConfig(
         ],
     ]
 );
-$database = (new DatabaseManager($dbConfig))->database();
+$databaseManager = new DatabaseManager($dbConfig);
+$database = $databaseManager->database();
 ```
 
 More comprehensive examples can be found at
 [Cycle Database docs](https://cycle-orm.dev/docs/database-configuration#declare-connection).
 
-### Working with schema
+### Working with migrations
 
-In order to keep less dependencies, this package doesn't provide any CLI for working with schema. There are multiple
-options to choose from:
+This package uses [Cycle Migrations](https://github.com/cycle/migrations) for managing database tables required for 
+storages. There are 3 tables in total (`yii_rbac_` prefix is used).
 
-- Use migration tool like [Yii DB Migration](https://github.com/yiisoft/yii-db-migration). Migrations are dumped as
-  plain SQL in `sql/migrations` folder.
-- Without migrations, `DbSchemaManager` class can be used. An example of CLI command containing it can be found
-  [here](examples/Command/RbacCycleInit.php).
-- Use plain SQL that is actual at the moment of installing `rbac-db` package (located at the root of `sql` folder).
-
-The structure of plain SQL files:
-
-- `pgsql-up.sql` - apply the changes for PostgreSQL driver.
-- `pgsql-down.sql` - revert the changes for PostgreSQL driver.
-
-Plain SQL assumes using default names for all 3 tables (`yii_rbac_` prefix is used):
+Items storage:
 
 - `yii_rbac_item`.
-- `yii_rbac_assignment`.
 - `yii_rbac_item_child`.
 
-`DbSchemaManager` allows to customize table names:
+Assignments storage:
+
+- `yii_rbac_assignment`.
+
+#### Configuring migrator and capsule
 
 ```php
-use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Rbac\Db\DbSchemaManager;
+use Cycle\Database\DatabaseManager;
+use Cycle\Migrations\Capsule;
+use Cycle\Migrations\Config\MigrationConfig;
+use Cycle\Migrations\FileRepository;
+use Cycle\Migrations\Migrator;
 
-/** @var ConnectionInterface $database */
-$schemaManager = new DbSchemaManager(
-    database: $database,
-    itemsTable: 'custom_items',
-    assignmentsTable: 'custom_assignments',    
-    itemsChildrenTable: 'custom_items_children',
-);
-$schemaManager->ensureTables();
-$schemaManager->ensureNoTables(); // Note: All existing data will be erased.
+$migrationsSubfolders = ['items', 'assignments'];
+$directories = [];
+foreach (static::$migrationsSubfolders as $subfolder) {
+    $directories[] = implode(DIRECTORY_SEPARATOR, [
+        dirname(__DIR__, 2), // Adjust this if your path is different.
+        'migrations', 
+        $subfolder,
+    ]);
+}
+
+$config = new MigrationConfig([
+    'directory' => $directories[0],
+    // "vendorDirectories" are specified because "directory" option doesn't support multiple directories. In the end, it
+    // makes no difference, because they all will be merged into single array.
+    'vendorDirectories' => $directories[1] ?? [],
+    'table' => 'cycle_migration',
+    'safe' => true,
+]);
+/** @var DatabaseManager $databaseManager */
+$migrator = new Migrator($config, $databaseManager, new FileRepository($config));
+$migrator->configure();
+
+$capsule = new Capsule($databaseManager->database());
+```
+
+For configuring `$databaseManager`, see [previous section](#configuring-database-connection).
+
+Because item and assignment storages are completely indepedent, migrations are separated as well in order to prevent 
+creation of unused tables. So, for example, if you only want to use assignment storage, adjust `$migrationsSubfolders` 
+variable like this:
+
+```php
+$migrationsSubfolders = ['assignments'];
+```
+
+#### Applying migrations
+
+```php
+use Cycle\Migrations\Capsule;
+use Cycle\Migrations\Migrator;
+
+/**
+ * @var Migrator $migrator
+ * @var Capsule $capsule 
+ */
+while ($migrator->run($capsule) !== null) {
+    echo "Migration {$migration->getState()->getName()} applied successfully.\n";
+}
+```
+
+#### Reverting migrations
+
+```php
+use Cycle\Migrations\Capsule;
+use Cycle\Migrations\Migrator;
+
+/**
+ * @var Migrator $migrator
+ * @var Capsule $capsule 
+ */
+while ($migrator->rollback($capsule) !== null) {
+    echo "Migration {$migration->getState()->getName()} reverted successfully.\n";
+}
 ```
 
 ### Using storages

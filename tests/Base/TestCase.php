@@ -77,7 +77,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $config = new MigrationConfig([
             'directory' => $directories[0],
             // "vendorDirectories" are specified because "directory" option doesn't support multiple directories. In the
-            // end, it makes no difference.
+            // end, it makes no difference, because they all will be merged into single array.
             'vendorDirectories' => $directories[1] ?? [],
             'table' => 'cycle_migration',
             'safe' => true,
