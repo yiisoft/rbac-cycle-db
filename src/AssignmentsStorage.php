@@ -123,14 +123,12 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
          * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
-         * - IncrementInteger, limit.
          */
         $result = $this
             ->database
             ->select([new Fragment('1 AS item_exists')])
             ->from($this->tableName)
             ->where(['itemName' => $itemName, 'userId' => $userId])
-            ->limit(1)
             ->run()
             ->fetch();
 
@@ -147,7 +145,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
          * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
-         * - IncrementInteger, limit.
          */
         $result = $this
             ->database
@@ -155,7 +152,6 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
             ->from($this->tableName)
             ->where(['userId' => $userId])
             ->andWhere('itemName', 'IN', $itemNames)
-            ->limit(1)
             ->run()
             ->fetch();
 
@@ -195,14 +191,12 @@ final class AssignmentsStorage implements AssignmentsStorageInterface
          * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
-         * - IncrementInteger, limit.
          */
         $result = $this
             ->database
             ->select([new Fragment('1 AS assignment_exists')])
             ->from($this->tableName)
             ->where(['itemName' => $name])
-            ->limit(1)
             ->run()
             ->fetch();
 

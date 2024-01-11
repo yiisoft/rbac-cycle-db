@@ -56,7 +56,6 @@ abstract class ItemsStorageTest extends TestCase
             ->getDatabase()
             ->select([new Fragment('1 AS item_exists')])
             ->from(self::$itemsChildrenTable)
-            ->limit(1)
             ->run()
             ->fetch();
         $this->assertFalse($itemsChildrenExist);
