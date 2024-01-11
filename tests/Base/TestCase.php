@@ -60,6 +60,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->populateDatabase();
     }
 
+    protected function tearDown(): void
+    {
+        if ($this->getDatabase()->getDriver()->getType() === 'SQLServer') {
+            $this->getDatabase()->getDriver()->disconnect();
+        }
+    }
+
     private function makeMigrator(): Migrator
     {
         $directories = [];

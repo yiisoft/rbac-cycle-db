@@ -40,6 +40,7 @@ abstract class ItemsStorageTest extends TestCase
 
     protected function tearDown(): void
     {
+        parent::tearDown();
         $this->traitTearDown();
 
         if ($this->name() === 'testGetAccessTreeWithCustomSeparator') {

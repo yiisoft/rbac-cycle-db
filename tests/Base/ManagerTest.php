@@ -21,6 +21,8 @@ abstract class ManagerTest extends TestCase
     {
         $this->createItemsStorage()->clear();
         $this->createAssignmentsStorage()->clear();
+
+        parent::tearDown();
     }
 
     protected function populateDatabase(): void
