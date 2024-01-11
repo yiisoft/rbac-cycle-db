@@ -169,7 +169,7 @@ abstract class ItemsStorageTest extends TestCase
         $this
             ->getDatabase()
             ->insert(self::$itemsTable)
-            ->columns(['name', 'type', 'createdAt', 'updatedAt'])
+            ->columns(['name', 'type', 'created_at', 'updated_at'])
             ->values($fixtures['items'])
             ->run();
         $this

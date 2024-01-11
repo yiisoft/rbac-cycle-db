@@ -32,9 +32,9 @@ final class CreateItemsTables extends Migration
         $schema->string('name', 128)->nullable(false);
         $schema->string('type', 10)->nullable(false);
         $schema->string('description', 191);
-        $schema->string('ruleName', 64);
-        $schema->integer('createdAt')->nullable(false);
-        $schema->integer('updatedAt')->nullable(false);
+        $schema->string('rule_name', 64);
+        $schema->integer('created_at')->nullable(false);
+        $schema->integer('updated_at')->nullable(false);
         $schema->index(['type'])->setName(sprintf('idx-%s-type', self::ITEMS_TABLE));
         $schema->setPrimaryKeys(['name']);
 
