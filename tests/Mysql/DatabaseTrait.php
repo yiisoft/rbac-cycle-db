@@ -7,13 +7,12 @@ namespace Yiisoft\Rbac\Cycle\Tests\Mysql;
 use Cycle\Database\Config\DatabaseConfig;
 use Cycle\Database\Config\MySQL\DsnConnectionConfig;
 use Cycle\Database\Config\MySQLDriverConfig;
-use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
-use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
+use Cycle\Database\DatabaseProviderInterface;
 
 trait DatabaseTrait
 {
-    protected function makeDatabase(): DatabaseInterface
+    protected function makeDatabaseManager(): DatabaseProviderInterface
     {
         $dbConfig = new DatabaseConfig(
             [
@@ -31,12 +30,9 @@ trait DatabaseTrait
             ],
         );
         $dbManager = new DatabaseManager($dbConfig);
+        $dbManager->database()->execute('SET GLOBAL max_connections = 5000;');
 
-        $logger = new Logger();
-        $dbManager->setLogger($logger);
-        $this->setLogger($logger);
-
-        return $dbManager->database();
+        return $dbManager;
     }
 
     protected function checkItemsChildrenTable(): void

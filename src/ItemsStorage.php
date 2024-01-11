@@ -74,8 +74,8 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     public function __construct(
         private DatabaseInterface $database,
-        private string $tableName = DbSchemaManager::ITEMS_TABLE,
-        private string $childrenTableName = DbSchemaManager::ITEMS_CHILDREN_TABLE,
+        private string $tableName = 'yii_rbac_item',
+        private string $childrenTableName = 'yii_rbac_item_child',
         string $namesSeparator = ',',
     ) {
         $this->assertNamesSeparator($namesSeparator);
@@ -146,14 +146,12 @@ final class ItemsStorage implements ItemsStorageInterface
          * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
-         * - IncrementInteger, limit.
          */
         $result = $this
             ->database
             ->select([new Fragment('1 AS item_exists')])
             ->from($this->tableName)
             ->where(['name' => $name])
-            ->limit(1)
             ->run()
             ->fetch();
 
@@ -166,14 +164,12 @@ final class ItemsStorage implements ItemsStorageInterface
          * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
-         * - IncrementInteger, limit.
          */
         $result = $this
             ->database
             ->select([new Fragment('1 AS role_exists')])
             ->from($this->tableName)
             ->where(['name' => $name, 'type' => Item::TYPE_ROLE])
-            ->limit(1)
             ->run()
             ->fetch();
 
@@ -416,14 +412,12 @@ final class ItemsStorage implements ItemsStorageInterface
          * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
-         * - IncrementInteger, limit.
          */
         $result = $this
             ->database
             ->select([new Fragment('1 AS item_child_exists')])
             ->from($this->childrenTableName)
             ->where(['parent' => $name])
-            ->limit(1)
             ->run()
             ->fetch();
 
@@ -441,14 +435,12 @@ final class ItemsStorage implements ItemsStorageInterface
          * @psalm-var array<0, 1>|false $result
          * @infection-ignore-all
          * - ArrayItemRemoval, select.
-         * - IncrementInteger, limit.
          */
         $result = $this
             ->database
             ->select([new Fragment('1 AS item_child_exists')])
             ->from($this->childrenTableName)
             ->where(['parent' => $parentName, 'child' => $childName])
-            ->limit(1)
             ->run()
             ->fetch();
 

@@ -5,63 +5,108 @@ declare(strict_types=1);
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Cycle\Database\DatabaseInterface;
-use RuntimeException;
-use Yiisoft\Rbac\Cycle\DbSchemaManager;
+use Cycle\Database\DatabaseManager;
+use Cycle\Database\DatabaseProviderInterface;
+use Cycle\Migrations\Capsule;
+use Cycle\Migrations\Config\MigrationConfig;
+use Cycle\Migrations\FileRepository;
+use Cycle\Migrations\Migrator;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    private ?DatabaseInterface $database = null;
-    private ?Logger $logger = null;
+    protected static string $itemsTable = 'yii_rbac_item';
+    protected static string $itemsChildrenTable = 'yii_rbac_item_child';
+    protected static string $assignmentsTable = 'yii_rbac_assignment';
+    protected static array $migrationsSubfolders = ['items', 'assignments'];
 
-    public function getLogger(): Logger
+    protected static ?DatabaseManager $databaseManager = null;
+    protected ?Migrator $migrator = null;
+
+    protected function getDatabaseManager(): DatabaseManager
     {
-        if ($this->logger === null) {
-            throw new RuntimeException('Logger was not set.');
+        if (self::$databaseManager === null) {
+            self::$databaseManager = $this->makeDatabaseManager();
         }
 
-        return $this->logger;
-    }
-
-    public function setLogger(Logger $logger): void
-    {
-        $this->logger = $logger;
+        return self::$databaseManager;
     }
 
     protected function getDatabase(): DatabaseInterface
     {
-        if ($this->database === null) {
-            $this->database = $this->makeDatabase();
+        return $this->getDatabaseManager()->database();
+    }
+
+    protected function getMigrator(): Migrator
+    {
+        if ($this->migrator === null) {
+            $this->migrator = $this->makeMigrator();
         }
 
-        return $this->database;
+        return $this->migrator;
+    }
+
+    public static function setUpBeforeClass(): void
+    {
+        (new static(static::class))->runMigrations();
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        (new static(static::class))->rollbackMigrations();
     }
 
     protected function setUp(): void
     {
-        $this->createSchemaManager()->ensureTables();
         $this->populateDatabase();
     }
 
     protected function tearDown(): void
     {
-        $this->createSchemaManager()->ensureNoTables();
-        $this->getDatabase()->getDriver()->disconnect();
+        if ($this->getDatabase()->getDriver()->getType() === 'SQLServer') {
+            $this->getDatabase()->getDriver()->disconnect();
+        }
     }
 
-    protected function createSchemaManager(
-        ?string $itemsTable = DbSchemaManager::ITEMS_TABLE,
-        ?string $itemsChildrenTable = DbSchemaManager::ITEMS_CHILDREN_TABLE,
-        ?string $assignmentsTable = DbSchemaManager::ASSIGNMENTS_TABLE,
-    ): DbSchemaManager {
-        return new DbSchemaManager(
-            database: $this->getDatabase(),
-            itemsTable: $itemsTable,
-            itemsChildrenTable: $itemsChildrenTable,
-            assignmentsTable: $assignmentsTable,
-        );
+    private function makeMigrator(): Migrator
+    {
+        $directories = [];
+        foreach (static::$migrationsSubfolders as $subfolder) {
+            $directories[] = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'migrations', $subfolder]);
+        }
+
+        $config = new MigrationConfig([
+            'directory' => $directories[0],
+            // "vendorDirectories" are specified because "directory" option doesn't support multiple directories. In the
+            // end, it makes no difference.
+            'vendorDirectories' => $directories[1] ?? [],
+            'table' => 'cycle_migration',
+            'safe' => true,
+        ]);
+        $migrator = new Migrator($config, $this->getDatabaseManager(), new FileRepository($config));
+        $migrator->configure();
+
+        return $migrator;
     }
 
-    abstract protected function makeDatabase(): DatabaseInterface;
+    protected function runMigrations(): void
+    {
+        $migrator = $this->getMigrator();
+        $capsule = new Capsule($this->getDatabase());
+
+        while ($migrator->run($capsule) !== null) {
+        }
+    }
+
+    protected function rollbackMigrations(): void
+    {
+        $migrator = $this->getMigrator();
+        $capsule = new Capsule($this->getDatabase());
+
+        while ($migrator->rollback($capsule) !== null) {
+        }
+    }
+
+    abstract protected function makeDatabaseManager(): DatabaseProviderInterface;
 
     abstract protected function populateDatabase(): void;
 }

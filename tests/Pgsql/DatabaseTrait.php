@@ -7,13 +7,12 @@ namespace Yiisoft\Rbac\Cycle\Tests\Pgsql;
 use Cycle\Database\Config\DatabaseConfig;
 use Cycle\Database\Config\Postgres\DsnConnectionConfig;
 use Cycle\Database\Config\PostgresDriverConfig;
-use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
-use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
+use Cycle\Database\DatabaseProviderInterface;
 
 trait DatabaseTrait
 {
-    protected function makeDatabase(): DatabaseInterface
+    protected function makeDatabaseManager(): DatabaseProviderInterface
     {
         $dbConfig = new DatabaseConfig(
             [
@@ -30,13 +29,8 @@ trait DatabaseTrait
                 ],
             ]
         );
-        $dbManager = new DatabaseManager($dbConfig);
 
-        $logger = new Logger();
-        $dbManager->setLogger($logger);
-        $this->setLogger($logger);
-
-        return $dbManager->database();
+        return new DatabaseManager($dbConfig);
     }
 
     protected function checkItemsChildrenTable(): void

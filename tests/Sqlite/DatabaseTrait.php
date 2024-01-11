@@ -7,13 +7,12 @@ namespace Yiisoft\Rbac\Cycle\Tests\Sqlite;
 use Cycle\Database\Config\DatabaseConfig;
 use Cycle\Database\Config\SQLite\MemoryConnectionConfig;
 use Cycle\Database\Config\SQLiteDriverConfig;
-use Cycle\Database\DatabaseInterface;
 use Cycle\Database\DatabaseManager;
-use Yiisoft\Rbac\Cycle\Tests\Base\Logger;
+use Cycle\Database\DatabaseProviderInterface;
 
 trait DatabaseTrait
 {
-    protected function makeDatabase(): DatabaseInterface
+    protected function makeDatabaseManager(): DatabaseProviderInterface
     {
         $dbConfig = new DatabaseConfig(
             [
@@ -29,10 +28,6 @@ trait DatabaseTrait
         $dbManager = new DatabaseManager($dbConfig);
         $dbManager->database()->execute('PRAGMA foreign_keys = ON;');
 
-        $logger = new Logger();
-        $dbManager->setLogger($logger);
-        $this->setLogger($logger);
-
-        return $dbManager->database();
+        return $dbManager;
     }
 }

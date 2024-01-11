@@ -10,11 +10,12 @@ build:
 
   environment:
     php:
-      version: 8.1
+      version: 8.2
       pecl_extensions:
         - uopz
       ini:
         xdebug.mode: coverage
+        memory_limit: "-1"
 
   nodes:
     analysis:

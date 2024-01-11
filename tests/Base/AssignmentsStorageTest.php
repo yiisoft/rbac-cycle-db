@@ -6,7 +6,6 @@ namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\Cycle\AssignmentsStorage;
-use Yiisoft\Rbac\Cycle\DbSchemaManager;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Tests\Common\AssignmentsStorageTestTrait;
@@ -26,14 +25,14 @@ abstract class AssignmentsStorageTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->traitTearDown();
         parent::tearDown();
+        $this->traitTearDown();
     }
 
     protected function populateItemsStorage(): void
     {
         $this->getDatabase()
-            ->insert(DbSchemaManager::ITEMS_TABLE)
+            ->insert(self::$itemsTable)
             ->columns(['name', 'type', 'createdAt', 'updatedAt'])
             ->values($this->getFixtures()['items'])
             ->run();
@@ -42,7 +41,7 @@ abstract class AssignmentsStorageTest extends TestCase
     protected function populateAssignmentsStorage(): void
     {
         $this->getDatabase()
-            ->insert(DbSchemaManager::ASSIGNMENTS_TABLE)
+            ->insert(self::$assignmentsTable)
             ->columns(['itemName', 'userId', 'createdAt'])
             ->values($this->getFixtures()['assignments'])
             ->run();
