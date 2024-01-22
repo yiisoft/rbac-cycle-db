@@ -92,6 +92,9 @@ $directories = [];
 foreach (static::$migrationsSubfolders as $subfolder) {
     $directories[] = implode(DIRECTORY_SEPARATOR, [
         dirname(__DIR__, 2), // Adjust this if your path is different.
+        'vendor',
+        'yiisoft',
+        'rbac',
         'migrations', 
         $subfolder,
     ]);
@@ -114,7 +117,7 @@ $capsule = new Capsule($databaseManager->database());
 
 For configuring `$databaseManager`, see [previous section](#configuring-database-connection).
 
-Because item and assignment storages are completely indepedent, migrations are separated as well in order to prevent 
+Because item and assignment storages are completely independent, migrations are separated as well in order to prevent 
 creation of unused tables. So, for example, if you only want to use assignment storage, adjust `$migrationsSubfolders` 
 variable like this:
 

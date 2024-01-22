@@ -29,10 +29,8 @@ trait DatabaseTrait
                 ],
             ],
         );
-        $dbManager = new DatabaseManager($dbConfig);
-        $dbManager->database()->execute('SET GLOBAL max_connections = 5000;');
 
-        return $dbManager;
+        return new DatabaseManager($dbConfig);
     }
 
     protected function checkItemsChildrenTable(): void
