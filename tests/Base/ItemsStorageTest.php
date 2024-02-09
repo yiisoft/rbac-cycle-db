@@ -187,6 +187,11 @@ abstract class ItemsStorageTest extends TestCase
 
     protected function getItemsStorage(): ItemsStorageInterface
     {
+        return $this->createItemsStorage();
+    }
+
+    protected function createItemsStorage(): ItemsStorageInterface
+    {
         return match ($this->name()) {
             'testGetAccessTreeSeparatorCollision' => new ItemsStorage($this->getDatabase(), namesSeparator: '.'),
             'testGetAccessTreeWithCustomSeparator' => new ItemsStorage($this->getDatabase(), namesSeparator: '|'),
