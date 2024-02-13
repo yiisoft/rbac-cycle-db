@@ -19,7 +19,7 @@ use Yiisoft\Rbac\Item;
  * @internal
  *
  * @psalm-import-type RawItem from ItemsStorage
- * @psalm-import-type AccessTree from ItemTreeTraversalInterface
+ * @psalm-import-type Hierarchy from ItemTreeTraversalInterface
  */
 abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
 {
@@ -51,7 +51,7 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         return $this->getRowsStatement($name, baseOuterQuery: $baseOuterQuery)->fetchAll();
     }
 
-    public function getAccessTree(string $name): array
+    public function getHierarchy(string $name): array
     {
         $baseOuterQuery = $this->database->select(['item.*', 'parent_of.children']);
         $cteSelectItemQuery = $this
@@ -76,7 +76,7 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
         )
         $outerQuery";
 
-        /** @psalm-var AccessTree */
+        /** @psalm-var Hierarchy */
         return $this->database->query($sql)->fetchAll();
     }
 

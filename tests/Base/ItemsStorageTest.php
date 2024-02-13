@@ -31,7 +31,7 @@ abstract class ItemsStorageTest extends TestCase
 
     protected function setUp(): void
     {
-        if ($this->name() === 'testGetAccessTreeWithCustomSeparator') {
+        if ($this->name() === 'testGetHierarchyWithCustomSeparator') {
             ClockMock::freeze(new DateTime('2023-12-24 17:51:18'));
         }
 
@@ -44,7 +44,7 @@ abstract class ItemsStorageTest extends TestCase
         parent::tearDown();
         $this->traitTearDown();
 
-        if ($this->name() === 'testGetAccessTreeWithCustomSeparator') {
+        if ($this->name() === 'testGetHierarchyWithCustomSeparator') {
             ClockMock::reset();
         }
     }
@@ -105,14 +105,14 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertSame($this->initialBothPermissionsChildrenCount, $itemsChildrenCount);
     }
 
-    public function testGetAccessTreeSeparatorCollision(): void
+    public function testGetHierarchySeparatorCollision(): void
     {
         $this->expectException(SeparatorCollisionException::class);
         $this->expectExceptionMessage('Separator collision has been detected.');
-        $this->getItemsStorage()->getAccessTree('posts.view');
+        $this->getItemsStorage()->GetHierarchy('posts.view');
     }
 
-    public function testGetAccessTreeWithCustomSeparator(): void
+    public function testGetHierarchyWithCustomSeparator(): void
     {
         $createdAt = (new DateTime('2023-12-24 17:51:18'))->getTimestamp();
         $postsViewPermission = (new Permission('posts.view'))->withCreatedAt($createdAt)->withUpdatedAt($createdAt);
@@ -137,7 +137,7 @@ abstract class ItemsStorageTest extends TestCase
                     ],
                 ],
             ],
-            $this->getItemsStorage()->getAccessTree('posts.view')
+            $this->getItemsStorage()->GetHierarchy('posts.view')
         );
     }
 
@@ -197,8 +197,8 @@ abstract class ItemsStorageTest extends TestCase
     protected function createItemsStorage(): ItemsStorageInterface
     {
         return match ($this->name()) {
-            'testGetAccessTreeSeparatorCollision' => new ItemsStorage($this->getDatabase(), namesSeparator: '.'),
-            'testGetAccessTreeWithCustomSeparator' => new ItemsStorage($this->getDatabase(), namesSeparator: '|'),
+            'testGetHierarchySeparatorCollision' => new ItemsStorage($this->getDatabase(), namesSeparator: '.'),
+            'testGetHierarchyWithCustomSeparator' => new ItemsStorage($this->getDatabase(), namesSeparator: '|'),
             default => new ItemsStorage($this->getDatabase()),
         };
     }
