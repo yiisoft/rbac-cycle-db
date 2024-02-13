@@ -21,6 +21,7 @@ abstract class ItemsStorageTest extends TestCase
         setUp as protected traitSetUp;
         tearDown as protected traitTearDown;
         testClear as protected traitTestClear;
+        dataRemove as public traitDataRemove;
         testRemove as protected traitTestRemove;
         testClearPermissions as protected traitTestClearPermissions;
         testClearRoles as protected traitTestClearRoles;
@@ -62,19 +63,22 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertFalse($itemsChildrenExist);
     }
 
-    public function testRemove(): void
+    /**
+     * @dataProvider traitDataRemove
+     */
+    public function testRemove(string $name): void
     {
         $storage = $this->getItemsStorage();
-        $initialItemChildrenCount = count($storage->getAllChildren('Parent 2'));
+        $initialItemChildrenCount = count($storage->getAllChildren($name));
 
-        $this->traitTestRemove();
+        $this->traitTestRemove($name);
 
-        $itemsChildren = $this
+        $itemsChildrenCount = $this
             ->getDatabase()
             ->select()
             ->from(self::$itemsChildrenTable)
             ->count();
-        $this->assertSame($this->initialItemsChildrenCount - $initialItemChildrenCount, $itemsChildren);
+        $this->assertSame($this->initialItemsChildrenCount - $initialItemChildrenCount, $itemsChildrenCount);
     }
 
     public function testClearPermissions(): void
@@ -186,6 +190,11 @@ abstract class ItemsStorageTest extends TestCase
     }
 
     protected function getItemsStorage(): ItemsStorageInterface
+    {
+        return $this->createItemsStorage();
+    }
+
+    protected function createItemsStorage(): ItemsStorageInterface
     {
         return match ($this->name()) {
             'testGetAccessTreeSeparatorCollision' => new ItemsStorage($this->getDatabase(), namesSeparator: '.'),

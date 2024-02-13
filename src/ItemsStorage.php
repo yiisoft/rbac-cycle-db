@@ -120,7 +120,7 @@ final class ItemsStorage implements ItemsStorageInterface
             ->database
             ->select()
             ->from($this->tableName)
-            ->andWhere('name', 'IN', $names)
+            ->where('name', 'IN', $names)
             ->fetchAll();
 
         return $this->getItemsIndexedByName($rawItems);

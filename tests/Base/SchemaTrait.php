@@ -206,7 +206,7 @@ trait SchemaTrait
     private function checkNoTables(): void
     {
         $this->assertFalse($this->getDatabase()->hasTable(self::$itemsTable));
-        $this->assertFalse($this->getDatabase()->hasTable(self::$assignmentsTable));
         $this->assertFalse($this->getDatabase()->hasTable(self::$itemsChildrenTable));
+        $this->assertFalse($this->getDatabase()->hasTable(self::$assignmentsTable));
     }
 }

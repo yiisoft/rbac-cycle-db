@@ -15,7 +15,6 @@ build:
         - uopz
       ini:
         xdebug.mode: coverage
-        memory_limit: "-1"
 
   nodes:
     analysis:
