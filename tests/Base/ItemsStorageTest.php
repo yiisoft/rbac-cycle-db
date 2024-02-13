@@ -67,7 +67,7 @@ abstract class ItemsStorageTest extends TestCase
         $storage = $this->getItemsStorage();
         $initialItemChildrenCount = count($storage->getAllChildren('Parent 2'));
 
-        $this->traitTestRemove();
+        $this->traitTestRemove($name);
 
         $itemsChildren = $this
             ->getDatabase()
