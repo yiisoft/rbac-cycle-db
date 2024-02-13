@@ -62,7 +62,7 @@ abstract class ItemsStorageTest extends TestCase
         $this->assertFalse($itemsChildrenExist);
     }
 
-    public function testRemove(): void
+    public function testRemove(string $name): void
     {
         $storage = $this->getItemsStorage();
         $initialItemChildrenCount = count($storage->getAllChildren('Parent 2'));
