@@ -72,7 +72,8 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
             ) raw_access_tree_base
             GROUP BY child_name
         ) access_tree_base
-        LEFT JOIN $this->tableName AS item ON item.name = access_tree_base.child_name";
+        LEFT JOIN $this->tableName AS item ON item.name = access_tree_base.child_name
+        WHERE item.name IS NOT NULL";
 
         /** @psalm-var AccessTree */
         return $this
