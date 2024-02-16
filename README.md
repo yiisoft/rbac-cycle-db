@@ -89,7 +89,7 @@ use Cycle\Migrations\Migrator;
 
 $migrationsSubfolders = ['items', 'assignments'];
 $directories = array_map(
-    static fn (): string => dirname(__DIR__),  "/vendor/yiisoft/rbac-cycle-db/migrations/$subfolder",
+    static fn (): string => dirname(__DIR__. 2),  "/vendor/yiisoft/rbac-cycle-db/migrations/$subfolder",
     $migrationsSubfolders, 
 );
 $config = new MigrationConfig([
