@@ -88,18 +88,10 @@ use Cycle\Migrations\FileRepository;
 use Cycle\Migrations\Migrator;
 
 $migrationsSubfolders = ['items', 'assignments'];
-$directories = [];
-foreach (static::$migrationsSubfolders as $subfolder) {
-    $directories[] = implode(DIRECTORY_SEPARATOR, [
-        dirname(__DIR__, 2), // Adjust this if your path is different.
-        'vendor',
-        'yiisoft',
-        'rbac',
-        'migrations', 
-        $subfolder,
-    ]);
-}
-
+$directories = array_map(
+    static fn (): string => dirname(__DIR__),  "/vendor/yiisoft/rbac-cycle-db/migrations/$subfolder",
+    $migrationsSubfolders, 
+);
 $config = new MigrationConfig([
     'directory' => $directories[0],
     // "vendorDirectories" are specified because "directory" option doesn't support multiple directories. In the end, it
