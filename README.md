@@ -18,7 +18,7 @@ The package provides [Cycle Database](https://github.com/cycle/database) storage
 
 ## Requirements
 
-- PHP 8.0 or higher.
+- PHP 8.1 or higher.
 - In case of using with SQLite, minimal required version is 3.8.3.
 - In case of using with SQL Server, minimal required version of PDO is 5.11.1. 
 

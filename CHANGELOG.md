@@ -21,7 +21,7 @@
 - Enh #94: Decrease size for string columns from 128 to 126 for PostgreSQL optimization (@arogachev)
 - Enh #95: Backwards sync of changes with rbac-db package (@arogachev)
 - Bug #95: Handle null result when getting access tree using MySQL 5.7 (@arogachev)
-- Chg #97: Rename `getAccessTree()` to `getHierarchy()` in `ItemsStorageInterface` (@arogachev)
+- Chg #97: Rename `getAccessTree()` to `getHierarchy()` in `ItemsStorageInterface` implmentations (@arogachev)
 
 ## 2.0.0 April 20, 2023
 
