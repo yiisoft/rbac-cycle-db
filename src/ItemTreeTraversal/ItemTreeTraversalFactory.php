@@ -28,7 +28,7 @@ class ItemTreeTraversalFactory
      * @param string $namesSeparator Separator used for joining item names.
      * @psalm-param non-empty-string $namesSeparator
      *
-     * @throws RuntimeException When a database was configured with unknown driver, either because it is not supported
+     * @throws RuntimeException When a database was configured with an unknown driver, either because it is not supported
      * by Cycle out of the box or newly added by Cycle and not supported / tested yet in this package.
      * @return ItemTreeTraversalInterface Item tree traversal strategy.
      */
@@ -41,7 +41,7 @@ class ItemTreeTraversalFactory
         $arguments = [$database, $tableName, $childrenTableName, $namesSeparator];
         $driverType = $database->getDriver()->getType();
 
-        // default - ignored due to a complexity of testing and preventing splitting of database argument.
+        // default - ignored due to the complexity of testing and preventing splitting of database argument.
         // @codeCoverageIgnoreStart
         return match ($driverType) {
             'SQLite' => new SqliteCteItemTreeTraversal(...$arguments),

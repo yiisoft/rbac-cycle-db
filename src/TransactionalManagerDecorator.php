@@ -13,7 +13,10 @@ use Yiisoft\Rbac\Role;
 
 final class TransactionalManagerDecorator implements ManagerInterface
 {
-    public function __construct(private ManagerInterface $manager, private DatabaseInterface $database)
+    public function __construct(
+        private readonly ManagerInterface $manager,
+        private readonly DatabaseInterface $database
+    )
     {
     }
 

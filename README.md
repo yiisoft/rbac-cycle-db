@@ -28,8 +28,8 @@ Detailed build statuses:
 ## Requirements
 
 - PHP 8.1 or higher.
-- In case of using with SQLite, minimal required version is 3.8.3.
-- In case of using with SQL Server, minimal required version of PDO is 5.11.1. 
+- In the case of using with SQLite, a minimal required version is 3.8.3.
+- In the case of using with SQL Server, a minimal required version of PDO is 5.11.1. 
 
 ## Installation
 
@@ -76,7 +76,7 @@ More comprehensive examples can be found at
 ### Working with migrations
 
 This package uses [Cycle Migrations](https://github.com/cycle/migrations) for managing database tables required for 
-storages. There are 3 tables in total (`yii_rbac_` prefix is used).
+storages. There are three tables in total (`yii_rbac_` prefix is used).
 
 Items storage:
 
@@ -103,8 +103,8 @@ $directories = array_map(
 );
 $config = new MigrationConfig([
     'directory' => $directories[0],
-    // "vendorDirectories" are specified because "directory" option doesn't support multiple directories. In the end, it
-    // makes no difference, because they all will be merged into single array.
+    // "vendorDirectories" are specified because the "directory" option doesn't support multiple directories. In the end,
+    // it makes no difference because they all will be merged into a single array.
     'vendorDirectories' => $directories[1] ?? [],
     'table' => 'cycle_migration',
     'safe' => true,
@@ -118,8 +118,8 @@ $capsule = new Capsule($databaseManager->database());
 
 For configuring `$databaseManager`, see [previous section](#configuring-database-connection).
 
-Because item and assignment storages are completely independent, migrations are separated as well in order to prevent 
-creation of unused tables. So, for example, if you only want to use assignment storage, adjust `$migrationsSubfolders` 
+Because item and assignment storages are completely independent, migrations are separated as well to prevent 
+the creation of unused tables. So, for example, if you only want to use assignment storage, adjust `$migrationsSubfolders` 
 variable like this:
 
 ```php
@@ -178,17 +178,17 @@ $manager = new TransactionalManagerDecorator(
     new Manager(
         itemsStorage: $itemsStorage, 
         assignmentsStorage: $assignmentsStorage,
-        // Requires https://github.com/yiisoft/rbac-rules-container or other compatible factory.
+        // Requires https://github.com/yiisoft/rbac-rules-container or another compatible factory.
         ruleFactory: $rulesContainer,
     ),
 );
 $manager->addPermission(new Permission('posts.create'));
 ```
 
-> Note wrapping manager with decorator - it additionally provides database transactions to guarantee data integrity.
+> Note wrapping manager with decorator—it additionally provides database transactions to guarantee data integrity.
 
 > Note that it's not necessary to use both DB storages. Combining different implementations is possible. A quite popular 
-> case is to manage items via [PHP file](https://github.com/yiisoft/rbac-php) while store assignments in database.
+> case is to manage items via [PHP file](https://github.com/yiisoft/rbac-php) while store assignments in a database.
 
 More examples can be found in [Yii RBAC](https://github.com/yiisoft/rbac) documentation.
 
