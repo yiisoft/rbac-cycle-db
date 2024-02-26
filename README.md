@@ -103,8 +103,8 @@ $directories = array_map(
 );
 $config = new MigrationConfig([
     'directory' => $directories[0],
-    // "vendorDirectories" are specified because the "directory" option doesn't support multiple directories. In the end,
-    // it makes no difference because they all will be merged into a single array.
+    // "vendorDirectories" are specified because the "directory" option doesn't support multiple directories. In the
+    // end, it makes no difference because they all will be merged into a single array.
     'vendorDirectories' => $directories[1] ?? [],
     'table' => 'cycle_migration',
     'safe' => true,
@@ -119,8 +119,8 @@ $capsule = new Capsule($databaseManager->database());
 For configuring `$databaseManager`, see [previous section](#configuring-database-connection).
 
 Because item and assignment storages are completely independent, migrations are separated as well to prevent 
-the creation of unused tables. So, for example, if you only want to use assignment storage, adjust `$migrationsSubfolders` 
-variable like this:
+the creation of unused tables. So, for example, if you only want to use assignment storage, adjust 
+`$migrationsSubfolders` variable like this:
 
 ```php
 $migrationsSubfolders = ['assignments'];

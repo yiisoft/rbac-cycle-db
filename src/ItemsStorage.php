@@ -615,8 +615,7 @@ final class ItemsStorage implements ItemsStorageInterface
 
     /**
      * Creates RBAC item tree traversal strategy and returns it.
-     * In case it was already created, it just retrieves
-     * previously saved instance.
+     * In case it was already created, it just retrieves previously saved instance.
      */
     private function getTreeTraversal(): ItemTreeTraversalInterface
     {

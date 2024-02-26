@@ -28,8 +28,8 @@ class ItemTreeTraversalFactory
      * @param string $namesSeparator Separator used for joining item names.
      * @psalm-param non-empty-string $namesSeparator
      *
-     * @throws RuntimeException When a database was configured with an unknown driver, either because it is not supported
-     * by Cycle out of the box or newly added by Cycle and not supported / tested yet in this package.
+     * @throws RuntimeException When a database was configured with an unknown driver, either because it is not
+     * supported by Cycle out of the box or newly added by Cycle and not supported / tested yet in this package.
      * @return ItemTreeTraversalInterface Item tree traversal strategy.
      */
     public static function getItemTreeTraversal(
