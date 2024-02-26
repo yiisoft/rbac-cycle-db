@@ -13,8 +13,8 @@ use Yiisoft\Rbac\Item;
 
 /**
  * A RBAC item tree traversal strategy based on CTE (common table expression). Uses `WITH` expression to form a
- * recursive query. The base queries are unified as much possible to work for all RDBMS supported by Cycle with minimal
- * differences.
+ * recursive query. The base queries are unified as much as possible to work for all RDBMS supported by Cycle with
+ * minimal differences.
  *
  * @internal
  *
@@ -121,7 +121,7 @@ abstract class CteItemTreeTraversal implements ItemTreeTraversalInterface
     }
 
     /**
-     * Gets `WITH` expression used in DB query.
+     * Gets `WITH` expression used in a DB query.
      *
      * @infection-ignore-all
      * - ProtectedVisibility.
