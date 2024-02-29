@@ -248,7 +248,7 @@ return [
 -    [
 -        'name' => 'posts.update',
 -        'rule_name' => 'is_author',
--        'type' => 'permission',        
+-        'type' => 'permission',
 -        'created_at' => 1683707079,
 -        'updated_at' => 1683707079,
 -    ],
