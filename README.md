@@ -198,7 +198,7 @@ The storages stay synced thanks to manager, but there can be situations where yo
 them is using combination with PHP file based storage and 
 [editing it manually](https://github.com/yiisoft/rbac-php/?tab=readme-ov-file#file-structure).
 
-Let's say PHP file is used for items, while database - for assignments, and some items were deleted.
+Let's say PHP file is used for items, while database - for assignments, and some items were deleted:
 
 ```diff
 return [
@@ -213,17 +213,17 @@ return [
             'posts.update.all',
         ],
     ],
--    [
--        'name' => 'posts.redactor',
--        'type' => 'role',        
--        'created_at' => 1683707079,
--        'updated_at' => 1683707079,
--        'children' => [
--            'posts.viewer',
--            'posts.create',
--            'posts.update',
--        ],
--    ],
+-   [
+-       'name' => 'posts.redactor',
+-       'type' => 'role',        
+-       'created_at' => 1683707079,
+-       'updated_at' => 1683707079,
+-       'children' => [
+-           'posts.viewer',
+-           'posts.create',
+-           'posts.update',
+-       ],
+-   ],
     [
         'name' => 'posts.viewer',
         'type' => 'role',        
@@ -245,13 +245,13 @@ return [
         'created_at' => 1683707079,
         'updated_at' => 1683707079,
     ],
--    [
--        'name' => 'posts.update',
--        'rule_name' => 'is_author',
--        'type' => 'permission',
--        'created_at' => 1683707079,
--        'updated_at' => 1683707079,
--    ],
+-   [
+-       'name' => 'posts.update',
+-       'rule_name' => 'is_author',
+-       'type' => 'permission',
+-       'created_at' => 1683707079,
+-       'updated_at' => 1683707079,
+-   ],
     [
         'name' => 'posts.delete',        
         'type' => 'permission',        
@@ -271,7 +271,6 @@ Then related entries in other storage needs to be deleted as well. This can be d
 
 ```php
 use Cycle\Migrations\Migration;
-use RuntimeException;
 
 final class DeletePostUpdateItems extends Migration
 {
@@ -289,7 +288,6 @@ final class DeletePostUpdateItems extends Migration
 
     public function down()
     {
-        throw new RuntimeException('This migration is not reversible.');
     }
 }
 ```
