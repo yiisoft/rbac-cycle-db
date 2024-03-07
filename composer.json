@@ -19,13 +19,12 @@
         "chat": "https://t.me/yii3en",
         "source": "https://github.com/yiisoft/rbac-cycle-db"
     },
-    "minimum-stability": "dev",
     "require": {
         "php": "^8.1",
         "cycle/database": "^2.7",
         "cycle/migrations": "^4.2.2",
         "yiisoft/friendly-exception": "^1.1",
-        "yiisoft/rbac": "dev-master"
+        "yiisoft/rbac": "^2.0"
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
