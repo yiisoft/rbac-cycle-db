@@ -1,5 +1,9 @@
 # Yii RBAC Cycle Database Storage Change Log
 
+## 3.0.1 under development
+
+- no changes in this release.
+
 ## 3.0.0 March 07, 2024
 
 - Enh #78, #95 #97: Sync with base package (implement interface methods) (@arogachev)
