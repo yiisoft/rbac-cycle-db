@@ -39,8 +39,6 @@ The package could be installed with composer:
 composer require yiisoft/rbac-cycle-db
 ```
 
-See [yiisoft/rbac](https://github.com/yiisoft/rbac) for RBAC package installation instructions.
-
 ## General usage
 
 ### Configuring database connection
