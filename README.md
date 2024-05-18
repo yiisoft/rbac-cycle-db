@@ -6,8 +6,6 @@
     <br>
 </p>
 
-The package provides [Cycle Database](https://github.com/cycle/database) storage for [Yii RBAC](https://github.com/yiisoft/rbac).
-
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/rbac-cycle-db/v/stable.png)](https://packagist.org/packages/yiisoft/rbac-cycle-db)
 [![Total Downloads](https://poser.pugx.org/yiisoft/rbac-cycle-db/downloads.png)](https://packagist.org/packages/yiisoft/rbac-cycle-db)
 [![Build status](https://github.com/yiisoft/rbac-cycle-db/workflows/build/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Abuild)
@@ -16,14 +14,16 @@ The package provides [Cycle Database](https://github.com/cycle/database) storage
 [![static analysis](https://github.com/yiisoft/rbac-cycle-db/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/rbac-cycle-db/coverage.svg)](https://shepherd.dev/github/yiisoft/rbac-cycle-db)
 
+The package provides [Cycle Database](https://github.com/cycle/database) storage for [Yii RBAC](https://github.com/yiisoft/rbac).
+
 Detailed build statuses:
 
-| RDBMS                | Status                                                                                                                                                            |
-|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SQLite               | [![SQLite status](https://github.com/yiisoft/rbac-cycle-db/workflows/sqlite/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Asqlite) |
-| MySQL                | [![MYSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/mysql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Amysql)    |
-| PostgreSQL           | [![MYSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/pgsql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Apgsql)    |
-| Microsoft SQL Server | [![MYSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/mssql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Amssql)    |
+| RDBMS | Status |
+|-------|--------|
+| SQLite | [![SQLite status](https://github.com/yiisoft/rbac-cycle-db/workflows/sqlite/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Asqlite) |
+| MySQL | [![MYSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/mysql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Amysql) |
+| PostgreSQL | [![MYSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/pgsql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Apgsql) |
+| Microsoft SQL Server | [![MYSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/mssql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Amssql) |
 
 ## Requirements
 
@@ -292,28 +292,28 @@ final class DeletePostUpdateItems extends Migration
 }
 ```
 
-## Testing
+## Documentation
 
-### Unit testing
+- [Internals](docs/internals.md)
 
-The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place
+for that. You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
 
-```php
-./vendor/bin/phpunit
-```
+## License
 
-### Mutation testing
+The Yii RBAC Cycle Database is free software. It is released under the terms of the BSD License.
+Please see [`LICENSE`](./LICENSE.md) for more information.
 
-The package tests are checked with [Infection](https://infection.github.io/) mutation framework. To run it:
+Maintained by [Yii Software](https://www.yiiframework.com/).
 
-```php
-./vendor/bin/infection
-```
+## Support the project
 
-### Static analysis
+[![Open Collective](https://img.shields.io/badge/Open%20Collective-sponsor-7eadf1?logo=open%20collective&logoColor=7eadf1&labelColor=555555)](https://opencollective.com/yiisoft)
 
-The code is statically analyzed with [Psalm](https://psalm.dev). To run static analysis:
+## Follow updates
 
-```php
-./vendor/bin/psalm
-```
+[![Official website](https://img.shields.io/badge/Powered_by-Yii_Framework-green.svg?style=flat)](https://www.yiiframework.com/)
+[![Twitter](https://img.shields.io/badge/twitter-follow-1DA1F2?logo=twitter&logoColor=1DA1F2&labelColor=555555?style=flat)](https://twitter.com/yiiframework)
+[![Telegram](https://img.shields.io/badge/telegram-join-1DA1F2?style=flat&logo=telegram)](https://t.me/yii3en)
+[![Facebook](https://img.shields.io/badge/facebook-join-1DA1F2?style=flat&logo=facebook&logoColor=ffffff)](https://www.facebook.com/groups/yiitalk)
+[![Slack](https://img.shields.io/badge/slack-join-1DA1F2?style=flat&logo=slack)](https://yiiframework.com/go/slack)
