@@ -13,12 +13,22 @@
     "license": "BSD-3-Clause",
     "support": {
         "issues": "https://github.com/yiisoft/rbac-cycle-db/issues?state=open",
+        "source": "https://github.com/yiisoft/rbac-cycle-db",
         "forum": "https://www.yiiframework.com/forum/",
         "wiki": "https://www.yiiframework.com/wiki/",
         "irc": "ircs://irc.libera.chat:6697/yii",
-        "chat": "https://t.me/yii3en",
-        "source": "https://github.com/yiisoft/rbac-cycle-db"
+        "chat": "https://t.me/yii3en"
     },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
     "require": {
         "php": "^8.1",
         "cycle/database": "^2.7",
@@ -50,7 +60,9 @@
             "Yiisoft\\Rbac\\Cycle\\Tests\\": "tests",
             "Yiisoft\\Rbac\\Tests\\": "vendor/yiisoft/rbac/tests"
         },
-        "files": ["tests/bootstrap.php"]
+        "files": [
+            "tests/bootstrap.php"
+        ]
     },
     "config": {
         "sort-packages": true,
