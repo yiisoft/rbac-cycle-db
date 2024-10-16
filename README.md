@@ -18,12 +18,12 @@ The package provides [Cycle Database](https://github.com/cycle/database) storage
 
 Detailed build statuses:
 
-| RDBMS | Status |
-|-------|--------|
-| SQLite | [![SQLite status](https://github.com/yiisoft/rbac-cycle-db/workflows/sqlite/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Asqlite) |
-| MySQL | [![MYSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/mysql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Amysql) |
-| PostgreSQL | [![MYSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/pgsql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Apgsql) |
-| Microsoft SQL Server | [![MYSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/mssql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Amssql) |
+| RDBMS                | Status                                                                                                                                                                        |
+|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SQLite               | [![SQLite status](https://github.com/yiisoft/rbac-cycle-db/workflows/sqlite/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Asqlite)             |
+| MySQL                | [![MYSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/mysql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Amysql)                |
+| PostgreSQL           | [![PostgreSQL status](https://github.com/yiisoft/rbac-cycle-db/workflows/pgsql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Apgsql)           |
+| Microsoft SQL Server | [![Microsoft SQL Server status](https://github.com/yiisoft/rbac-cycle-db/workflows/mssql/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3Amssql) |
 
 ## Requirements
 
