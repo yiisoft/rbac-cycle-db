@@ -8,7 +8,6 @@
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/rbac-cycle-db/v)](https://packagist.org/packages/yiisoft/rbac-cycle-db)
 [![Total Downloads](https://poser.pugx.org/yiisoft/rbac-cycle-db/downloads)](https://packagist.org/packages/yiisoft/rbac-cycle-db)
-[![Build status](https://github.com/yiisoft/rbac-cycle-db/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/yiisoft/rbac-cycle-db/graph/badge.svg?token=OAABFCCC7A)](https://codecov.io/gh/yiisoft/rbac-cycle-db)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Frbac-cycle-db%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/rbac-cycle-db/master)
 [![static analysis](https://github.com/yiisoft/rbac-cycle-db/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/rbac-cycle-db/actions?query=workflow%3A%22static+analysis%22)
