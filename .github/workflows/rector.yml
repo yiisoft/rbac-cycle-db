@@ -11,6 +11,8 @@ on:
 
 name: rector
 
+permissions:
+  contents: read
 jobs:
   rector:
     uses: yiisoft/actions/.github/workflows/rector.yml@master
