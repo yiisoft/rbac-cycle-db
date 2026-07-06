@@ -30,7 +30,6 @@ jobs:
   roave_bc_check:
     uses: yiisoft/actions/.github/workflows/bc.yml@master
     with:
-      composer-require-options: '--with-all-dependencies --ignore-platform-reqs --no-security-blocking --no-progress --ansi'
       extensions: uopz
       os: >-
         ['ubuntu-latest']
