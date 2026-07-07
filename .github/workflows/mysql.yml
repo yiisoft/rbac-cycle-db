@@ -22,6 +22,8 @@ on:
 
 name: mysql
 
+permissions:
+  contents: read
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
@@ -45,7 +47,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql:${{ matrix.mysql }}
+        image: mysql:${{ matrix.mysql }} # zizmor: ignore[unpinned-images]
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_PASSWORD: ''
@@ -56,10 +58,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
 
       - name: Install PHP with extensions
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45
         with:
           php-version: ${{ matrix.php }}
           extensions: ${{ env.extensions }}
@@ -71,7 +75,7 @@ jobs:
         run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
           key: php${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
@@ -89,6 +93,6 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
-        uses: codecov/codecov-action@v7
+        uses: codecov/codecov-action@a99c28d3f0da835de33ff2feb2e15691c7b9641f
         with:
           files: ./coverage.xml
