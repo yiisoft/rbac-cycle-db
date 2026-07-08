@@ -66,7 +66,7 @@ jobs:
         run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
 
       - name: Install PHP with extensions
-        uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
         with:
           php-version: ${{ matrix.php }}
           extensions: ${{ env.extensions }}
@@ -97,6 +97,6 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
-        uses: codecov/codecov-action@a99c28d3f0da835de33ff2feb2e15691c7b9641f
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
         with:
           files: ./coverage.xml
