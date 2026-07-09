@@ -3,6 +3,8 @@
 ## 3.0.1 under development
 
 - Enh #118: Bump `yiisoft/rbac` version to `^2.1` (@vjik)
+- Enh #120: Add `@final` annotation to `SeparatorCollisionException` (@vjik)
+- Bug #120: Fix parameter type in `ItemsStorage` transaction callbacks (@vjik)
 
 ## 3.0.0 March 07, 2024
 
