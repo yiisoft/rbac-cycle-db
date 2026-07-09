@@ -34,6 +34,7 @@ abstract class ManagerTest extends TestCase
         ?AssignmentsStorageInterface $assignmentsStorage = null,
         ?bool $enableDirectPermissions = false,
         ?bool $includeRolesInAccessChecks = false,
+        ?DateTimeImmutable $currentDateTime = null,
     ): ManagerInterface {
         return new TransactionalManagerDecorator(
             $this->traitCreateManager(
@@ -41,6 +42,7 @@ abstract class ManagerTest extends TestCase
                 $assignmentsStorage,
                 $enableDirectPermissions,
                 $includeRolesInAccessChecks,
+                $currentDateTime,
             ),
             $this->getDatabase(),
         );
