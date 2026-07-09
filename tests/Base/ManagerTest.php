@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Rbac\Cycle\Tests\Base;
 
+use DateTimeImmutable;
 use Yiisoft\Rbac\AssignmentsStorageInterface;
 use Yiisoft\Rbac\Cycle\TransactionalManagerDecorator;
 use Yiisoft\Rbac\ItemsStorageInterface;
