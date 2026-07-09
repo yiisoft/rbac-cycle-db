@@ -22,7 +22,7 @@ trait DatabaseTrait
                 ],
                 'connections' => [
                     'mssql' => new SQLServerDriverConfig(new DsnConnectionConfig(
-                        'sqlsrv:Server=127.0.0.1,1433;Database=yiitest',
+                        'sqlsrv:Server=127.0.0.1,1433;Database=yiitest;TrustServerCertificate=true',
                         'SA',
                         'YourStrong!Passw0rd',
                     )),

@@ -7,7 +7,6 @@ namespace Yiisoft\Rbac\Cycle\Tests\Base;
 use Cycle\Database\Injection\Fragment;
 use DateTime;
 use InvalidArgumentException;
-use SlopeIt\ClockMock\ClockMock;
 use Yiisoft\Rbac\Cycle\Exception\SeparatorCollisionException;
 use Yiisoft\Rbac\Cycle\ItemsStorage;
 use Yiisoft\Rbac\ItemsStorageInterface;
@@ -31,10 +30,6 @@ abstract class ItemsStorageTest extends TestCase
 
     protected function setUp(): void
     {
-        if ($this->name() === 'testGetHierarchyWithCustomSeparator') {
-            ClockMock::freeze(new DateTime('2023-12-24 17:51:18'));
-        }
-
         parent::setUp();
         $this->traitSetUp();
     }
@@ -43,10 +38,6 @@ abstract class ItemsStorageTest extends TestCase
     {
         parent::tearDown();
         $this->traitTearDown();
-
-        if ($this->name() === 'testGetHierarchyWithCustomSeparator') {
-            ClockMock::reset();
-        }
     }
 
     public function testClear(): void
