@@ -38,7 +38,6 @@
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
-        "ext-uopz": "*",
         "maglnet/composer-require-checker": "^4.3",
         "phpunit/phpunit": "^10.5.2",
         "rector/rector": "^2.0.3",
@@ -59,10 +58,7 @@
         "psr-4": {
             "Yiisoft\\Rbac\\Cycle\\Tests\\": "tests",
             "Yiisoft\\Rbac\\Tests\\": "vendor/yiisoft/rbac/tests"
-        },
-        "files": [
-            "tests/bootstrap.php"
-        ]
+        }
     },
     "config": {
         "sort-packages": true,

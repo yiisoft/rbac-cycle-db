@@ -29,7 +29,7 @@ jobs:
     name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
 
     env:
-      extensions: pdo, pdo_sqlsrv-5.11.1, uopz
+      extensions: pdo, pdo_sqlsrv-5.11.1
 
     runs-on: ${{ matrix.os }}
 
