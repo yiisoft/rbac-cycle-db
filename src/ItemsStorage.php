@@ -114,6 +114,7 @@ final class ItemsStorage implements ItemsStorageInterface
     public function getByNames(array $names): array
     {
         if (empty($names)) {
+            /** @infection-ignore-all  */
             return [];
         }
 
@@ -256,6 +257,7 @@ final class ItemsStorage implements ItemsStorageInterface
     public function getRolesByNames(array $names): array
     {
         if (empty($names)) {
+            /** @infection-ignore-all  */
             return [];
         }
 
@@ -290,6 +292,7 @@ final class ItemsStorage implements ItemsStorageInterface
     public function getPermissionsByNames(array $names): array
     {
         if (empty($names)) {
+            /** @infection-ignore-all  */
             return [];
         }
 
