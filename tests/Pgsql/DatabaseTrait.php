@@ -27,7 +27,7 @@ trait DatabaseTrait
                         'root',
                     )),
                 ],
-            ]
+            ],
         );
 
         return new DatabaseManager($dbConfig);

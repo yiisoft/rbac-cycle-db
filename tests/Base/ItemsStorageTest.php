@@ -14,6 +14,8 @@ use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 use Yiisoft\Rbac\Tests\Common\ItemsStorageTestTrait;
 
+use function count;
+
 abstract class ItemsStorageTest extends TestCase
 {
     use ItemsStorageTestTrait {
@@ -128,7 +130,7 @@ abstract class ItemsStorageTest extends TestCase
                     ],
                 ],
             ],
-            $this->getItemsStorage()->GetHierarchy('posts.view')
+            $this->getItemsStorage()->GetHierarchy('posts.view'),
         );
     }
 

@@ -5,6 +5,7 @@
 - Enh #118: Bump `yiisoft/rbac` version to `^2.1` (@vjik)
 - Enh #120: Add `@final` annotation to `SeparatorCollisionException` (@vjik)
 - Bug #120: Fix parameter type in `ItemsStorage` transaction callbacks (@vjik)
+- Enh #121: Explicitly import functions in "use" section (@vjik)
 
 ## 3.0.0 March 07, 2024
 

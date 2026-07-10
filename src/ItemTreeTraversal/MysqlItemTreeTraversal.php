@@ -39,8 +39,7 @@ final class MysqlItemTreeTraversal implements ItemTreeTraversalInterface
         protected string $tableName,
         protected string $childrenTableName,
         protected string $namesSeparator,
-    ) {
-    }
+    ) {}
 
     public function getParentRows(string $name): array
     {
