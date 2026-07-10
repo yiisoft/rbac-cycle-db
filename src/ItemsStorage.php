@@ -87,14 +87,16 @@ final class ItemsStorage implements ItemsStorageInterface
         $itemsStorage = $this;
         $this
             ->database
-            ->transaction(static function (Database $database) use ($itemsStorage): void {
-                $database
-                    ->delete($itemsStorage->childrenTableName)
-                    ->run();
-                $database
-                    ->delete($itemsStorage->tableName)
-                    ->run();
-            });
+            ->transaction(
+                static function (DatabaseInterface $database) use ($itemsStorage): void {
+                    $database
+                        ->delete($itemsStorage->childrenTableName)
+                        ->run();
+                    $database
+                        ->delete($itemsStorage->tableName)
+                        ->run();
+                },
+            );
     }
 
     public function getAll(): array
@@ -112,6 +114,7 @@ final class ItemsStorage implements ItemsStorageInterface
     public function getByNames(array $names): array
     {
         if (empty($names)) {
+            /** @infection-ignore-all  */
             return [];
         }
 
@@ -190,43 +193,45 @@ final class ItemsStorage implements ItemsStorageInterface
         $itemsStorage = $this;
         $this
             ->database
-            ->transaction(static function (Database $database) use ($itemsStorage, $name, $item): void {
-                $itemsChildren = $database
-                    ->select()
-                    ->from($itemsStorage->childrenTableName)
-                    ->where(['parent' => $name])
-                    ->orWhere(['child' => $name])
-                    ->fetchAll();
-                if ($itemsChildren !== []) {
-                    $itemsStorage->removeRelatedItemsChildren($database, $name);
-                }
+            ->transaction(
+                static function (DatabaseInterface $database) use ($itemsStorage, $name, $item): void {
+                    $itemsChildren = $database
+                        ->select()
+                        ->from($itemsStorage->childrenTableName)
+                        ->where(['parent' => $name])
+                        ->orWhere(['child' => $name])
+                        ->fetchAll();
+                    if ($itemsChildren !== []) {
+                        $itemsStorage->removeRelatedItemsChildren($database, $name);
+                    }
 
-                $database
-                    ->update($itemsStorage->tableName, $item->getAttributes(), ['name' => $name])
-                    ->run();
-
-                if ($itemsChildren !== []) {
-                    $itemsChildren = array_map(
-                        static function (array $itemChild) use ($name, $item): array {
-                            if ($itemChild['parent'] === $name) {
-                                $itemChild['parent'] = $item->getName();
-                            }
-
-                            if ($itemChild['child'] === $name) {
-                                $itemChild['child'] = $item->getName();
-                            }
-
-                            return [$itemChild['parent'], $itemChild['child']];
-                        },
-                        $itemsChildren,
-                    );
                     $database
-                        ->insert($itemsStorage->childrenTableName)
-                        ->columns(['parent', 'child'])
-                        ->values($itemsChildren)
+                        ->update($itemsStorage->tableName, $item->getAttributes(), ['name' => $name])
                         ->run();
-                }
-            });
+
+                    if ($itemsChildren !== []) {
+                        $itemsChildren = array_map(
+                            static function (array $itemChild) use ($name, $item): array {
+                                if ($itemChild['parent'] === $name) {
+                                    $itemChild['parent'] = $item->getName();
+                                }
+
+                                if ($itemChild['child'] === $name) {
+                                    $itemChild['child'] = $item->getName();
+                                }
+
+                                return [$itemChild['parent'], $itemChild['child']];
+                            },
+                            $itemsChildren,
+                        );
+                        $database
+                            ->insert($itemsStorage->childrenTableName)
+                            ->columns(['parent', 'child'])
+                            ->values($itemsChildren)
+                            ->run();
+                    }
+                },
+            );
     }
 
     public function remove(string $name): void
@@ -234,12 +239,14 @@ final class ItemsStorage implements ItemsStorageInterface
         $itemsStorage = $this;
         $this
             ->database
-            ->transaction(static function (Database $database) use ($itemsStorage, $name): void {
-                $itemsStorage->removeRelatedItemsChildren($database, $name);
-                $database
-                    ->delete($itemsStorage->tableName, ['name' => $name])
-                    ->run();
-            });
+            ->transaction(
+                static function (DatabaseInterface $database) use ($itemsStorage, $name): void {
+                    $itemsStorage->removeRelatedItemsChildren($database, $name);
+                    $database
+                        ->delete($itemsStorage->tableName, ['name' => $name])
+                        ->run();
+                },
+            );
     }
 
     public function getRoles(): array
@@ -250,6 +257,7 @@ final class ItemsStorage implements ItemsStorageInterface
     public function getRolesByNames(array $names): array
     {
         if (empty($names)) {
+            /** @infection-ignore-all  */
             return [];
         }
 
@@ -284,6 +292,7 @@ final class ItemsStorage implements ItemsStorageInterface
     public function getPermissionsByNames(array $names): array
     {
         if (empty($names)) {
+            /** @infection-ignore-all  */
             return [];
         }
 
@@ -546,10 +555,10 @@ final class ItemsStorage implements ItemsStorageInterface
     /**
      * Removes all related records in items children table for a given item name.
      *
-     * @param Database $database Cycle database instance.
+     * @param DatabaseInterface $database Cycle database instance.
      * @param string $name Item name.
      */
-    private function removeRelatedItemsChildren(Database $database, string $name): void
+    private function removeRelatedItemsChildren(DatabaseInterface $database, string $name): void
     {
         $database
             ->delete()
@@ -570,47 +579,49 @@ final class ItemsStorage implements ItemsStorageInterface
         $itemsStorage = $this;
         $this
             ->database
-            ->transaction(static function (Database $database) use ($itemsStorage, $type): void {
-                $parentsSubQuery = $database
-                    ->select('parents.parent')
-                    ->from(
-                        new Fragment(
-                            '(' .
-                            $database
-                                ->select('parent')
-                                ->distinct()
-                                ->from($itemsStorage->childrenTableName) .
-                            ') AS parents',
-                        ),
-                    )
-                    ->leftJoin($itemsStorage->tableName, 'parent_items')
-                    ->on('parent_items.name', 'parents.parent')
-                    ->where(['parent_items.type' => $type]);
-                $childrenSubQuery = $database
-                    ->select('children.child')
-                    ->from(
-                        new Fragment(
-                            '(' .
-                            $database
-                                ->select('child')
-                                ->distinct()
-                                ->from($itemsStorage->childrenTableName) .
-                            ') AS children',
-                        ),
-                    )
-                    ->leftJoin($itemsStorage->tableName, 'child_items')
-                    ->on('child_items.name', 'children.child')
-                    ->where(['child_items.type' => $type]);
-                $database
-                    ->delete()
-                    ->from($itemsStorage->childrenTableName)
-                    ->where('parent', 'IN', $parentsSubQuery)
-                    ->orWhere('child', 'IN', $childrenSubQuery)
-                    ->run();
-                $database
-                    ->delete($itemsStorage->tableName, ['type' => $type])
-                    ->run();
-            });
+            ->transaction(
+                static function (DatabaseInterface $database) use ($itemsStorage, $type): void {
+                    $parentsSubQuery = $database
+                        ->select('parents.parent')
+                        ->from(
+                            new Fragment(
+                                '(' .
+                                $database
+                                    ->select('parent')
+                                    ->distinct()
+                                    ->from($itemsStorage->childrenTableName) .
+                                ') AS parents',
+                            ),
+                        )
+                        ->leftJoin($itemsStorage->tableName, 'parent_items')
+                        ->on('parent_items.name', 'parents.parent')
+                        ->where(['parent_items.type' => $type]);
+                    $childrenSubQuery = $database
+                        ->select('children.child')
+                        ->from(
+                            new Fragment(
+                                '(' .
+                                $database
+                                    ->select('child')
+                                    ->distinct()
+                                    ->from($itemsStorage->childrenTableName) .
+                                ') AS children',
+                            ),
+                        )
+                        ->leftJoin($itemsStorage->tableName, 'child_items')
+                        ->on('child_items.name', 'children.child')
+                        ->where(['child_items.type' => $type]);
+                    $database
+                        ->delete()
+                        ->from($itemsStorage->childrenTableName)
+                        ->where('parent', 'IN', $parentsSubQuery)
+                        ->orWhere('child', 'IN', $childrenSubQuery)
+                        ->run();
+                    $database
+                        ->delete($itemsStorage->tableName, ['type' => $type])
+                        ->run();
+                },
+            );
     }
 
     /**

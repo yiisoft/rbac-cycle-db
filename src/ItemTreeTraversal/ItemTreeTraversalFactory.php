@@ -12,7 +12,7 @@ use RuntimeException;
  *
  * @internal
  */
-class ItemTreeTraversalFactory
+final class ItemTreeTraversalFactory
 {
     /**
      * Creates item tree traversal strategy depending on used RDBMS.
