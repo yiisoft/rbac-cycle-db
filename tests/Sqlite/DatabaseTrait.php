@@ -23,7 +23,7 @@ trait DatabaseTrait
                 'connections' => [
                     'sqlite' => new SQLiteDriverConfig(new MemoryConnectionConfig()),
                 ],
-            ]
+            ],
         );
         $dbManager = new DatabaseManager($dbConfig);
         $dbManager->database()->execute('PRAGMA foreign_keys = ON;');

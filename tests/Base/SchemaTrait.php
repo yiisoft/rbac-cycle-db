@@ -23,11 +23,6 @@ trait SchemaTrait
         // Skip
     }
 
-    protected function populateDatabase(): void
-    {
-        // Skip
-    }
-
     public function testSchema(): void
     {
         $this->checkNoTables();
@@ -36,6 +31,11 @@ trait SchemaTrait
 
         $this->rollbackMigrations();
         $this->checkNoTables();
+    }
+
+    protected function populateDatabase(): void
+    {
+        // Skip
     }
 
     protected function checkAssignmentsTable(): void

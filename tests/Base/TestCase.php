@@ -12,6 +12,10 @@ use Cycle\Migrations\Config\MigrationConfig;
 use Cycle\Migrations\FileRepository;
 use Cycle\Migrations\Migrator;
 
+use function dirname;
+
+use const DIRECTORY_SEPARATOR;
+
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected static string $itemsTable = 'yii_rbac_item';
@@ -21,6 +25,28 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected static ?DatabaseManager $databaseManager = null;
     protected ?Migrator $migrator = null;
+
+    public static function setUpBeforeClass(): void
+    {
+        (new static(static::class))->runMigrations();
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        (new static(static::class))->rollbackMigrations();
+    }
+
+    protected function setUp(): void
+    {
+        $this->populateDatabase();
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->getDatabase()->getDriver()->getType() === 'SQLServer') {
+            $this->getDatabase()->getDriver()->disconnect();
+        }
+    }
 
     protected function getDatabaseManager(): DatabaseManager
     {
@@ -45,49 +71,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return $this->migrator;
     }
 
-    public static function setUpBeforeClass(): void
-    {
-        (new static(static::class))->runMigrations();
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        (new static(static::class))->rollbackMigrations();
-    }
-
-    protected function setUp(): void
-    {
-        $this->populateDatabase();
-    }
-
-    protected function tearDown(): void
-    {
-        if ($this->getDatabase()->getDriver()->getType() === 'SQLServer') {
-            $this->getDatabase()->getDriver()->disconnect();
-        }
-    }
-
-    private function makeMigrator(): Migrator
-    {
-        $directories = [];
-        foreach (static::$migrationsSubfolders as $subfolder) {
-            $directories[] = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'migrations', $subfolder]);
-        }
-
-        $config = new MigrationConfig([
-            'directory' => $directories[0],
-            // "vendorDirectories" are specified because the "directory" option doesn't support multiple directories. In
-            // the end, it makes no difference because they all will be merged into a single array.
-            'vendorDirectories' => $directories[1] ?? [],
-            'table' => 'cycle_migration',
-            'safe' => true,
-        ]);
-        $migrator = new Migrator($config, $this->getDatabaseManager(), new FileRepository($config));
-        $migrator->configure();
-
-        return $migrator;
-    }
-
     protected function runMigrations(): void
     {
         $migrator = $this->getMigrator();
@@ -109,4 +92,25 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     abstract protected function makeDatabaseManager(): DatabaseProviderInterface;
 
     abstract protected function populateDatabase(): void;
+
+    private function makeMigrator(): Migrator
+    {
+        $directories = [];
+        foreach (static::$migrationsSubfolders as $subfolder) {
+            $directories[] = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'migrations', $subfolder]);
+        }
+
+        $config = new MigrationConfig([
+            'directory' => $directories[0],
+            // "vendorDirectories" are specified because the "directory" option doesn't support multiple directories. In
+            // the end, it makes no difference because they all will be merged into a single array.
+            'vendorDirectories' => $directories[1] ?? [],
+            'table' => 'cycle_migration',
+            'safe' => true,
+        ]);
+        $migrator = new Migrator($config, $this->getDatabaseManager(), new FileRepository($config));
+        $migrator->configure();
+
+        return $migrator;
+    }
 }

@@ -16,6 +16,9 @@ use Yiisoft\Rbac\ItemsStorageInterface;
 use Yiisoft\Rbac\Permission;
 use Yiisoft\Rbac\Role;
 
+use function is_array;
+use function strlen;
+
 /**
  * **Warning:** Do not use directly! Use with {@see Manager} instead.
  *
@@ -585,12 +588,12 @@ final class ItemsStorage implements ItemsStorageInterface
                         ->select('parents.parent')
                         ->from(
                             new Fragment(
-                                '(' .
-                                $database
+                                '('
+                                . $database
                                     ->select('parent')
                                     ->distinct()
-                                    ->from($itemsStorage->childrenTableName) .
-                                ') AS parents',
+                                    ->from($itemsStorage->childrenTableName)
+                                . ') AS parents',
                             ),
                         )
                         ->leftJoin($itemsStorage->tableName, 'parent_items')
@@ -600,12 +603,12 @@ final class ItemsStorage implements ItemsStorageInterface
                         ->select('children.child')
                         ->from(
                             new Fragment(
-                                '(' .
-                                $database
+                                '('
+                                . $database
                                     ->select('child')
                                     ->distinct()
-                                    ->from($itemsStorage->childrenTableName) .
-                                ') AS children',
+                                    ->from($itemsStorage->childrenTableName)
+                                . ') AS children',
                             ),
                         )
                         ->leftJoin($itemsStorage->tableName, 'child_items')

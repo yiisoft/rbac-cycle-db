@@ -27,7 +27,7 @@ trait DatabaseTrait
                         'YourStrong!Passw0rd',
                     )),
                 ],
-            ]
+            ],
         );
 
         return new DatabaseManager($dbConfig);
