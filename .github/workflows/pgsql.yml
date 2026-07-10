@@ -6,7 +6,7 @@ on:
       - 'migrations/**'
       - 'src/**'
       - 'tests/**'
-      - '.github/workflows/mssql.yml'
+      - '.github/workflows/pgsql.yml'
       - 'composer.json'
       - 'phpunit.xml.dist'
   push:
