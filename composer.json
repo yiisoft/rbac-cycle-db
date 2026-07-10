@@ -38,13 +38,15 @@
     },
     "require-dev": {
         "ext-pdo_sqlite": "*",
+        "friendsofphp/php-cs-fixer": "^3.95",
         "maglnet/composer-require-checker": "^4.3",
         "phpunit/phpunit": "^10.5.2",
         "psr/clock": "^1.0",
-        "rector/rector": "^2.0.3",
+        "rector/rector": "^2.5.5",
         "roave/infection-static-analysis-plugin": "^1.25",
         "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.2|^6.0"
+        "vimeo/psalm": "^4.30|^5.2|^6.0",
+        "yiisoft/code-style": "^1.0"
     },
     "suggest": {
         "yiisoft/yii-db-migration": "For automating schema migration"
@@ -68,8 +70,10 @@
         }
     },
     "scripts": {
+        "cs-fix": "php-cs-fixer fix",
+        "psalm": "psalm",
+        "rector": "rector",
         "test": "phpunit --testdox --no-interaction",
-        "test-watch": "phpunit-watcher watch",
-        "psalm": "psalm"
+        "test-watch": "phpunit-watcher watch"
     }
 }
