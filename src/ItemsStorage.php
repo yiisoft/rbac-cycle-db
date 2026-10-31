@@ -633,14 +633,12 @@ final class ItemsStorage implements ItemsStorageInterface
      */
     private function getTreeTraversal(): ItemTreeTraversalInterface
     {
-        if ($this->treeTraversal === null) {
-            $this->treeTraversal = ItemTreeTraversalFactory::getItemTreeTraversal(
-                $this->database,
-                $this->tableName,
-                $this->childrenTableName,
-                $this->namesSeparator,
-            );
-        }
+        $this->treeTraversal ??= ItemTreeTraversalFactory::getItemTreeTraversal(
+            $this->database,
+            $this->tableName,
+            $this->childrenTableName,
+            $this->namesSeparator,
+        );
 
         return $this->treeTraversal;
     }
