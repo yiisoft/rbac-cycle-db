@@ -50,9 +50,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function getDatabaseManager(): DatabaseManager
     {
-        if (self::$databaseManager === null) {
-            self::$databaseManager = $this->makeDatabaseManager();
-        }
+        self::$databaseManager ??= $this->makeDatabaseManager();
 
         return self::$databaseManager;
     }
@@ -64,9 +62,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function getMigrator(): Migrator
     {
-        if ($this->migrator === null) {
-            $this->migrator = $this->makeMigrator();
-        }
+        $this->migrator ??= $this->makeMigrator();
 
         return $this->migrator;
     }

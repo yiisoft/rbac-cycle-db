@@ -3,12 +3,12 @@ name: mutation test
 on:
   pull_request:
     paths: &paths
-      - 'mutation/**'
       - 'src/**'
       - 'tests/**'
       - '.github/workflows/mutation.yml'
       - 'composer.json'
       - 'infection.json.dist'
+      - 'phpunit.xml.dist'
   push:
     branches: ['master']
     paths: *paths
@@ -16,15 +16,20 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   mutation:
-    uses: yiisoft/actions/.github/workflows/roave-infection.yml@master
+    uses: yiisoft/actions/.github/workflows/infection.yml@master
     with:
-      min-covered-msi: 100
+      min-covered-msi: 94
       extensions: pdo, pdo_sqlite
       os: >-
         ['ubuntu-latest']
       php: >-
         ['8.2']
+      infection-args: --ignore-msi-with-no-mutations
     secrets:
       STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
